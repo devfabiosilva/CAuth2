@@ -55,7 +55,7 @@ cauth_2fa_auth_code(
 
 CAUTH_SIGN_CODE_ERR
 sign_message_dynamic(
-   uint8_t **, size_t *,
+   void **, size_t *,
    mbedtls_md_type_t,
    uint8_t *, size_t,
    uint8_t *, size_t

@@ -5,7 +5,7 @@
 
 static
 int cauth_sha256_digest_dynamic_util(
-   uint8_t **res,
+   void **res,
    uint8_t *msg,
    size_t msg_size
 )
@@ -53,7 +53,7 @@ cauth_sha256_digest_EXIT1:
 static
 CAUTH_2FA_AUTH_CODE_ERR
 cauth_base32_decode_dynamic_util(
-    uint8_t **p_key, size_t *p_key_size,
+    void **p_key, size_t *p_key_size,
     const char *input, size_t input_sz
 )
 {
@@ -84,26 +84,23 @@ cauth_hex2str_dynamic(
 
    char *res;
    char *p;
-   const char *f[]={"%02x","%02X"};
+   static const char *f[]={"%02x","%02X"};
    const char *q;
 
    if (!buf_sz)
       return NULL;
 
-   if (!(res=malloc(buf_sz+1)))
+   if (!(res=malloc(buf_sz+32)))
       return NULL;
 
    p=res;
    q=f[type];
 
    for (;buf_sz--;) {
-
       sprintf(p, q, (unsigned char)*((unsigned char *)buf++));
       p+=2;
-
    }
-
-//   res[buf_sz]=0; //You dont need it. sprintf put NULL char
+   //res[buf_sz]=0; //You dont need it. sprintf put NULL char
 
    return res;
 }
@@ -156,7 +153,7 @@ cauth_2fa_auth_code(
       return CAUTH_2FA_ERR_INVALID_ALG_TYPE;
 
    if (is_key_base32) {
-      if ((err=cauth_base32_decode_dynamic_util(&p_key, &p_key_sz, key, key_sz)))
+      if ((err=cauth_base32_decode_dynamic_util((void **)&p_key, &p_key_sz, (const char *)key, key_sz)))
          return err;
    } else {
       p_key=key;
@@ -209,7 +206,7 @@ cauth_2fa_auth_code_EXIT1:
 
 CAUTH_SIGN_CODE_ERR
 sign_message_dynamic(
-   uint8_t **signature, size_t *signature_size,
+   void **signature, size_t *signature_size,
    mbedtls_md_type_t alg_type,
    uint8_t *key, size_t key_size,
    uint8_t *message, size_t message_size
@@ -231,10 +228,10 @@ sign_message_dynamic(
    if (!(info_sha=mbedtls_md_info_from_type(alg_type)))
       return CAUTH_ERR_INVALID_ALG_TYPE;
 
-   if (!(*signature=malloc(*signature_size=(size_t)mbedtls_md_get_size(info_sha))))
+   if (!((*signature)=malloc(*signature_size=(size_t)mbedtls_md_get_size(info_sha))))
       return CAUTH_SIGN_ALLOC;
 
-   if ((err=cauth_sha256_digest_dynamic_util(&sha256, key, key_size)))
+   if ((err=cauth_sha256_digest_dynamic_util((void *)&sha256, key, key_size)))
       goto sign_message_dynamic_EXIT1;
 
    err=mbedtls_md_hmac(
@@ -323,7 +320,7 @@ cauth_verify_message_with_err(
    size_t signature_verify_size;
 
    if (sign_message_dynamic(
-      &signature_verify, &signature_verify_size,
+      (void **)&signature_verify, &signature_verify_size,
       alg_type, key, key_size,
       message, message_size
    )) return CAUTH_VERIFY_SIGNATURE_ERR;

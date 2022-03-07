@@ -2,7 +2,17 @@
 #include <stdio.h>
 #include <strings.h>
 //https://datatracker.ietf.org/doc/html/rfc6238
-// gcc -O2 main.c src/cauth2.c src/CyoDecode.c -Iinclude -Llib -lnanocrypto1 -o test -fsanitize=leak,address
+// gcc -O2 main.c src/cauth2.c src/CyoDecode.c -Iinclude -Llib -lnanocrypto1 -o test -fsanitize=leak,address -Wall
+
+//gcc -O2 -c src/cauth2.c -Iinclude -Llib -lnanocrypto1 -fPIC -o cauth.o -Wall
+//gcc -O2 -c src/CyoDecode.c -Iinclude -fPIC -o cyodecode.o -Wall
+
+//gcc -O2 -c src/cauth2.c -Iinclude -Llib -lnanocrypto1 -flto -fuse-linker-plugin -fwhole-program -fPIC -o cauth.o -Wall
+//gcc -O2 -c src/CyoDecode.c -Iinclude -flto -fuse-linker-plugin -fwhole-program -o cyodecode.o -Wall
+
+
+//gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -Llib -lnanocrypto1 -fPIC -Iinclude -Iinclude/mbedtls -Iinclude/cyoencode -c src/cauth2.c -o cauth.o
+// gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -Iinclude -Iinclude/cyoencode -c src/CyoDecode.c -o cyodecode.o
 int main(int argc, char **argv)
 {
     int err;
@@ -34,10 +44,10 @@ int main(int argc, char **argv)
     char *p;
 
     if (!(err=sign_message_dynamic(
-        &signature, &signature_size,
+        (void **)&signature, &signature_size,
         MBEDTLS_MD_SHA1,
-        KEY_2, KEY_2_SZ,
-        MSG, MSG_SZ
+        (uint8_t *)KEY_2, KEY_2_SZ,
+        (uint8_t *)MSG, MSG_SZ
     ))) {
         p=cauth_hex2str_dynamic((const uint8_t *)signature, signature_size, IS_LOWER_CASE);
         printf("\nSignature %s @ %p with size %lu\n", p, signature, signature_size);
@@ -49,8 +59,8 @@ int main(int argc, char **argv)
     if (cauth_verify_message(
         signature, signature_size,
         MBEDTLS_MD_SHA1,
-        KEY_2, KEY_2_SZ,
-        MSG, MSG_SZ
+        (uint8_t *)KEY_2, KEY_2_SZ,
+        (uint8_t *)MSG, MSG_SZ
     )) printf("Signature is VALID\n");
     else printf("SINGNATURE INVALID");
 
