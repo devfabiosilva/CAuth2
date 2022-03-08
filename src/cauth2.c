@@ -57,7 +57,10 @@ cauth_base32_decode_dynamic_util(
     const char *input, size_t input_sz
 )
 {
-    *p_key_size=cyoBase32DecodeGetLength(input_sz);
+   *p_key=NULL;
+   
+   if (!(*p_key_size=cyoBase32DecodeGetLength(input_sz)))
+      return CAUTH2_2FA_BASE32_ZERO_SZ;
 
     if (!(*p_key=malloc(*p_key_size)))
         return CAUTH2_2FA_BASE32_ALLOC;
@@ -146,7 +149,7 @@ cauth_2fa_auth_code(
    if (!key_sz)
       return CAUTH_2FA_ERR_EMPTY_KEY_SIZE;
 
-   if ((size_t)digit_size>DIGITS_POWER_INDEX)
+   if ((size_t)digit_size>=DIGITS_POWER_INDEX)
       return CAUTH_2FA_ERR_DIGIT_SIZE;
 
    if (!(info_sha=mbedtls_md_info_from_type(alg_type)))
