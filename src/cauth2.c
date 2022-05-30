@@ -73,6 +73,39 @@ cauth_base32_decode_dynamic_util(
     return CAUTH2_2FA_BASE32_DECODE;
 }
 
+CAUTH_2FA_AUTH_CODE_ERR
+check_base32_oauth_key_valid(
+   size_t *output_size,
+   const char *input, size_t input_sz,
+   mbedtls_md_type_t alg_type
+)
+{
+   int err;
+   void *p_key;
+   size_t output_size_tmp;
+   const mbedtls_md_info_t *info_sha;
+
+   if (output_size)
+      *output_size=0;
+
+   if (!(info_sha=mbedtls_md_info_from_type(alg_type)))
+      return CAUTH_2FA_ERR_INVALID_ALG_TYPE;
+
+   if ((err=cauth_base32_decode_dynamic_util(&p_key, &output_size_tmp, input, input_sz)))
+      return err;
+
+   memset(p_key, 0, output_size_tmp);
+   free(p_key);
+
+   if ((err=(output_size_tmp!=(size_t)mbedtls_md_get_size(info_sha))))
+      output_size_tmp=0;
+
+   if (output_size)
+      *output_size=output_size_tmp;
+
+   return err;
+}
+
 char *
 cauth_hex2str_dynamic(
    const uint8_t *buf,

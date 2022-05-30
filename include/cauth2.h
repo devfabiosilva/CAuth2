@@ -97,4 +97,11 @@ cauth_hex2str_dynamic(
    size_t,
    HEX2STR_TYPE
 );
+
+CAUTH_2FA_AUTH_CODE_ERR
+check_base32_oauth_key_valid(
+   size_t *,
+   const char *, size_t,
+   mbedtls_md_type_t
+);
 #endif
