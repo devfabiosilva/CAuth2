@@ -22,7 +22,8 @@ typedef enum cauth_2fa_auth_code_err_t {
    CAUTH_2FA_ERR_DIV_ZERO,
    CAUTH2_2FA_BASE32_ALLOC,
    CAUTH2_2FA_BASE32_DECODE,
-   CAUTH2_2FA_BASE32_ZERO_SZ
+   CAUTH2_2FA_BASE32_ZERO_SZ,
+   CAUTH_2FA_ERR_WRONG_KEY_SIZE
 } CAUTH_2FA_AUTH_CODE_ERR;
 
 typedef enum cauth_sign_err_t {

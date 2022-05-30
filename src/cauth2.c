@@ -65,12 +65,8 @@ cauth_base32_decode_dynamic_util(
     if (!(*p_key=malloc(*p_key_size)))
         return CAUTH2_2FA_BASE32_ALLOC;
 
-    if (cyoBase32Decode((void *)*p_key, (const char *)input, input_sz)) {
-        if (input[input_sz-1]=='=')
-            (*p_key_size)--;
-
+    if ((*p_key_size=cyoBase32Decode((void *)*p_key, (const char *)input, input_sz)))
         return ERROR_SUCCESS;
-    }
 
     free(*p_key);
     *p_key=NULL;
@@ -163,7 +159,16 @@ cauth_2fa_auth_code(
       p_key_sz=key_sz;
    }
 
-   if (!(hmac_output=malloc(hmac_output_sz=(size_t)mbedtls_md_get_size(info_sha)))) {
+//   BEGIN
+//   Keys SHOULD be of the length of the HMAC output to facilitate
+//   interoperability. See 5.1 @ https://datatracker.ietf.org/doc/html/rfc6238
+   if (p_key_sz!=(hmac_output_sz=(size_t)mbedtls_md_get_size(info_sha))) {
+      err=CAUTH_2FA_ERR_WRONG_KEY_SIZE;
+      goto cauth_2fa_auth_code_EXIT1;
+   }
+//   END
+
+   if (!(hmac_output=malloc(hmac_output_sz))) {
       err=CAUTH_2FA_ERR_HMAC_MALLOC_ERROR;
       goto cauth_2fa_auth_code_EXIT1;
    }

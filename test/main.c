@@ -134,6 +134,38 @@ int main(int argc, char **argv) {
 #undef INVALID_BASE32_KEY_SIZE
 #define INVALID_BASE32_KEY_SIZE
 
+    C_ASSERT_EQUAL_INT(
+        CAUTH_2FA_ERR_WRONG_KEY_SIZE,
+        cauth_2fa_auth_code(
+            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA512, SECRET_KEY_SHA512_SZ,
+            FALSE, T0, X, NULL, 8
+        )
+    )
+
+    C_ASSERT_EQUAL_INT(
+        CAUTH_2FA_ERR_WRONG_KEY_SIZE,
+        cauth_2fa_auth_code(
+            &result, MBEDTLS_MD_SHA512, (uint8_t *)SECRET_KEY_SHA1, SECRET_KEY_SHA1_SZ,
+            FALSE, T0, X, NULL, 8
+        )
+    )
+
+    C_ASSERT_EQUAL_INT(
+        CAUTH_2FA_ERR_WRONG_KEY_SIZE,
+        cauth_2fa_auth_code(
+            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA512_B32, SECRET_KEY_SHA512_B32_SZ,
+            TRUE, T0, X, NULL, 8
+        )
+    )
+
+    C_ASSERT_EQUAL_INT(
+        CAUTH_2FA_ERR_WRONG_KEY_SIZE,
+        cauth_2fa_auth_code(
+            &result, MBEDTLS_MD_SHA512, (uint8_t *)SECRET_KEY_SHA1_B32, SECRET_KEY_SHA1_B32_SZ,
+            TRUE, T0, X, NULL, 8
+        )
+    )
+
     end_tests();
     return 0;
 }
