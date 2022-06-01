@@ -104,4 +104,13 @@ check_base32_oauth_key_valid(
    const char *, size_t,
    mbedtls_md_type_t
 );
+
+const char *
+cauth_getVersion();
+
+const char *
+cauth_buildDate();
+
+const char *
+cauth_endianess();
 #endif

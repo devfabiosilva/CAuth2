@@ -2,6 +2,30 @@
 #include <cyoencode/CyoDecode.h>
 #include <mbedtls/sha256.h>
 #include <stdio.h>
+#include <version.h>
+
+const char *
+cauth_getVersion()
+{
+   return VERSION"."VERSION_MAJOR"."VERSION_MINOR;
+}
+
+const char *
+cauth_buildDate()
+{
+   return BUILD_YEAR BUILD_MONTH BUILD_DAY BUILD_HOUR;
+}
+
+const char *
+cauth_endianess()
+{
+   return
+#ifdef CAUTH_LITTLE_ENDIAN
+   "LE";
+#else
+   "BE";
+#endif
+}
 
 static
 int cauth_sha256_digest_dynamic_util(
