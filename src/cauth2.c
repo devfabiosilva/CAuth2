@@ -178,13 +178,12 @@ cauth_2fa_auth_code(
       i,
       err;
 
-   uint32_t 
+   const uint32_t
       digits_power[]={1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
 
    size_t
       offset,
-      p_key_sz,
-      hmac_output_sz;
+      p_key_sz;
 
    union c_val_u {
       uint8_t u8[sizeof(uint64_t)];
@@ -219,13 +218,13 @@ cauth_2fa_auth_code(
 //   BEGIN
 //   Keys SHOULD be of the length of the HMAC output to facilitate
 //   interoperability. See 5.1 @ https://datatracker.ietf.org/doc/html/rfc6238
-   if (p_key_sz!=(hmac_output_sz=(size_t)mbedtls_md_get_size(info_sha))) {
+   if (p_key_sz!=(size_t)mbedtls_md_get_size(info_sha)) {
       err=CAUTH_2FA_ERR_WRONG_KEY_SIZE;
       goto cauth_2fa_auth_code_EXIT1;
    }
 //   END
 
-   if (!(hmac_output=malloc(hmac_output_sz))) {
+   if (!(hmac_output=malloc(p_key_sz))) {
       err=CAUTH_2FA_ERR_HMAC_MALLOC_ERROR;
       goto cauth_2fa_auth_code_EXIT1;
    }
@@ -246,7 +245,7 @@ cauth_2fa_auth_code(
       (unsigned char *)hmac_output
    ))) goto cauth_2fa_auth_code_EXIT2;
 
-   offset=(size_t)(hmac_output[hmac_output_sz-1]&0x0F);
+   offset=(size_t)(hmac_output[p_key_sz-1]&0x0F);
 
    *output=(uint32_t)((hmac_output[offset++]&0x7F)<<24);
    *output|=(uint32_t)((hmac_output[offset++])<<16);
@@ -256,7 +255,7 @@ cauth_2fa_auth_code(
    *output=(*output)%(digits_power[(size_t)digit_size]);
 
 cauth_2fa_auth_code_EXIT2:
-   memset(hmac_output, 0, hmac_output_sz);
+   memset(hmac_output, 0, p_key_sz);
    free(hmac_output);
 
 cauth_2fa_auth_code_EXIT1:
