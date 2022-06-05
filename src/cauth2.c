@@ -146,7 +146,7 @@ cauth_hex2str_dynamic(
    if (!buf_sz)
       return NULL;
 
-   if (!(res=malloc(buf_sz+32)))
+   if (!(res=malloc(buf_sz+1)))
       return NULL;
 
    p=res;
