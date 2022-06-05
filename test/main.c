@@ -6,6 +6,9 @@
 #define SHA256 "SHA256"
 #define SHA512 "SHA512"
 
+#define MBEDTLS_MD_SHA1234 1234
+#define SHA1234 "SHA1234"
+
 #define SECRET_KEY_SHA1 "12345678901234567890"
 #define SECRET_KEY_SHA1_SZ sizeof(SECRET_KEY_SHA1)-1
 #define SECRET_KEY_SHA1_B32 "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
@@ -69,6 +72,9 @@ struct test_table_t
 
 static void
 test_signatures();
+
+static void
+verify_signatures_test();
 
 int main(int argc, char **argv) {
     int table_index=0;
@@ -136,6 +142,15 @@ int main(int argc, char **argv) {
             FALSE, T0, X, NULL, 9
         )
     )
+
+    C_ASSERT_EQUAL_INT(
+        CAUTH_2FA_ERR_INVALID_ALG_TYPE,
+        cauth_2fa_auth_code(
+            &result, MBEDTLS_MD_SHA1234, (uint8_t *)SECRET_KEY_SHA1, SECRET_KEY_SHA1_SZ,
+            FALSE, T0, X, NULL, 8
+        )
+    )
+
 #define INVALID_BASE32_KEY "^Invalid~"
 #define INVALID_BASE32_KEY_SIZE sizeof(INVALID_BASE32_KEY)-1
     C_ASSERT_EQUAL_INT(
@@ -181,6 +196,7 @@ int main(int argc, char **argv) {
     )
 
     test_signatures();
+    verify_signatures_test();
 
     end_tests();
     return 0;
@@ -347,6 +363,185 @@ test_signatures()
     } while ((++test_signatures_list)->alg_name);
 
     INFO_MSG("End \"signature messages\"")
+}
+
+static uint8_t
+*signature_hex_util(size_t *len, const char *signature)
+{
+    static uint8_t value[64];
+
+    if ((*len=strlen(signature))>(2*sizeof(value))) {
+        *len=0;
+        return NULL;
+    }
+
+    if (cauth_str_to_hex(value, (char *)signature, *len)==0) {
+        (*len)>>=1;
+        return value;
+    }
+
+    *len=0;
+
+    return NULL;
+}
+
+#define SET_VERIFY_SIGNATURE(alg, message, expected_signature, expected_success, expected_valid_signature_bool) \
+{ \
+    0, #alg, MBEDTLS_MD_##alg, (uint8_t *)message, expected_signature, expected_success, expected_valid_signature_bool \
+}
+
+struct verify_signatures_t {
+    int index;
+    const char *alg_name;
+    mbedtls_md_type_t alg_type;
+    uint8_t *message;
+    const char *signature_expected_string;
+    CAUTH_VERIFY_CODE_ERR expected_err;
+    CAUTH_BOOL is_valid_signature_expected;
+} VERIFY_SIGNATURES[]={
+    SET_VERIFY_SIGNATURE(SHA1, "abc", "1234", CAUTH_VERIFY_WRONG_SIZE_ERR, FALSE),
+    SET_VERIFY_SIGNATURE(SHA256, "abcde", "a234", CAUTH_VERIFY_WRONG_SIZE_ERR, FALSE),
+    SET_VERIFY_SIGNATURE(SHA512, "", "a23456", CAUTH_VERIFY_SIGNATURE_ERR, FALSE),
+    SET_VERIFY_SIGNATURE(SHA512, "abcdefg", "a234", CAUTH_VERIFY_WRONG_SIZE_ERR, FALSE),
+    SET_VERIFY_SIGNATURE(SHA1234, "abcdefgh", "b234", CAUTH_VERIFY_SIGNATURE_ERR, FALSE),
+    SET_VERIFY_SIGNATURE(
+        SHA1, MESSAGE,
+        "64FF91FF3EA1E3557EE8B4485CAAFDDE5555CADA",
+        CAUTH_VERIFY_OK, TRUE
+    ),
+    SET_VERIFY_SIGNATURE(
+        SHA1, "a"MESSAGE,
+        "64FF91FF3EA1E3557EE8B4485CAAFDDE5555CADA",
+        CAUTH_VERIFY_INVALID, FALSE
+    ),
+    SET_VERIFY_SIGNATURE(
+        SHA1, MESSAGE,
+        "74FF91FF3EA1E3557EE8B4485CAAFDDE5555CADA",
+        CAUTH_VERIFY_INVALID, FALSE
+    ),
+    SET_VERIFY_SIGNATURE(
+        SHA256, MESSAGE,
+        "801870E6463E300AD35FC8FE9EC0B6BBAF98080896C94CF04509278363FA4433",
+        CAUTH_VERIFY_OK, TRUE
+    ),
+    SET_VERIFY_SIGNATURE(
+        SHA256, "b"MESSAGE,
+        "801870E6463E300AD35FC8FE9EC0B6BBAF98080896C94CF04509278363FA4433",
+        CAUTH_VERIFY_INVALID, FALSE
+    ),
+    SET_VERIFY_SIGNATURE(
+        SHA256, MESSAGE,
+        "801870E6463E300AD35FC8FE9EC0B6BBAF98080896C94CF04509278363FA4432",
+        CAUTH_VERIFY_INVALID, FALSE
+    ),
+    SET_VERIFY_SIGNATURE(
+        SHA512, MESSAGE,
+        "21D280BB0197BB861C15C60CBF4635459CB49369D149A07610DCE5D7FD051661621C39A487C6D5BBA6D56A90699AFB01853C37A773C7AEF70DA846C35C3C5D3B",
+        CAUTH_VERIFY_OK, TRUE
+    ),
+    SET_VERIFY_SIGNATURE(
+        SHA512, MESSAGE"c",
+        "21D280BB0197BB861C15C60CBF4635459CB49369D149A07610DCE5D7FD051661621C39A487C6D5BBA6D56A90699AFB01853C37A773C7AEF70DA846C35C3C5D3B",
+        CAUTH_VERIFY_INVALID, FALSE
+    ),
+    SET_VERIFY_SIGNATURE(
+        SHA512, MESSAGE,
+        "22D280BB0197BB861C15C60CBF4635459CB49369D149A07610DCE5D7FD051661621C39A487C6D5BBA6D56A90699AFB01853C37A773C7AEF70DA846C35C3C5D3B",
+        CAUTH_VERIFY_INVALID, FALSE
+    ),
+    {0}
+};
+
+#undef SHA1234
+#undef WRONG_TYPE_SHA1234
+
+void
+cb_verify_signatures_test_on_error(void *ctx)
+{
+    struct verify_signatures_t *verify_signatures=(struct verify_signatures_t *)ctx;
+
+    ERROR_MSG_FMT(
+        "\nERROR @ index %d\n\talg name %s\n\twith message: %s\n\twith expected signature: %s\n\t",
+        verify_signatures->index,
+        verify_signatures->alg_name,
+        verify_signatures->message,
+        verify_signatures->signature_expected_string
+    )
+}
+
+void
+cb_verify_signatures_test_on_success(void *ctx)
+{
+    struct verify_signatures_t *verify_signatures=(struct verify_signatures_t *)ctx;
+
+    INFO_MSG_FMT(
+        "\nSUCCESS @ index %d\n\talg name %s\n\twith message: %s\n\twith %s signature: %s\n\t",
+        verify_signatures->index,
+        verify_signatures->alg_name,
+        verify_signatures->message,
+        (verify_signatures->is_valid_signature_expected)?"expected":"unexpected",
+        verify_signatures->signature_expected_string
+    )
+}
+
+#define VERIFY_SIGNATURES_SIZE (int)(sizeof(VERIFY_SIGNATURES)/sizeof(VERIFY_SIGNATURES[0]))
+
+static void
+verify_signatures_test()
+{
+    int index=0;
+
+    uint8_t *signature_to_be_verified;
+    size_t signature_to_be_verified_size;
+
+    struct verify_signatures_t *verify_signatures_ptr=VERIFY_SIGNATURES;
+
+    INFO_MSG("Begin \"verify_signatures_test()\" ...\n\n")
+
+    do {
+        INFO_MSG_FMT("\nTesting index %d of %d", ++index, VERIFY_SIGNATURES_SIZE)
+
+        signature_to_be_verified=signature_hex_util(
+            &signature_to_be_verified_size,
+            verify_signatures_ptr->signature_expected_string
+        );
+
+        C_ASSERT_NOT_NULL(signature_to_be_verified)
+
+        C_ASSERT_EQUAL_INT(
+            verify_signatures_ptr->expected_err,
+            cauth_verify_message_with_err(
+                signature_to_be_verified, signature_to_be_verified_size,
+                verify_signatures_ptr->alg_type,
+                (uint8_t *)SECRET, SZ(SECRET),
+                verify_signatures_ptr->message, strlen((const char *)verify_signatures_ptr->message)
+            ),
+            CTEST_SETTER(
+                CTEST_ON_ERROR_CB(cb_verify_signatures_test_on_error, (void *)verify_signatures_ptr)
+            )
+        )
+
+        WARN_MSG_FMT(
+            "Expecting a%s signature to pass. Conditional: TRUE",
+            (verify_signatures_ptr->is_valid_signature_expected)?" valid":"n invalid"
+        )
+
+        C_ASSERT_TRUE(
+            verify_signatures_ptr->is_valid_signature_expected==cauth_verify_message(
+                signature_to_be_verified, signature_to_be_verified_size,
+                verify_signatures_ptr->alg_type,
+                (uint8_t *)SECRET, SZ(SECRET),
+                verify_signatures_ptr->message, strlen((const char *)verify_signatures_ptr->message)
+            ),
+            CTEST_SETTER(
+                CTEST_ON_SUCCESS_CB(cb_verify_signatures_test_on_success, (void *)verify_signatures_ptr),
+                CTEST_ON_ERROR_CB(cb_verify_signatures_test_on_error, (void *)verify_signatures_ptr)
+            )
+        )
+
+    } while ((++verify_signatures_ptr)->alg_name);
+
+    INFO_MSG("End \"verify_signatures_test()\"")
 #undef MESSAGE
 #undef SECRET
 }
