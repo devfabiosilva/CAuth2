@@ -258,32 +258,27 @@ cb_test_signatures_on_success(void *ctx)
     0x5c, 0x3c, 0x5d, 0x3b \
 })
 
+#define SIG_SET(sg) \
+{ \
+  SHA##sg, \
+  MBEDTLS_MD_SHA##sg, \
+  SIG_SHA##sg, \
+  sizeof(SIG_SHA##sg) \
+}
+
 struct test_signatures_list_t {
     const char *alg_name;
     mbedtls_md_type_t alg_type;
     uint8_t *signature;
     size_t signature_size;
 } TEST_SIGNATURE_LIST[]={
-    {
-        SHA1,
-        MBEDTLS_MD_SHA1,
-        SIG_SHA1,
-        sizeof(SIG_SHA1)
-    },
-    {
-        SHA256,
-        MBEDTLS_MD_SHA256,
-        SIG_SHA256,
-        sizeof(SIG_SHA256)
-    },
-    {
-        SHA512,
-        MBEDTLS_MD_SHA512,
-        SIG_SHA512,
-        sizeof(SIG_SHA512)
-    },
+    SIG_SET(1),
+    SIG_SET(256),
+    SIG_SET(512),
     {0}
 };
+
+#undef SIG_SET
 
 static void
 test_signatures()
