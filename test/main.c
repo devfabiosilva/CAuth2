@@ -1,6 +1,6 @@
 #include <cauth2.h>
 #include <test/asserts.h>
-//gcc -O2 test/main.c src/cauth2.c src/CyoDecode.c src/ctest/asserts.c -Iinclude -Llib -lnanocrypto1 -o test/test -fsanitize=leak,address -Wall
+
 #define SZ(this) sizeof(this)-1
 #define SHA1 "SHA1"
 #define SHA256 "SHA256"
@@ -10,19 +10,13 @@
 #define SHA1234 "SHA1234"
 
 #define SECRET_KEY_SHA1 "12345678901234567890"
-#define SECRET_KEY_SHA1_SZ sizeof(SECRET_KEY_SHA1)-1
 #define SECRET_KEY_SHA1_B32 "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-#define SECRET_KEY_SHA1_B32_SZ sizeof(SECRET_KEY_SHA1_B32)-1
 
 #define SECRET_KEY_SHA256 "12345678901234567890123456789012" // see https://www.rfc-editor.org/errata_search.php?rfc=6238&rec_status=0
-#define SECRET_KEY_SHA256_SZ sizeof(SECRET_KEY_SHA256)-1
 #define SECRET_KEY_SHA256_B32 "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA===="
-#define SECRET_KEY_SHA256_B32_SZ sizeof(SECRET_KEY_SHA256_B32)-1
 
 #define SECRET_KEY_SHA512 "1234567890123456789012345678901234567890123456789012345678901234" // see https://www.rfc-editor.org/errata_search.php?rfc=6238&rec_status=0
-#define SECRET_KEY_SHA512_SZ sizeof(SECRET_KEY_SHA512)-1
 #define SECRET_KEY_SHA512_B32 "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNA="
-#define SECRET_KEY_SHA512_B32_SZ sizeof(SECRET_KEY_SHA512_B32)-1
 
 #define X (uint64_t)30
 #define T0 (uint64_t)0
@@ -122,7 +116,7 @@ int main(int argc, char **argv) {
     C_ASSERT_EQUAL_INT(
         CAUTH_2FA_ERR_DIV_ZERO,
         cauth_2fa_auth_code(
-            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA1, SECRET_KEY_SHA1_SZ,
+            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA1, SZ(SECRET_KEY_SHA1),
             FALSE, T0, 0, NULL, 0
         )
     )
@@ -138,7 +132,7 @@ int main(int argc, char **argv) {
     C_ASSERT_EQUAL_INT(
         CAUTH_2FA_ERR_DIGIT_SIZE,
         cauth_2fa_auth_code(
-            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA1, SECRET_KEY_SHA1_SZ,
+            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA1, SZ(SECRET_KEY_SHA1),
             FALSE, T0, X, NULL, 9
         )
     )
@@ -146,27 +140,25 @@ int main(int argc, char **argv) {
     C_ASSERT_EQUAL_INT(
         CAUTH_2FA_ERR_INVALID_ALG_TYPE,
         cauth_2fa_auth_code(
-            &result, MBEDTLS_MD_SHA1234, (uint8_t *)SECRET_KEY_SHA1, SECRET_KEY_SHA1_SZ,
+            &result, MBEDTLS_MD_SHA1234, (uint8_t *)SECRET_KEY_SHA1, SZ(SECRET_KEY_SHA1),
             FALSE, T0, X, NULL, 8
         )
     )
 
 #define INVALID_BASE32_KEY "^Invalid~"
-#define INVALID_BASE32_KEY_SIZE sizeof(INVALID_BASE32_KEY)-1
     C_ASSERT_EQUAL_INT(
         CAUTH2_2FA_BASE32_ZERO_SZ,
         cauth_2fa_auth_code(
-            &result, MBEDTLS_MD_SHA1, (uint8_t *)INVALID_BASE32_KEY, INVALID_BASE32_KEY_SIZE,
+            &result, MBEDTLS_MD_SHA1, (uint8_t *)INVALID_BASE32_KEY, SZ(INVALID_BASE32_KEY),
             TRUE, T0, X, NULL, 1
         )
     )
-#undef INVALID_BASE32_KEY_SIZE
 #define INVALID_BASE32_KEY_SIZE
 
     C_ASSERT_EQUAL_INT(
         CAUTH_2FA_ERR_WRONG_KEY_SIZE,
         cauth_2fa_auth_code(
-            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA512, SECRET_KEY_SHA512_SZ,
+            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA512, SZ(SECRET_KEY_SHA512),
             FALSE, T0, X, NULL, 8
         )
     )
@@ -174,7 +166,7 @@ int main(int argc, char **argv) {
     C_ASSERT_EQUAL_INT(
         CAUTH_2FA_ERR_WRONG_KEY_SIZE,
         cauth_2fa_auth_code(
-            &result, MBEDTLS_MD_SHA512, (uint8_t *)SECRET_KEY_SHA1, SECRET_KEY_SHA1_SZ,
+            &result, MBEDTLS_MD_SHA512, (uint8_t *)SECRET_KEY_SHA1, SZ(SECRET_KEY_SHA1),
             FALSE, T0, X, NULL, 8
         )
     )
@@ -182,7 +174,7 @@ int main(int argc, char **argv) {
     C_ASSERT_EQUAL_INT(
         CAUTH_2FA_ERR_WRONG_KEY_SIZE,
         cauth_2fa_auth_code(
-            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA512_B32, SECRET_KEY_SHA512_B32_SZ,
+            &result, MBEDTLS_MD_SHA1, (uint8_t *)SECRET_KEY_SHA512_B32, SZ(SECRET_KEY_SHA512_B32),
             TRUE, T0, X, NULL, 8
         )
     )
@@ -190,7 +182,7 @@ int main(int argc, char **argv) {
     C_ASSERT_EQUAL_INT(
         CAUTH_2FA_ERR_WRONG_KEY_SIZE,
         cauth_2fa_auth_code(
-            &result, MBEDTLS_MD_SHA512, (uint8_t *)SECRET_KEY_SHA1_B32, SECRET_KEY_SHA1_B32_SZ,
+            &result, MBEDTLS_MD_SHA512, (uint8_t *)SECRET_KEY_SHA1_B32, SZ(SECRET_KEY_SHA1_B32),
             TRUE, T0, X, NULL, 8
         )
     )
