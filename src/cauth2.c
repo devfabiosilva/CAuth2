@@ -1,8 +1,11 @@
-#include <cauth2.h>
+#include <cauth2_dev.h>
 #include <cyoencode/CyoDecode.h>
 #include <mbedtls/sha256.h>
+#include <mbedtls/md.h>
 #include <stdio.h>
 #include <version.h>
+
+_Static_assert(sizeof(int)==sizeof(mbedtls_md_type_t), "wrong mbedtls_md_type_t size");
 
 const char *
 cauth_getVersion()
@@ -47,13 +50,16 @@ int cauth_sha256_digest_dynamic_util(
 
    mbedtls_sha256_init(sha256);
 
-   if ((err=mbedtls_sha256_starts_ret(sha256, 0)))
+   //if ((err=mbedtls_sha256_starts_ret(sha256, 0)))
+   if ((err=mbedtls_sha256_starts(sha256, 0)))
       goto cauth_sha256_digest_EXIT;
 
-   if ((err=mbedtls_sha256_update_ret(sha256, msg, msg_size)))
+   //if ((err=mbedtls_sha256_update_ret(sha256, msg, msg_size)))
+   if ((err=mbedtls_sha256_update(sha256, msg, msg_size)))
       goto cauth_sha256_digest_EXIT;
 
-   if ((err=mbedtls_sha256_finish_ret(sha256, (unsigned char *)*res)))
+   //if ((err=mbedtls_sha256_finish_ret(sha256, (unsigned char *)*res)))
+   if ((err=mbedtls_sha256_finish(sha256, (unsigned char *)*res)))
       goto cauth_sha256_digest_EXIT;
 
 cauth_sha256_digest_EXIT:
@@ -101,7 +107,7 @@ CAUTH_2FA_AUTH_CODE_ERR
 check_base32_oauth_key_valid(
    size_t *output_size,
    const char *input, size_t input_sz,
-   mbedtls_md_type_t alg_type
+   int alg_type
 )
 {
    int err;
@@ -112,7 +118,7 @@ check_base32_oauth_key_valid(
    if (output_size)
       *output_size=0;
 
-   if (!(info_sha=mbedtls_md_info_from_type(alg_type)))
+   if (!(info_sha=mbedtls_md_info_from_type((mbedtls_md_type_t)alg_type)))
       return CAUTH_2FA_ERR_INVALID_ALG_TYPE;
 
    if ((err=cauth_base32_decode_dynamic_util(&p_key, &output_size_tmp, input, input_sz)))
@@ -164,7 +170,7 @@ cauth_hex2str_dynamic(
 CAUTH_2FA_AUTH_CODE_ERR
 cauth_2fa_auth_code(
    uint32_t *output,
-   mbedtls_md_type_t alg_type,
+   int alg_type,
    uint8_t *key,
    size_t key_sz,
    int is_key_base32,
@@ -204,7 +210,7 @@ cauth_2fa_auth_code(
    if ((size_t)digit_size>=DIGITS_POWER_INDEX)
       return CAUTH_2FA_ERR_DIGIT_SIZE;
 
-   if (!(info_sha=mbedtls_md_info_from_type(alg_type)))
+   if (!(info_sha=mbedtls_md_info_from_type((mbedtls_md_type_t)alg_type)))
       return CAUTH_2FA_ERR_INVALID_ALG_TYPE;
 
    if (is_key_base32) {
@@ -271,7 +277,7 @@ cauth_2fa_auth_code_EXIT1:
 CAUTH_SIGN_CODE_ERR
 sign_message_dynamic(
    void **signature, size_t *signature_size,
-   mbedtls_md_type_t alg_type,
+   int alg_type,
    uint8_t *key, size_t key_size,
    uint8_t *message, size_t message_size
 )
@@ -289,7 +295,7 @@ sign_message_dynamic(
    if (!message_size)
       return CAUTH_EMPTY_MESSAGE;
 
-   if (!(info_sha=mbedtls_md_info_from_type(alg_type)))
+   if (!(info_sha=mbedtls_md_info_from_type((mbedtls_md_type_t)alg_type)))
       return CAUTH_ERR_INVALID_ALG_TYPE;
 
    if (!((*signature)=malloc(*signature_size=(size_t)mbedtls_md_get_size(info_sha))))
@@ -374,7 +380,7 @@ cauth_str_to_hex(
 CAUTH_VERIFY_CODE_ERR
 cauth_verify_message_with_err(
    uint8_t *signature, size_t signature_size,
-   mbedtls_md_type_t alg_type,
+   int alg_type,
    uint8_t *key, size_t key_size,
    uint8_t *message, size_t message_size
 )
@@ -385,7 +391,7 @@ cauth_verify_message_with_err(
 
    if (sign_message_dynamic(
       (void **)&signature_verify, &signature_verify_size,
-      alg_type, key, key_size,
+      (mbedtls_md_type_t)alg_type, key, key_size,
       message, message_size
    )) return CAUTH_VERIFY_SIGNATURE_ERR;
 
@@ -410,7 +416,7 @@ inline
 CAUTH_BOOL
 cauth_verify_message(
    uint8_t *signature, size_t signature_size,
-   mbedtls_md_type_t alg_type,
+   int alg_type,
    uint8_t *key, size_t key_size,
    uint8_t *message, size_t message_size
 )

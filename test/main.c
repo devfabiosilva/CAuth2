@@ -1,5 +1,6 @@
 #include <cauth2.h>
-#include <test/asserts.h>
+#include <asserts.h>
+#include <mbedtls/md.h>
 
 #define SZ(this) sizeof(this)-1
 #define SHA1 "SHA1"
