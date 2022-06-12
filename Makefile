@@ -84,7 +84,6 @@ ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a)","")
 	@cp $(MBED_LIB_DIR)/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib -v
 	@mv $(CAUTH_BUILD_DIR)/lib/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a
 	@ar -q $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a cauth.o cyodecode.o
-#	@$(AR) $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a cauth.o cyodecode.o
 else
 	@echo "Nothing to do lib$(LIBANAME).a already exists"
 endif
@@ -150,3 +149,11 @@ ifneq ("$(wildcard $(CURDIR)/test/test)","")
 else
 	@echo "Delete test: Nothing to do"
 endif
+
+.PHONY: panelauth_build
+panelauth_build: test
+	@python3 setup.py build
+
+.PHONY: panelauth_install
+panelauth_install: test
+	@python3 setup.py install
