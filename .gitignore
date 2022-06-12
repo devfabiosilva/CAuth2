@@ -53,6 +53,7 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-#downloads objects cloned
+#downloads objects cloned and compiled
 downloads/
 lib/
+build/

@@ -4,8 +4,12 @@
 #include <mbedtls/md.h>
 #include <stdio.h>
 #include <version.h>
+#include <cauth2_dev.h>
 
 _Static_assert(sizeof(int)==sizeof(mbedtls_md_type_t), "wrong mbedtls_md_type_t size");
+_Static_assert(ALG_SHA1_DEFAULT==MBEDTLS_MD_SHA1, "wrong ALG_SHA1_DEFAULT value");
+_Static_assert(ALG_SHA256==MBEDTLS_MD_SHA256, "wrong ALG_SHA256 value");
+_Static_assert(ALG_SHA512==MBEDTLS_MD_SHA512, "wrong ALG_SHA512 value");
 
 const char *
 cauth_getVersion()

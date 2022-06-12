@@ -6,6 +6,7 @@ MBEDTLS_GIT=https://github.com/Mbed-TLS/mbedtls.git
 MBEDTLS_BRANCH=v3.1.0
 MBED_INCLUDE_DIR=$(CURDIR)/downloads/mbedtls/build/compiled/include
 MBED_LIB_DIR=$(CURDIR)/downloads/mbedtls/build/compiled/lib
+MBED_LIB_OBJ_DIR=$(CURDIR)/downloads/mbedtls/build/library/CMakeFiles/mbedcrypto.dir
 MBED_CRYPTO_NAME=libmbedcrypto.a
 AR=ar rcs
 LIBANAME=cauth2
@@ -45,7 +46,7 @@ else
 	pwd; cd $(CURDIR)/downloads/mbedtls; pwd; \
 	mkdir $(CURDIR)/downloads/mbedtls/build -v; \
 	cd $(CURDIR)/downloads/mbedtls/build; pwd; \
-	cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_PROGRAMS=OFF -D ENABLE_TESTING=ON -D INSTALL_MBEDTLS_HEADERS=ON -D USE_SHARED_MBEDTLS_LIBRARY=OFF -D MBEDTLS_FATAL_WARNINGS=ON -D CMAKE_INSTALL_PREFIX="$(CURDIR)/downloads/mbedtls/build/compiled" ..
+	cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_PROGRAMS=OFF -D ENABLE_TESTING=ON -D INSTALL_MBEDTLS_HEADERS=ON -D USE_SHARED_MBEDTLS_LIBRARY=ON -D MBEDTLS_FATAL_WARNINGS=ON -D CMAKE_INSTALL_PREFIX="$(CURDIR)/downloads/mbedtls/build/compiled" ..
 	$(MAKE) -C $(CURDIR)/downloads/mbedtls/build
 	$(MAKE) install -C $(CURDIR)/downloads/mbedtls/build
 endif
@@ -83,23 +84,21 @@ ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a)","")
 	@cp $(MBED_LIB_DIR)/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib -v
 	@mv $(CAUTH_BUILD_DIR)/lib/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a
 	@ar -q $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a cauth.o cyodecode.o
+#	@$(AR) $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a cauth.o cyodecode.o
 else
 	@echo "Nothing to do lib$(LIBANAME).a already exists"
 endif
 
 ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so)","")
 	@echo "Build CAuth2 object shared"
-	@$(CC) -O2 -c src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(MBED_LIB_DIR) -lmbedcrypto -fPIC -o cauth_shared.o -Wall
-	@cp $(MBED_LIB_DIR)/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/shared -v
-	@echo "Build library lib$(LIBANAME)_shared.a ..."
-
-	@cp $(MBED_LIB_DIR)/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/shared -v
-	@mv $(CAUTH_BUILD_DIR)/lib/shared/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared.a
-	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared.a cauth_shared.o cyodecode_shared.o
-
-	@echo "Build library lib$(LIBANAME).so ..."
-	@$(CC) -shared -O2 -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so -Wall
+	pwd; cd $(MBED_LIB_OBJ_DIR); pwd; \
+	$(AR) $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared.a *.o; \
+	cd $(CAUTH_BUILD_DIR)/lib/shared -v; pwd; \
+	mv $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared.a $(CAUTH_BUILD_DIR)/lib/shared -v
+	@$(CC) -shared -O2 -fPIC $(CURDIR)/src/cauth2.c -I$(INCLUDEDIR) -I$(MBED_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so -Wall
 	@strip $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so
+	@$(CC) -O2 -c $(CURDIR)/src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -fPIC -o cauth_shared.o -Wall
+	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared.a $(CURDIR)/cauth_shared.o $(CURDIR)/cyodecode_shared.o
 else
 	@echo "Nothing to do lib$(LIBANAME).so already exists"
 endif
@@ -117,7 +116,7 @@ test: main
 	@echo "Execute test ..."
 ifeq ("$(wildcard $(CURDIR)/test/test)","")
 	@echo "Starting build tests"
-	@$(CC) -O2 test/main.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -lcauth2 -o test/test -fsanitize=leak,address -Wall
+	@$(CC) -O2 test/main.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -o test/test -fsanitize=leak,address -Wall
 endif
 	@echo "Executing tests ..."
 	@$(CURDIR)/test/test

@@ -10,6 +10,10 @@
 #define TRUE (int)(1==1)
 #define FALSE (int)(1!=1)
 
+#define ALG_SHA1_DEFAULT (int)2
+#define ALG_SHA256 (int)4
+#define ALG_SHA512 (int)6
+
 typedef int CAUTH_BOOL;
 
 typedef enum cauth_2fa_auth_code_err_t {
