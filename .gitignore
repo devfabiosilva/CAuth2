@@ -57,3 +57,7 @@ dkms.conf
 downloads/
 lib/
 build/
+
+#
+test/test
+test/test_shared

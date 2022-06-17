@@ -1,4 +1,4 @@
-from distutils.core import setup, Extension, os
+from distutils.core import setup, Extension
 
 def main():
 

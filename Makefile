@@ -94,10 +94,10 @@ ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so)","")
 	$(AR) $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared.a *.o; \
 	cd $(CAUTH_BUILD_DIR)/lib/shared -v; pwd; \
 	mv $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared.a $(CAUTH_BUILD_DIR)/lib/shared -v
-	@$(CC) -shared -O2 -fPIC $(CURDIR)/src/cauth2.c -I$(INCLUDEDIR) -I$(MBED_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so -Wall
-	@strip $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so
 	@$(CC) -O2 -c $(CURDIR)/src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -fPIC -o cauth_shared.o -Wall
 	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared.a $(CURDIR)/cauth_shared.o $(CURDIR)/cyodecode_shared.o
+	@$(CC) -shared -O2 -fPIC $(CURDIR)/src/cauth2.c -I$(INCLUDEDIR) -I$(MBED_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so -Wall
+	@strip $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so
 else
 	@echo "Nothing to do lib$(LIBANAME).so already exists"
 endif
@@ -117,9 +117,17 @@ ifeq ("$(wildcard $(CURDIR)/test/test)","")
 	@echo "Starting build tests"
 	@$(CC) -O2 test/main.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -o test/test -fsanitize=leak,address -Wall
 endif
-	@echo "Executing tests ..."
+	@echo "Executing tests (static) ..."
 	@$(CURDIR)/test/test
-	@echo "All tests passed !"
+	@echo "All tests passed (static) !"
+	@echo "Execute test_shared ..."
+ifeq ("$(wildcard $(CURDIR)/test/test_shared)","")
+	@echo "Starting build tests (shared)"
+	@$(CC) -O2 test/main.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME) -o test/test_shared -fsanitize=leak,address -Wall
+endif
+	pwd; export LD_LIBRARY_PATH=$(CAUTH_BUILD_DIR)/lib/shared; \
+	$(CURDIR)/test/test_shared; pwd;
+	@echo "All tests passed (shared) !"
 
 .PHONY: clean
 clean:
@@ -148,6 +156,12 @@ ifneq ("$(wildcard $(CURDIR)/test/test)","")
 	rm -v $(CURDIR)/test/test
 else
 	@echo "Delete test: Nothing to do"
+endif
+
+ifneq ("$(wildcard $(CURDIR)/test/test_shared)","")
+	rm -v $(CURDIR)/test/test_shared
+else
+	@echo "Delete test_shared: Nothing to do"
 endif
 
 .PHONY: panelauth_build
