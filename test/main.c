@@ -487,7 +487,7 @@ cb_verify_signatures_test_on_success(void *ctx)
     )
 }
 
-#define VERIFY_SIGNATURES_SIZE (int)(sizeof(VERIFY_SIGNATURES)/sizeof(VERIFY_SIGNATURES[0]))
+#define VERIFY_SIGNATURES_SIZE (int)(sizeof(VERIFY_SIGNATURES)/sizeof(VERIFY_SIGNATURES[0])-1)
 
 static void
 verify_signatures_test()

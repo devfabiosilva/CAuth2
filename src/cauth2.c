@@ -54,15 +54,12 @@ int cauth_sha256_digest_dynamic_util(
 
    mbedtls_sha256_init(sha256);
 
-   //if ((err=mbedtls_sha256_starts_ret(sha256, 0)))
    if ((err=mbedtls_sha256_starts(sha256, 0)))
       goto cauth_sha256_digest_EXIT;
 
-   //if ((err=mbedtls_sha256_update_ret(sha256, msg, msg_size)))
    if ((err=mbedtls_sha256_update(sha256, msg, msg_size)))
       goto cauth_sha256_digest_EXIT;
 
-   //if ((err=mbedtls_sha256_finish_ret(sha256, (unsigned char *)*res)))
    if ((err=mbedtls_sha256_finish(sha256, (unsigned char *)*res)))
       goto cauth_sha256_digest_EXIT;
 

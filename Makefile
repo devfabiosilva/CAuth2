@@ -167,6 +167,9 @@ endif
 .PHONY: panelauth_build
 panelauth_build: test
 	@python3 setup.py build
+	cd $(CURDIR)/build/lib.*; \
+	export PYTHONPATH=$$(pwd); \
+	cd $(CURDIR)/test; pytest
 
 .PHONY: panelauth_install
 panelauth_install: test

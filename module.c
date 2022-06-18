@@ -193,15 +193,21 @@ static PyObject *sign_message(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kw
    PANEL_ERROR("Error. Can't convert binary to string", NULL)
 }
 
+static PyObject *c_buildDate(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
+{
+   return Py_BuildValue("s", cauth_buildDate());
+}
+
 static PyMethodDef panelauth_methods[] = {
     {"getAuthTotp", (PyCFunction)get_auth_totp, METH_NOARGS, "Get current TOTP authentication code with given initialized secret."},
     {"signMessage", (PyCFunction)sign_message, METH_VARARGS|METH_KEYWORDS, "Signs a message with a given private key"},
+    {"buildDate", (PyCFunction)c_buildDate, METH_NOARGS, "Get C Auth2 current build date"},
     {NULL}
 };
 
 static PyTypeObject PANEL_AUTH_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name="Panel Auth Type module",
+    .tp_name="Panel Auth",
     .tp_doc="This module implements AUTH2 and HMAC signature for PLC Control panel and IoT devices",
     .tp_basicsize=sizeof(C_RAW_DATA_OBJ),
     .tp_itemsize=0,
