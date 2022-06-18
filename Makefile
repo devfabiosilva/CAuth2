@@ -115,7 +115,7 @@ test: main
 	@echo "Execute test ..."
 ifeq ("$(wildcard $(CURDIR)/test/test)","")
 	@echo "Starting build tests"
-	@$(CC) -O2 test/main.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -o test/test -fsanitize=leak,address -Wall
+	@$(CC) -g -O2 test/main.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -o test/test -fsanitize=leak,address -Wall
 endif
 	@echo "Executing tests (static) ..."
 	@$(CURDIR)/test/test
@@ -123,7 +123,7 @@ endif
 	@echo "Execute test_shared ..."
 ifeq ("$(wildcard $(CURDIR)/test/test_shared)","")
 	@echo "Starting build tests (shared)"
-	@$(CC) -O2 test/main.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME) -o test/test_shared -fsanitize=leak,address -Wall
+	@$(CC) -g -O2 test/main.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME) -o test/test_shared -fsanitize=leak,address -Wall
 endif
 	pwd; export LD_LIBRARY_PATH=$(CAUTH_BUILD_DIR)/lib/shared; \
 	$(CURDIR)/test/test_shared; pwd;
@@ -172,5 +172,5 @@ panelauth_build: test
 	cd $(CURDIR)/test; pytest
 
 .PHONY: panelauth_install
-panelauth_install: test
+panelauth_install: panelauth_build
 	@python3 setup.py install

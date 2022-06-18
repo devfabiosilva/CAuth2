@@ -92,8 +92,8 @@ static int c_raw_data_obj_init(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
 
    self->hmac_secret_key_dyn=NULL;
    self->totp_secret_key_dyn=NULL;
-   self->hmac_alg_type=ALG_SHA256 /*MBEDTLS_MD_SHA256*/;
-   self->totp_alg_type=ALG_SHA1_DEFAULT /* MBEDTLS_MD_SHA1 */;
+   self->hmac_alg_type=ALG_SHA256;
+   self->totp_alg_type=ALG_SHA1_DEFAULT;
 
    if (!PyArg_ParseTupleAndKeywords(
       args, kwds, "s|sII", kwlist,
@@ -198,10 +198,16 @@ static PyObject *c_buildDate(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwd
    return Py_BuildValue("s", cauth_buildDate());
 }
 
+static PyObject *c_getVersion(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
+{
+   return Py_BuildValue("s", cauth_getVersion());
+}
+
 static PyMethodDef panelauth_methods[] = {
     {"getAuthTotp", (PyCFunction)get_auth_totp, METH_NOARGS, "Get current TOTP authentication code with given initialized secret."},
     {"signMessage", (PyCFunction)sign_message, METH_VARARGS|METH_KEYWORDS, "Signs a message with a given private key"},
     {"buildDate", (PyCFunction)c_buildDate, METH_NOARGS, "Get C Auth2 current build date"},
+    {"getVersion", (PyCFunction)c_getVersion, METH_NOARGS, "Get C Auth2 current version"},
     {NULL}
 };
 

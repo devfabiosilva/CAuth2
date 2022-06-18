@@ -336,7 +336,7 @@ test_signatures()
             test_signature.signature
         )
 
-        C_ASSERT_EQUAL_S64(
+        C_ASSERT_EQUAL_U64(
             (uint64_t)test_signatures_list->signature_size,
             (uint64_t)test_signature.signature_size,
             CTEST_SETTER(
