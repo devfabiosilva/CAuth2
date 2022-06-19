@@ -153,7 +153,7 @@ cauth_hex2str_dynamic(
    if (!buf_sz)
       return NULL;
 
-   if (!(res=malloc(buf_sz+1)))
+   if (!(res=malloc((2*buf_sz)+1)))
       return NULL;
 
    p=res;
@@ -163,7 +163,6 @@ cauth_hex2str_dynamic(
       sprintf(p, q, (unsigned char)*((unsigned char *)buf++));
       p+=2;
    }
-   //res[buf_sz]=0; //You dont need it. sprintf put NULL char
 
    return res;
 }
