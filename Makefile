@@ -194,4 +194,8 @@ panelauth_install: panelauth_build
 .PHONY: doc
 doc: main
 	@echo "Building documentation ..."
+ifeq ("$(wildcard $(CURDIR)/docs)","")
 	pwd; cd $(CURDIR)/doc_dev; exec $(CURDIR)/doc_dev/build.sh
+else
+	@echo "Creating doc: Nothing to do"
+endif

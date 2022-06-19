@@ -197,6 +197,22 @@ cauth_hex2str_dynamic(
    HEX2STR_TYPE
 );
 
+/**
+ * @fn CAUTH_2FA_AUTH_CODE_ERR check_base32_oauth_key_valid(
+ *    size_t *output_size,
+ *    const char *input, size_t input_sz,
+ *    int alg_type
+ * )
+ * @brief Check is Base32 secret key is valid
+ * 
+ * @param [out] output_size Pointer of _output_ size of secret key. It can be _NULL_
+ * @param [in] input Pointer of _input_ secret key in Base32
+ * @param [in] input_sz Size of _input_ secret key
+ * @param [in] alg_type Algorithm type. See @see ALG_SHA1_DEFAULT @see ALG_SHA256 @see ALG_SHA512
+ * 
+ * @retval ERROR_SUCCESS or CAUTH_2FA_AUTH_CODE_ERR on error
+ */
+
 CAUTH_2FA_AUTH_CODE_ERR
 check_base32_oauth_key_valid(
    size_t *,
@@ -204,12 +220,24 @@ check_base32_oauth_key_valid(
    int
 );
 
+/**
+ * @fn const char *cauth_getVersion()
+ * @brief Get CAuth2 current version
+ */
 const char *
 cauth_getVersion();
 
+/**
+ * @fn const char *cauth_buildDate()
+ * @brief Get CAuth2 build date
+ */
 const char *
 cauth_buildDate();
 
+/**
+ * @fn const char *cauth_endianess()
+ * @brief Get CAuth2 compilation architecture endianess
+ */
 const char *
 cauth_endianess();
 #endif
