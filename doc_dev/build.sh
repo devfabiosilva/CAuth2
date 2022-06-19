@@ -6,5 +6,4 @@
 #
 
 cd api
-rm -rf ../../docs -v
 doxygen doxygen.config
