@@ -1,4 +1,3 @@
-#define CAUTH_LITTLE_ENDIAN
 #ifndef CAUTH2_H
  #define CAUTH2_H
 

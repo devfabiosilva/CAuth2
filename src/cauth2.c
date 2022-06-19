@@ -182,7 +182,12 @@ cauth_2fa_auth_code(
 )
 {
    int
+#ifdef CAUTH_LITTLE_ENDIAN
       i,
+#elif CAUTH_BIG_ENDIAN
+#else
+ #error "Could not compile. Choose CAUTH_LITTLE_ENDIAN or CAUTH_BIG_ENDIAN"
+#endif
       err;
 
    const uint32_t

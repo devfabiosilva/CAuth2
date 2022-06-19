@@ -14,6 +14,8 @@ CAUTH_BUILD_DIR_NAME=build
 CAUTH_BUILD_DIR=$(CURDIR)/$(CAUTH_BUILD_DIR_NAME)
 CAUTH_BUILD_INCLUDE_DIR_NAME=include
 CAUTH_BUILD_INCLUDE_DIR=$(CAUTH_BUILD_DIR)/$(CAUTH_BUILD_INCLUDE_DIR_NAME)
+ENDIANESS?=CAUTH_LITTLE_ENDIAN
+DEBUG?=NONE
 
 all: main
 
@@ -79,7 +81,7 @@ endif
 main: libdir cyodecode_shared.o cyodecode.o mbedtls
 ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a)","")
 	@echo "Build CAuth2 object"
-	@$(CC) -O2 -c src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(MBED_LIB_DIR) -lmbedcrypto -o cauth.o -Wall
+	@$(CC) -D$(ENDIANESS) -O2 -c src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(MBED_LIB_DIR) -lmbedcrypto -o cauth.o -Wall
 	@echo "Build static library $(LIBANAME).a ..."
 	@cp $(MBED_LIB_DIR)/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib -v
 	@mv $(CAUTH_BUILD_DIR)/lib/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a
@@ -94,9 +96,9 @@ ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so)","")
 	$(AR) $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared.a *.o; \
 	cd $(CAUTH_BUILD_DIR)/lib/shared -v; pwd; \
 	mv $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared.a $(CAUTH_BUILD_DIR)/lib/shared -v
-	@$(CC) -O2 -c $(CURDIR)/src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -fPIC -o cauth_shared.o -Wall
+	@$(CC) -D$(ENDIANESS) -O2 -c $(CURDIR)/src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -fPIC -o cauth_shared.o -Wall
 	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared.a $(CURDIR)/cauth_shared.o $(CURDIR)/cyodecode_shared.o
-	@$(CC) -shared -O2 -fPIC $(CURDIR)/src/cauth2.c -I$(INCLUDEDIR) -I$(MBED_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so -Wall
+	@$(CC) -D$(ENDIANESS) -shared -O2 -fPIC $(CURDIR)/src/cauth2.c -I$(INCLUDEDIR) -I$(MBED_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so -Wall
 	@strip $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so
 else
 	@echo "Nothing to do lib$(LIBANAME).so already exists"
@@ -166,7 +168,12 @@ endif
 
 .PHONY: panelauth_build
 panelauth_build: test
+ifeq ($(DEBUG), P_DEBUG)
+	@python3 setup.py build_ext --define $(DEBUG)
+else
 	@python3 setup.py build
+endif
+
 	cd $(CURDIR)/build/lib.*; \
 	export PYTHONPATH=$$(pwd); \
 	cd $(CURDIR)/test; pytest
