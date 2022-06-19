@@ -1,3 +1,100 @@
+/**
+ * @file
+ * @brief CAuth2 is a tiny C TOTP Auth2 authenticator
+ * @mainpage Overview
+ *
+ * ## Usage
+ *
+ * To compile C library (static and dynamic):
+ *
+ * ```sh
+ * make
+ * ```
+ *
+ * To build with test:
+ *
+ * ```sh
+ * make test
+ * ```
+ *
+ * ### Note
+ *
+ * By default it is compiled in _little_endian_. If you want to compile in _big_endian_ type:
+ *
+ * ```sh
+ * make ENDIANESS=CAUTH_BIG_ENDIAN
+ * ```
+ *
+ * To build documentation:
+ *
+ * ```sh
+ * make doc
+ * ```
+ *
+ * To clean documentation:
+ *
+ * ```sh
+ * make doc_clean
+ * ```
+ *
+ * To clean build:
+ *
+ * ```sh
+ * make clean
+ * ```
+ * 
+ * ## panelauth library for Python3
+ *
+ * This tiny library has a _panelauth_ library for Python 3.
+ *
+ * To compile just type:
+ *
+ * ```sh
+ * make panelauth_build
+ * ```
+ *
+ * To install:
+ *
+ * ```sh
+ * make panelauth_install
+ * ```
+ *
+ * ### DEBUG MODE
+ *
+ * If you want to debug type
+ * 
+ * _To compile just type:_
+ *
+ * ```sh
+ * make panelauth_build DEBUG=P_DEBUG
+ * ```
+ *
+ * _To install:_
+ *
+ * ```sh
+ * make panelauth_install DEBUG=P_DEBUG
+ * ```
+ * 
+ * ## Changelogs
+ * 
+ * See <a href="https://github.com/devfabiosilva/CAuth2/blob/master/CHANGELOG.md">here</a>
+ *  
+ * ## Credits
+ *
+ * @author Fábio Pereira da Silva
+ * @date Jun 19 2022
+ * @version 0.1.0
+ * @copyright License MIT <a href="https://github.com/devfabiosilva/CAuth2/blob/master/LICENSE">see here</a>
+ *
+ * ## Contact
+ *
+ * mailto:fabioegel@gmail.com
+ * 
+ * ## Donations are wellcome :)
+ *
+ * **Bitcoin**: `1EcvCevxkbDvYXLuo8UzyG8YxJk78Lwe3e`
+ */
+
 #ifndef CAUTH2_H
  #define CAUTH2_H
 

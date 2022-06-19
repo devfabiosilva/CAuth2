@@ -13,7 +13,25 @@ To build with test:
 make test
 ```
 
-### _NOTE_
+To build documentation:
+
+```sh
+make doc
+```
+
+To clean documentation:
+
+```sh
+make doc_clean
+```
+
+To clean build:
+
+```sh
+make clean
+```
+
+### Note
 
 By default it is compiled in _little_endian_. If you want to compile in _big_endian_ type:
 

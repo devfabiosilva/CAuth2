@@ -131,8 +131,17 @@ endif
 	$(CURDIR)/test/test_shared; pwd;
 	@echo "All tests passed (shared) !"
 
+.PHONY: doc_clean
+doc_clean:
+ifneq ("$(wildcard $(CURDIR)/docs)","")
+	@echo "Removing documentation ..."
+	rm -rfv $(CURDIR)/docs
+else
+	@echo "No documentation to remove. Skip"
+endif
+
 .PHONY: clean
-clean:
+clean: doc_clean
 
 ifneq ("$(wildcard $(CURDIR)/*.o)","")
 	@echo "Removing objects ..."
@@ -181,3 +190,8 @@ endif
 .PHONY: panelauth_install
 panelauth_install: panelauth_build
 	@python3 setup.py install
+
+.PHONY: doc
+doc: main
+	@echo "Building documentation ..."
+	pwd; cd $(CURDIR)/doc_dev; exec $(CURDIR)/doc_dev/build.sh
