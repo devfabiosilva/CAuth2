@@ -1,6 +1,8 @@
 # CAuth2
 CAuth2 is a tiny C TOTP Auth2 authenticator
 
+See [documentation](https://devfabiosilva.github.io/CAuth2/)
+
 To compile C library (static and dynamic):
 
 ```sh
