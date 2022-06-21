@@ -162,6 +162,23 @@ sign_message_dynamic(
    uint8_t *, size_t
 );
 
+/**
+ * @fn int cauth_str_to_hex(
+ *  uint8_t *hex_stream,
+ *  char *str,
+ *  size_t len
+ * )
+ * @brief Parses hex string into binary
+ * 
+ * @param [out] hex_stream Pointer of output data
+ * @param [in] str Input pointer hex string to be parsed
+ * @param [in] len Length of _str_ pointer. If 0 it will calculate the length of _str_
+ * 
+ * _WARNING_: _hex_stream_ needs at least _len(str) / 2_ in size
+ * 
+ * @retval 0 if success or non zero if error
+ * 
+ */
 int
 cauth_str_to_hex(
    uint8_t *,
@@ -190,6 +207,23 @@ typedef enum hex2str_type_t {
    IS_UPPER_CASE=1
 } HEX2STR_TYPE;
 
+/**
+ * @fn char *cauth_hex2str_dynamic(
+ *  const uint8_t *buf,
+ *  size_t buf_sz,
+ *  HEX2STR_TYPE type
+ * )
+ * @brief Parses binary to hex string
+ * 
+ * @param [in] buf Pointer of binary data
+ * @param [in] buf_sz Size of _buf_
+ * @param [in] type Type of _IS_LOWER_CASE_ or _IS_UPPER_CASE_
+ * 
+ * It must be free after use
+ * 
+ * @retval New string pointer or _NULL_ if error
+ * 
+ */
 char *
 cauth_hex2str_dynamic(
    const uint8_t *,
@@ -208,11 +242,10 @@ cauth_hex2str_dynamic(
  * @param [out] output_size Pointer of _output_ size of secret key. It can be _NULL_
  * @param [in] input Pointer of _input_ secret key in Base32
  * @param [in] input_sz Size of _input_ secret key
- * @param [in] alg_type Algorithm type. See @see ALG_SHA1_DEFAULT @see ALG_SHA256 @see ALG_SHA512
+ * @param [in] alg_type Algorithm type. See ALG_SHA1_DEFAULT ALG_SHA256 ALG_SHA512
  * 
  * @retval ERROR_SUCCESS or CAUTH_2FA_AUTH_CODE_ERR on error
  */
-
 CAUTH_2FA_AUTH_CODE_ERR
 check_base32_oauth_key_valid(
    size_t *,

@@ -173,8 +173,8 @@ Functions</h2></td></tr>
 <tr class="separator:a46f92d357a77b5eea7be6ba18b103caa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71e4f471c71faa1b394373ce9b0b03de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/dd4/cauth2_8h.html#a15673a44e3599f46f8e49424ed8a0f71">CAUTH_BOOL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a71e4f471c71faa1b394373ce9b0b03de">cauth_verify_message</a> (uint8_t *, size_t, int, uint8_t *, size_t, uint8_t *, size_t)</td></tr>
 <tr class="separator:a71e4f471c71faa1b394373ce9b0b03de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33bbedfa2071b8bb1bb80f84ad42a3ee"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a33bbedfa2071b8bb1bb80f84ad42a3ee">cauth_hex2str_dynamic</a> (const uint8_t *, size_t, <a class="el" href="../../d0/dd4/cauth2_8h.html#a206b1b412fc2269cb68f0670a25d0293">HEX2STR_TYPE</a>)</td></tr>
-<tr class="separator:a33bbedfa2071b8bb1bb80f84ad42a3ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5af366db0665dcf2d36c22d5b0793231"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a5af366db0665dcf2d36c22d5b0793231">cauth_hex2str_dynamic</a> (const uint8_t *, size_t, <a class="el" href="../../d0/dd4/cauth2_8h.html#a206b1b412fc2269cb68f0670a25d0293">HEX2STR_TYPE</a>)</td></tr>
+<tr class="separator:a5af366db0665dcf2d36c22d5b0793231"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4236f08bcb351c0e804c2d8420cc768"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/dd4/cauth2_8h.html#a40f11c1e080f6ab293822bdc4b3d385f">CAUTH_2FA_AUTH_CODE_ERR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#aa4236f08bcb351c0e804c2d8420cc768">check_base32_oauth_key_valid</a> (size_t *, const char *, size_t, int)</td></tr>
 <tr class="separator:aa4236f08bcb351c0e804c2d8420cc768"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab28d655edcd149d3602b3625e5624f60"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#ab28d655edcd149d3602b3625e5624f60">cauth_getVersion</a> ()</td></tr>
@@ -447,7 +447,7 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a845abf149bfb7bb245ca4cc3e509b2b7a56cc0c2c11721aba3c3420d8ac25bebf"></a>IS_UPPER_CASE&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/dd4/cauth2_8h_source.html#l00188">188</a> of file <a class="el" href="../../d0/dd4/cauth2_8h_source.html">cauth2.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/dd4/cauth2_8h_source.html#l00205">205</a> of file <a class="el" href="../../d0/dd4/cauth2_8h_source.html">cauth2.h</a>.</p>
 
 </div>
 </div>
@@ -579,29 +579,29 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a33bbedfa2071b8bb1bb80f84ad42a3ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a33bbedfa2071b8bb1bb80f84ad42a3ee">&#9670;&nbsp;</a></span>cauth_hex2str_dynamic()</h2>
+<a id="a5af366db0665dcf2d36c22d5b0793231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5af366db0665dcf2d36c22d5b0793231">&#9670;&nbsp;</a></span>cauth_hex2str_dynamic()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">char* cauth_hex2str_dynamic </td>
+          <td class="memname">char * cauth_hex2str_dynamic </td>
           <td>(</td>
           <td class="paramtype">const uint8_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>buf</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>buf_sz</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="../../d0/dd4/cauth2_8h.html#a206b1b412fc2269cb68f0670a25d0293">HEX2STR_TYPE</a>&#160;</td>
-          <td class="paramname">&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -610,6 +610,23 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Parses binary to hex string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">buf</td><td>Pointer of binary data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">buf_sz</td><td>Size of <em>buf</em> </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>Type of <em>IS_LOWER_CASE</em> or <em>IS_UPPER_CASE</em></td></tr>
+  </table>
+  </dd>
+</dl>
+<p>It must be free after use</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">New</td><td>string pointer or <em>NULL</em> if error </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -623,19 +640,19 @@ Functions</h2></td></tr>
           <td class="memname">int cauth_str_to_hex </td>
           <td>(</td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>hex_stream</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">char *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>str</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname">&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -644,6 +661,23 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Parses hex string into binary. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">hex_stream</td><td>Pointer of output data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">str</td><td>Input pointer hex string to be parsed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">len</td><td>Length of <em>str</em> pointer. If 0 it will calculate the length of <em>str</em></td></tr>
+  </table>
+  </dd>
+</dl>
+<p><em>WARNING</em>: <em>hex_stream</em> needs at least <em>len(str) / 2</em> in size</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">0</td><td>if success or non zero if error </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -807,15 +841,10 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output_size</td><td>Pointer of <em>output</em> size of secret key. It can be <em>NULL</em> </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input</td><td>Pointer of <em>input</em> secret key in Base32 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input_sz</td><td>Size of <em>input</em> secret key </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">alg_type</td><td>Algorithm type. See </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">alg_type</td><td>Algorithm type. See ALG_SHA1_DEFAULT ALG_SHA256 ALG_SHA512</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d0/dd4/cauth2_8h.html#a090f74af649f839af277bf3c7969e9a0">ALG_SHA1_DEFAULT</a> </dd>
-<dd>
-<a class="el" href="../../d0/dd4/cauth2_8h.html#a0b4cc1e244b5df7ab4e5a56534c1a759">ALG_SHA256</a> </dd>
-<dd>
-<a class="el" href="../../d0/dd4/cauth2_8h.html#af4aaf0d90d016eb954e451624beb7b90">ALG_SHA512</a></dd></dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">ERROR_SUCCESS</td><td>or CAUTH_2FA_AUTH_CODE_ERR on error </td></tr>

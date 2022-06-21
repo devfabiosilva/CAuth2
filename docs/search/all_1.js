@@ -21,7 +21,7 @@ var searchData=
   ['cauth_5fendianess',['cauth_endianess',['../d0/dd4/cauth2_8h.html#a30bc9c77c992c6e7a7246d6a93b2a3fe',1,'cauth2.h']]],
   ['cauth_5ferr_5finvalid_5falg_5ftype',['CAUTH_ERR_INVALID_ALG_TYPE',['../d0/dd4/cauth2_8h.html#a14363cf228f6dbc2fe712b5bcc37e989a366322a22bc0e5ef661047712e7af3d4',1,'cauth2.h']]],
   ['cauth_5fgetversion',['cauth_getVersion',['../d0/dd4/cauth2_8h.html#ab28d655edcd149d3602b3625e5624f60',1,'cauth2.h']]],
-  ['cauth_5fhex2str_5fdynamic',['cauth_hex2str_dynamic',['../d0/dd4/cauth2_8h.html#a33bbedfa2071b8bb1bb80f84ad42a3ee',1,'cauth2.h']]],
+  ['cauth_5fhex2str_5fdynamic',['cauth_hex2str_dynamic',['../d0/dd4/cauth2_8h.html#a5af366db0665dcf2d36c22d5b0793231',1,'cauth2.h']]],
   ['cauth_5fsign_5falloc',['CAUTH_SIGN_ALLOC',['../d0/dd4/cauth2_8h.html#a14363cf228f6dbc2fe712b5bcc37e989a3e031e9f464e96b36583ca5578cc0e96',1,'cauth2.h']]],
   ['cauth_5fsign_5fcode_5ferr',['CAUTH_SIGN_CODE_ERR',['../d0/dd4/cauth2_8h.html#a1468b0f8f32730c11af97ce216b4aee3',1,'cauth2.h']]],
   ['cauth_5fsign_5ferr_5ft',['cauth_sign_err_t',['../d0/dd4/cauth2_8h.html#a14363cf228f6dbc2fe712b5bcc37e989',1,'cauth2.h']]],
