@@ -14,6 +14,7 @@ CAUTH_BUILD_DIR_NAME=build
 CAUTH_BUILD_DIR=$(CURDIR)/$(CAUTH_BUILD_DIR_NAME)
 CAUTH_BUILD_INCLUDE_DIR_NAME=include
 CAUTH_BUILD_INCLUDE_DIR=$(CAUTH_BUILD_DIR)/$(CAUTH_BUILD_INCLUDE_DIR_NAME)
+CAUTH_EXAMPLE_DIR=$(CURDIR)/examples
 ENDIANESS?=CAUTH_LITTLE_ENDIAN
 DEBUG?=NONE
 
@@ -175,6 +176,12 @@ else
 	@echo "Delete test_shared: Nothing to do"
 endif
 
+ifneq ("$(wildcard $(CAUTH_EXAMPLE_DIR)/example01)","")
+	rm -v $(CAUTH_EXAMPLE_DIR)/example01
+else
+	@echo "Delete example01: Nothing to do"
+endif
+
 .PHONY: panelauth_build
 panelauth_build: test
 ifeq ($(DEBUG), P_DEBUG)
@@ -198,4 +205,13 @@ ifeq ("$(wildcard $(CURDIR)/docs)","")
 	pwd; cd $(CURDIR)/doc_dev; exec $(CURDIR)/doc_dev/build.sh
 else
 	@echo "Creating doc: Nothing to do"
+endif
+
+.PHONY: examples
+examples: test
+	@echo Building examples ...
+ifeq ("$(wildcard $(CAUTH_EXAMPLE_DIR)/example01)","")
+	@$(CC) -O2 $(CAUTH_EXAMPLE_DIR)/example01.c -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -o $(CAUTH_EXAMPLE_DIR)/example01 -Wall
+else
+	@echo "example01: Nothing to do"
 endif

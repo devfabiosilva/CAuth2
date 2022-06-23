@@ -63,3 +63,5 @@ test/test
 test/test_shared
 __pycache__
 .pytest_cache
+
+example01
