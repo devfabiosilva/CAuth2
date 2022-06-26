@@ -447,7 +447,7 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a845abf149bfb7bb245ca4cc3e509b2b7a56cc0c2c11721aba3c3420d8ac25bebf"></a>IS_UPPER_CASE&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/dd4/cauth2_8h_source.html#l00205">205</a> of file <a class="el" href="../../d0/dd4/cauth2_8h_source.html">cauth2.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/dd4/cauth2_8h_source.html#l00261">261</a> of file <a class="el" href="../../d0/dd4/cauth2_8h_source.html">cauth2.h</a>.</p>
 
 </div>
 </div>
@@ -691,43 +691,43 @@ Functions</h2></td></tr>
           <td class="memname"><a class="el" href="../../d0/dd4/cauth2_8h.html#a15673a44e3599f46f8e49424ed8a0f71">CAUTH_BOOL</a> cauth_verify_message </td>
           <td>(</td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>signature</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>signature_size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>alg_type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>key_size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>message</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname">&#160;</td>
+          <td class="paramname"><em>message_size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -736,6 +736,31 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Checks if <em>message</em> has valid signature. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">signature</td><td>Pointer of signature </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">signature_size</td><td>Size of output signature </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">alg_type</td><td>Algorithm <em>type</em></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="fragment"><div class="line">ALG_SHA1_DEFAULT</div><div class="line">ALG_SHA256</div><div class="line">ALG_SHA512</div></div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">key</td><td>Pointer of private key </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">key_size</td><td>Size of private key </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">message</td><td>Pointer of message to be verified </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">message_size</td><td>Size of message to be verified</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">TRUE</td><td>if <em>signature</em> is <b>valid</b> or else <em>FALSE</em> </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -864,43 +889,43 @@ Functions</h2></td></tr>
           <td class="memname"><a class="el" href="../../d0/dd4/cauth2_8h.html#a1468b0f8f32730c11af97ce216b4aee3">CAUTH_SIGN_CODE_ERR</a> sign_message_dynamic </td>
           <td>(</td>
           <td class="paramtype">void **&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>signature</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>signature_size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>alg_type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>key_size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>message</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname">&#160;</td>
+          <td class="paramname"><em>message_size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -909,6 +934,32 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Signs dynamically one <em>message</em> using <em>key</em> with given algorithm. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">signature</td><td>Pointer with new allocated memory with signature </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">signature_size</td><td>Size of output signature </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">alg_type</td><td>Algorithm <em>type</em> are:</td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="fragment"><div class="line">ALG_SHA1_DEFAULT</div><div class="line">ALG_SHA256</div><div class="line">ALG_SHA512</div></div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">key</td><td>Pointer of <em>input</em> secret key </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">key_size</td><td>Size of <em>input</em> secret key </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">message</td><td>Pointer of <em>input</em> message </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">message_size</td><td>Size of pointer <em>input</em> message size</td></tr>
+  </table>
+  </dd>
+</dl>
+<p><em>WARNING</em> <code>signature</code> must be free after use</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">0</td><td>if success or non zero if error </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

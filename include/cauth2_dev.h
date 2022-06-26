@@ -154,6 +154,35 @@ cauth_2fa_auth_code(
    uint8_t
 );
 
+/**
+ * @fn CAUTH_SIGN_CODE_ERR sign_message_dynamic(
+ *    void **signature, size_t *signature_size,
+ *    int alg_type,
+ *    uint8_t *key, size_t key_size,
+ *    uint8_t *message, size_t message_size
+ * )
+ *
+ * @brief Signs dynamically one _message_ using _key_ with given algorithm
+ * 
+ * @param [out] signature Pointer with new allocated memory with signature
+ * @param [out] signature_size Size of output signature
+ * @param [in] alg_type Algorithm _type_  are:
+ * 
+ * ```sh
+ * ALG_SHA1_DEFAULT
+ * ALG_SHA256
+ * ALG_SHA512
+ * ```
+ * @param [in] key Pointer of _input_ secret key
+ * @param [in] key_size Size of _input_ secret key
+ * @param [in] message Pointer of _input_ message
+ * @param [in] message_size Size of pointer _input_ message size
+ * 
+ * _WARNING_ `signature` must be free after use
+ *
+ * @retval 0 if success or non zero if error
+ * 
+ */
 CAUTH_SIGN_CODE_ERR
 sign_message_dynamic(
    void **, size_t *,
@@ -194,6 +223,33 @@ cauth_verify_message_with_err(
    uint8_t *, size_t
 );
 
+/**
+ * @fn CAUTH_BOOL cauth_verify_message(
+ *    uint8_t *signature, size_t signature_size,
+ *    int alg_type,
+ *    uint8_t *key, size_t key_size,
+ *    uint8_t *message, size_t message_size
+ * )
+ *
+ * @brief Checks if _message_ has valid signature
+ * 
+ * @param [out] signature Pointer of signature
+ * @param [out] signature_size Size of output signature
+ * @param [in] alg_type Algorithm _type_
+ * 
+ * ```sh
+ * ALG_SHA1_DEFAULT
+ * ALG_SHA256
+ * ALG_SHA512
+ * ```
+ * @param [in] key Pointer of private key
+ * @param [in] key_size Size of private key
+ * @param [in] message Pointer of message to be verified
+ * @param [in] message_size Size of message to be verified
+ * 
+ * @retval TRUE if _signature_ is **valid** or else _FALSE_
+ * 
+ */
 CAUTH_BOOL
 cauth_verify_message(
    uint8_t *, size_t,
