@@ -103,42 +103,109 @@
 #include <string.h>
 #include <stdlib.h>
 
+/**
+ * @def TRUE
+ * @brief CAuth2 _TRUE_
+ */
 #define TRUE (int)(1==1)
+
+/**
+ * @def FALSE
+ * @brief CAuth2 _FALSE_
+ */
 #define FALSE (int)(1!=1)
 
+/**
+ * @def ALG_SHA1_DEFAULT
+ * @brief SHA1 Algorithm (Default)
+ */
 #define ALG_SHA1_DEFAULT (int)2
+
+/**
+ * @def ALG_SHA256
+ * @brief SHA256 Algorithm
+ */
 #define ALG_SHA256 (int)4
+
+/**
+ * @def ALG_SHA512
+ * @brief SHA512 Algorithm
+ */
 #define ALG_SHA512 (int)6
 
+/**
+ * @typedef CAUTH_BOOL
+ * @brief CAuth2 boolean type
+ */
 typedef int CAUTH_BOOL;
 
+/**
+ * @typedef CAUTH_2FA_AUTH_CODE_ERR
+ * @brief CAuth2 2FA error code
+ *
+ * @enum cauth_2fa_auth_code_err_t
+ */
 typedef enum cauth_2fa_auth_code_err_t {
+   /** Empty key size */
    CAUTH_2FA_ERR_EMPTY_KEY_SIZE=10800,
+   /** Invalid algorithm type */
    CAUTH_2FA_ERR_INVALID_ALG_TYPE,
+   /** Allocate HMAC error */
    CAUTH_2FA_ERR_HMAC_MALLOC_ERROR,
+   /** Digit size error */
    CAUTH_2FA_ERR_DIGIT_SIZE,
+   /** NULL string */
    CAUTH_2FA_ERR_TOTP_NULL_STR,
+   /** Error zero divide */
    CAUTH_2FA_ERR_DIV_ZERO,
+   /** Alloc Base32 */
    CAUTH2_2FA_BASE32_ALLOC,
+   /** Error Base32 decode */
    CAUTH2_2FA_BASE32_DECODE,
+   /** Zero size Base32 */
    CAUTH2_2FA_BASE32_ZERO_SZ,
+   /** 2FA wrong key size */
    CAUTH_2FA_ERR_WRONG_KEY_SIZE
 } CAUTH_2FA_AUTH_CODE_ERR;
 
+/**
+ * @typedef CAUTH_SIGN_CODE_ERR
+ * @brief CAuth2 signing error code
+ *
+ * @enum cauth_sign_err_t
+ */
 typedef enum cauth_sign_err_t {
+   /** Empty key error */
    CAUTH_EMPTY_KEY_ERR=10700,
+   /** Empty message */
    CAUTH_EMPTY_MESSAGE,
+   /** Invalid algorithm type */
    CAUTH_ERR_INVALID_ALG_TYPE,
+   /** Allocation sign error */
    CAUTH_SIGN_ALLOC
 } CAUTH_SIGN_CODE_ERR;
 
+/**
+ * @typedef CAUTH_VERIFY_CODE_ERR
+ * @brief CAuth2 verity error code
+ *
+ * @enum cauth_verify_err_t
+ */
 typedef enum cauth_verify_err_t {
+   /** Signature error */
    CAUTH_VERIFY_SIGNATURE_ERR=-40,
+   /** Wrong size error */
    CAUTH_VERIFY_WRONG_SIZE_ERR,
+   /** Verify invalid signature */
    CAUTH_VERIFY_INVALID=3033,
+   /** Verify OK */
    CAUTH_VERIFY_OK=1981
 } CAUTH_VERIFY_CODE_ERR;
 
+/**
+ * @def ERROR_SUCCESS
+ * @brief CAuth2 error success
+ */
 #define ERROR_SUCCESS (int)0
 
 CAUTH_2FA_AUTH_CODE_ERR
@@ -258,8 +325,16 @@ cauth_verify_message(
    uint8_t *, size_t
 );
 
+/**
+ * @typedef HEX2STR_TYPE
+ * @brief CAuth2 Hex string case
+ *
+ * @enum hex2str_type_t
+ */
 typedef enum hex2str_type_t {
+   /** Set hex string is lower case*/
    IS_LOWER_CASE=0,
+   /** Set hex string is upper case*/
    IS_UPPER_CASE=1
 } HEX2STR_TYPE;
 
