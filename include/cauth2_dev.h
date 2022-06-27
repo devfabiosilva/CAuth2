@@ -282,6 +282,34 @@ cauth_str_to_hex(
    size_t
 );
 
+
+/**
+ * @fn CAUTH_VERIFY_CODE_ERR cauth_verify_message_with_err(
+ *    uint8_t *signature, size_t signature_size,
+ *    int alg_type,
+ *    uint8_t *key, size_t key_size,
+ *    uint8_t *message, size_t message_size
+ * )
+ *
+ * @brief Checks if _message_ has valid signature returning valid or error
+ * 
+ * @param [out] signature Pointer of signature
+ * @param [out] signature_size Size of output signature
+ * @param [in] alg_type Algorithm _type_
+ * 
+ * ```sh
+ * ALG_SHA1_DEFAULT
+ * ALG_SHA256
+ * ALG_SHA512
+ * ```
+ * @param [in] key Pointer of private key
+ * @param [in] key_size Size of private key
+ * @param [in] message Pointer of message to be verified
+ * @param [in] message_size Size of message to be verified
+ * 
+ * @retval CAUTH_VERIFY_OK if _signature_ is **valid** or else CAUTH_VERIFY_CODE_ERR
+ * 
+ */
 CAUTH_VERIFY_CODE_ERR
 cauth_verify_message_with_err(
    uint8_t *, size_t,
