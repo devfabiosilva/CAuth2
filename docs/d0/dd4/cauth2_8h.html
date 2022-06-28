@@ -489,7 +489,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/dd4/cauth2_8h_source.html#l00362">362</a> of file <a class="el" href="../../d0/dd4/cauth2_8h_source.html">cauth2.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/dd4/cauth2_8h_source.html#l00396">396</a> of file <a class="el" href="../../d0/dd4/cauth2_8h_source.html">cauth2.h</a>.</p>
 
 </div>
 </div>
@@ -504,55 +504,55 @@ Functions</h2></td></tr>
           <td class="memname"><a class="el" href="../../d0/dd4/cauth2_8h.html#af4b672205d3879be32a312b91014d2c5">CAUTH_2FA_AUTH_CODE_ERR</a> cauth_2fa_auth_code </td>
           <td>(</td>
           <td class="paramtype">uint32_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>output</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>alg_type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>key_sz</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>is_key_base32</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>T0</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>X</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">time_t *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>T</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname">&#160;</td>
+          <td class="paramname"><em>digit_size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -561,6 +561,33 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Get OAuth2 code from given <em>key</em> </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Output OAuth2 code </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">alg_type</td><td>Algorithm <em>type</em> are:</td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="fragment"><div class="line">ALG_SHA1_DEFAULT</div><div class="line">ALG_SHA256</div><div class="line">ALG_SHA512</div></div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">key</td><td>Pointer of <em>input</em> secret key </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">key_sz</td><td>Size of <em>input</em> secret key </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">is_key_base32</td><td>Any value != 0 means is Key is Base32 encoded </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">T0</td><td>Initial Unix time. Usually <em>T0 = 0</em> </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">X</td><td>Is the time step. Usually <em>X = 30</em> in seconds </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>Pointer of Unix time value. If <em>NULL</em> this function computes current system Unix time </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">digit_size</td><td>Size of output digit. Usually <em>digit_size = 6</em></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">0</td><td>if success or non zero if error </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

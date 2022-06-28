@@ -208,6 +208,40 @@ typedef enum cauth_verify_err_t {
  */
 #define ERROR_SUCCESS (int)0
 
+/**
+ * @fn CAUTH_2FA_AUTH_CODE_ERR cauth_2fa_auth_code(
+ *    uint32_t *output,
+ *    int alg_type,
+ *    uint8_t *key,
+ *    size_t key_sz,
+ *    int is_key_base32,
+ *    uint64_t T0,
+ *    uint64_t X,
+ *    time_t *T,
+ *    uint8_t digit_size
+ * )
+ *
+ * @brief Get OAuth2 code from given _key_
+ * 
+ * @param [out] output Output OAuth2 code
+ * @param [in] alg_type Algorithm _type_  are:
+ * 
+ * ```sh
+ * ALG_SHA1_DEFAULT
+ * ALG_SHA256
+ * ALG_SHA512
+ * ```
+ * @param [in] key Pointer of _input_ secret key
+ * @param [in] key_sz Size of _input_ secret key
+ * @param [in] is_key_base32 Any value != 0 means is Key is Base32 encoded
+ * @param [in] T0 Initial Unix time. Usually _T0 = 0_
+ * @param [in] X Is the time step. Usually _X = 30_ in seconds
+ * @param [in] T Pointer of Unix time value. If _NULL_ this function computes current system Unix time
+ * @param [in] digit_size Size of output digit. Usually _digit_size = 6_
+ * 
+ * @retval 0 if success or non zero if error
+ * 
+ */
 CAUTH_2FA_AUTH_CODE_ERR
 cauth_2fa_auth_code(
    uint32_t *,

@@ -29,7 +29,7 @@
         (uint8_t *)SECRET_KEY_##alg##_B32, SZ(SECRET_KEY_##alg##_B32) \
     }
 
-// See https://datatracker.ietf.org/doc/html/rfc6238"
+// See https://datatracker.ietf.org/doc/html/rfc6238
 struct test_table_t
 {
     time_t T;
