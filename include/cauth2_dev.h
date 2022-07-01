@@ -466,4 +466,13 @@ cauth_buildDate();
  */
 const char *
 cauth_endianess();
+
+typedef int (*fn_rand)(uint8_t *, size_t);
+
+void cauth_random_attach(fn_rand);
+
+void cauth_random_detach();
+
+uint8_t *cauth_random(uint8_t *, size_t);
+
 #endif

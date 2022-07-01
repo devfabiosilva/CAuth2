@@ -11,6 +11,8 @@ _Static_assert(ALG_SHA1_DEFAULT==MBEDTLS_MD_SHA1, "wrong ALG_SHA1_DEFAULT value"
 _Static_assert(ALG_SHA256==MBEDTLS_MD_SHA256, "wrong ALG_SHA256 value");
 _Static_assert(ALG_SHA512==MBEDTLS_MD_SHA512, "wrong ALG_SHA512 value");
 
+static fn_rand _fn_rand=NULL;
+
 const char *
 cauth_getVersion()
 {
@@ -432,4 +434,22 @@ cauth_verify_message(
       key, key_size,
       message, message_size
    )==CAUTH_VERIFY_OK);
+}
+
+inline void cauth_random_attach(fn_rand function)
+{
+   _fn_rand=function;
+}
+
+inline void cauth_random_detach()
+{
+   _fn_rand=NULL;
+}
+
+inline uint8_t *cauth_random(uint8_t *ptr, size_t ptr_size)
+{
+   if ((_fn_rand!=NULL)&&(!_fn_rand(ptr, ptr_size)))
+      return ptr;
+
+   return NULL;
 }

@@ -10,6 +10,7 @@ var cauth2_8h =
     [ "CAUTH_BOOL", "d0/dd4/cauth2_8h.html#a699f49d3aa97dbe30db6f058004a781a", null ],
     [ "CAUTH_SIGN_CODE_ERR", "d0/dd4/cauth2_8h.html#a8d360d29e052cff23c138bb8f7509dc0", null ],
     [ "CAUTH_VERIFY_CODE_ERR", "d0/dd4/cauth2_8h.html#a5094d9222e15c43ca18ba7ae29872166", null ],
+    [ "fn_rand", "d0/dd4/cauth2_8h.html#a293bbe8931f59733c6e322c401a8c93b", null ],
     [ "HEX2STR_TYPE", "d0/dd4/cauth2_8h.html#a53650bcb565801b4669b3141568200b9", null ],
     [ "cauth_2fa_auth_code_err_t", "d0/dd4/cauth2_8h.html#a615f6bd994017bdae5a7770d654094c2", [
       [ "CAUTH_2FA_ERR_EMPTY_KEY_SIZE", "d0/dd4/cauth2_8h.html#a615f6bd994017bdae5a7770d654094c2a62f5647f1c479295098bcb66c75b25a1", null ],
@@ -44,6 +45,9 @@ var cauth2_8h =
     [ "cauth_endianess", "d0/dd4/cauth2_8h.html#a30bc9c77c992c6e7a7246d6a93b2a3fe", null ],
     [ "cauth_getVersion", "d0/dd4/cauth2_8h.html#ab28d655edcd149d3602b3625e5624f60", null ],
     [ "cauth_hex2str_dynamic", "d0/dd4/cauth2_8h.html#a5af366db0665dcf2d36c22d5b0793231", null ],
+    [ "cauth_random", "d0/dd4/cauth2_8h.html#acc7d44ad143039f2e0c768c56dddaac3", null ],
+    [ "cauth_random_attach", "d0/dd4/cauth2_8h.html#abc55b624935c2be7171423307a75ef5b", null ],
+    [ "cauth_random_detach", "d0/dd4/cauth2_8h.html#a03b0c0cd63d5403de8a931c8a38c18e5", null ],
     [ "cauth_str_to_hex", "d0/dd4/cauth2_8h.html#ab0bcd1e26642ed2da740e2fff4d54001", null ],
     [ "cauth_verify_message", "d0/dd4/cauth2_8h.html#a71e4f471c71faa1b394373ce9b0b03de", null ],
     [ "cauth_verify_message_with_err", "d0/dd4/cauth2_8h.html#a46f92d357a77b5eea7be6ba18b103caa", null ],

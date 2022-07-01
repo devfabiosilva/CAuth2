@@ -125,6 +125,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a5094d9222e15c43ca18ba7ae29872166"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53650bcb565801b4669b3141568200b9"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="../../d0/dd4/cauth2_8h.html#a845abf149bfb7bb245ca4cc3e509b2b7">hex2str_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a53650bcb565801b4669b3141568200b9">HEX2STR_TYPE</a></td></tr>
 <tr class="separator:a53650bcb565801b4669b3141568200b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a293bbe8931f59733c6e322c401a8c93b"><td class="memItemLeft" align="right" valign="top">typedef int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a293bbe8931f59733c6e322c401a8c93b">fn_rand</a>) (uint8_t *, size_t)</td></tr>
+<tr class="separator:a293bbe8931f59733c6e322c401a8c93b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -183,6 +185,12 @@ Functions</h2></td></tr>
 <tr class="separator:a0aad74305c65a6037c543b2d56c3d5a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30bc9c77c992c6e7a7246d6a93b2a3fe"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a30bc9c77c992c6e7a7246d6a93b2a3fe">cauth_endianess</a> ()</td></tr>
 <tr class="separator:a30bc9c77c992c6e7a7246d6a93b2a3fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc55b624935c2be7171423307a75ef5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#abc55b624935c2be7171423307a75ef5b">cauth_random_attach</a> (<a class="el" href="../../d0/dd4/cauth2_8h.html#a293bbe8931f59733c6e322c401a8c93b">fn_rand</a>)</td></tr>
+<tr class="separator:abc55b624935c2be7171423307a75ef5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03b0c0cd63d5403de8a931c8a38c18e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a03b0c0cd63d5403de8a931c8a38c18e5">cauth_random_detach</a> ()</td></tr>
+<tr class="separator:a03b0c0cd63d5403de8a931c8a38c18e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc7d44ad143039f2e0c768c56dddaac3"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#acc7d44ad143039f2e0c768c56dddaac3">cauth_random</a> (uint8_t *, size_t)</td></tr>
+<tr class="separator:acc7d44ad143039f2e0c768c56dddaac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>CAuth2 is a tiny C TOTP Auth2 authenticator. </p>
@@ -361,6 +369,22 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>CAuth2 verity error code. </p>
+
+</div>
+</div>
+<a id="a293bbe8931f59733c6e322c401a8c93b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a293bbe8931f59733c6e322c401a8c93b">&#9670;&nbsp;</a></span>fn_rand</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef int(* fn_rand) (uint8_t *, size_t)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d0/dd4/cauth2_8h_source.html#l00470">470</a> of file <a class="el" href="../../d0/dd4/cauth2_8h_source.html">cauth2.h</a>.</p>
 
 </div>
 </div>
@@ -696,6 +720,69 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="acc7d44ad143039f2e0c768c56dddaac3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc7d44ad143039f2e0c768c56dddaac3">&#9670;&nbsp;</a></span>cauth_random()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t* cauth_random </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abc55b624935c2be7171423307a75ef5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc55b624935c2be7171423307a75ef5b">&#9670;&nbsp;</a></span>cauth_random_attach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void cauth_random_attach </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dd4/cauth2_8h.html#a293bbe8931f59733c6e322c401a8c93b">fn_rand</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a03b0c0cd63d5403de8a931c8a38c18e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03b0c0cd63d5403de8a931c8a38c18e5">&#9670;&nbsp;</a></span>cauth_random_detach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void cauth_random_detach </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
