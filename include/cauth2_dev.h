@@ -473,6 +473,6 @@ void cauth_random_attach(fn_rand);
 
 void cauth_random_detach();
 
-uint8_t *cauth_random(uint8_t *, size_t);
+CAUTH_BOOL cauth_random(uint8_t *, size_t);
 
 #endif

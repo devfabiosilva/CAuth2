@@ -1,6 +1,9 @@
 #include <cauth2.h>
 #include <asserts.h>
 #include <mbedtls/md.h>
+#include <test_util.h>
+
+void test_random();
 
 #define SZ(this) sizeof(this)-1
 #define SHA1 "SHA1"
@@ -190,6 +193,7 @@ int main(int argc, char **argv) {
 
     test_signatures();
     verify_signatures_test();
+    test_random();
 
     end_tests();
     return 0;
@@ -550,4 +554,8 @@ verify_signatures_test()
     INFO_MSG("End \"verify_signatures_test()\"")
 #undef MESSAGE
 #undef SECRET
+}
+
+void test_random() {
+    cauth_random_attach(gen_rand_no_entropy_util);
 }

@@ -446,10 +446,7 @@ inline void cauth_random_detach()
    _fn_rand=NULL;
 }
 
-inline uint8_t *cauth_random(uint8_t *ptr, size_t ptr_size)
+inline CAUTH_BOOL cauth_random(uint8_t *ptr, size_t ptr_size)
 {
-   if ((_fn_rand!=NULL)&&(!_fn_rand(ptr, ptr_size)))
-      return ptr;
-
-   return NULL;
+   return ((_fn_rand!=NULL)&&(!_fn_rand(ptr, ptr_size)));
 }
