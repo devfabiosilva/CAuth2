@@ -448,5 +448,5 @@ inline void cauth_random_detach()
 
 inline CAUTH_BOOL cauth_random(uint8_t *ptr, size_t ptr_size)
 {
-   return ((_fn_rand!=NULL)&&(!_fn_rand(ptr, ptr_size)));
+   return ((_fn_rand!=NULL)&&(_fn_rand(ptr, ptr_size)==0));
 }

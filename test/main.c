@@ -557,5 +557,78 @@ verify_signatures_test()
 }
 
 void test_random() {
+    uint8_t randv[64];
+
+#define CLEAR_RANDV memset(randv, 0, sizeof(randv));
+#define IS_RANDV_NULL test_vector(randv, sizeof(randv), 0)==0
+
+    INFO_MSG("Begin \"test_random()\" ...\n\n")
+
+    CLEAR_RANDV
+
+    C_ASSERT_FALSE(
+        cauth_random(randv, sizeof(randv)),
+        CTEST_SETTER(
+            CTEST_INFO("Expecting random false because it has not initialized")
+        )
+    )
+
+    C_ASSERT_TRUE(
+        IS_RANDV_NULL,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting random vector is NULL")
+        )
+    )
+
     cauth_random_attach(gen_rand_no_entropy_util);
+
+    C_ASSERT_TRUE(
+        IS_RANDV_NULL,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting random vector is NULL on attach random function")
+        )
+    )
+
+    C_ASSERT_TRUE(
+        cauth_random(randv, sizeof(randv)),
+        CTEST_SETTER(
+            CTEST_INFO("Generate random value")
+        )
+    )
+
+    C_ASSERT_FALSE(
+        IS_RANDV_NULL,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting random vector is NOT NULL and has random value")
+        )
+    )
+
+    C_ASSERT_FALSE(
+        cauth_random(NULL, sizeof(randv)),
+        CTEST_SETTER(
+            CTEST_INFO("Expecting false on generate random value because it has invalid parameter")
+        )
+    )
+
+    C_ASSERT_FALSE(
+        cauth_random(randv, 0),
+        CTEST_SETTER(
+            CTEST_INFO("Expecting false on generate random value because it has invalid parameter in size")
+        )
+    )
+
+    cauth_random_detach();
+
+    C_ASSERT_FALSE(
+        cauth_random(randv, sizeof(randv)),
+        CTEST_SETTER(
+            CTEST_INFO("Expecting fail on generate random value because custom function has detached")
+        )
+    )
+
+    INFO_MSG("End \"test_random()\"")
+
+#undef IS_RANDV_NOT_NULL
+#undef IS_RANDV_NULL
+#undef CLEAR_RANDV
 }
