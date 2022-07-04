@@ -5,7 +5,7 @@ CAuth2 changelogs
 - Add documentation 👻😊✔️
 - Add Secret key TOTP generator support ⏰🧪👀
 - Add Secret key TOTP generator support for _panelauth_ in Python3 🐍⏰🧪👀
-- Add Secret key generator support for signing messages ⏰🧪👀
+- Add Secret key generator support for signing messages 👻😊✔️
 - Add Secret key generator support for signing messages for _panelauth_ in Python3 🐍⏰🧪👀
 
 ## [0.1.0] - 2022-06-19
