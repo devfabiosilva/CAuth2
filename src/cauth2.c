@@ -450,3 +450,63 @@ inline CAUTH_BOOL cauth_random(uint8_t *ptr, size_t ptr_size)
 {
    return ((_fn_rand!=NULL)&&(_fn_rand(ptr, ptr_size)==0));
 }
+
+const char _cauth_rnd_1[]={
+   'a', 'b', 'c', 'd', 'e', 'f', 'g', '\\', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+   '9', 'Y', ':', 'Z', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+   'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '^', ';', '<', '=', '>', '?',
+   '1', 'Q', '2', 'R', '3', 'S', '4', 'T', '5', 'U', '6', 'V', '7', 'W', '8', 'X',
+   '`', 'p', 'a', 'q', 'b', 'r', 'c', 's', 'd', 't', 'e', 'u', 'f', 'v', 'g', 'w',
+   '!', 'A', '[', 'B', '#', 'C', '$', 'D', '%', 'E', '&', 'F', ']', 'G', '(', 'H',
+   'h', 'x', 'i', 'y', 'j', 'z', 'k', '{', 'l', '|', 'm', '}', 'n', '~', 'o', '_',
+   ')', 'I', '*', 'J', '+', 'K', ',', 'L', '-', 'M', '.', 'N', '/', 'O', '0', 'P'
+};
+
+_Static_assert(sizeof(_cauth_rnd_1)==128, "_cauth_rnd_1 wrong size");
+
+const char *generate_key_dynamic(int alg)
+{
+   uint16_t u16_sz;
+   size_t sz;
+   char *p;
+   const char *res;
+
+   if (!_fn_rand)
+      return NULL;
+
+   switch (alg) {
+      case ALG_SHA1_DEFAULT:
+         u16_sz=20;
+         break;
+
+      case ALG_SHA256:
+         u16_sz=32;
+         break;
+
+      case ALG_SHA512:
+         u16_sz=64;
+         break;
+      default:
+         return NULL;
+   }
+
+   if (!(res=malloc(sz=(4*((size_t)u16_sz)+1))))
+      return NULL;
+
+   if (cauth_random((uint8_t *)(p=(char *)res), sz)) {
+
+      sz=(size_t)(u16_sz<<=1);
+      p[sz++]=0;
+
+      do {
+         *p=(char)_cauth_rnd_1[(size_t)((*(p+sz)&0x70)|((*p)&0x0F))];
+         p++;
+      } while (--u16_sz);
+
+      return res;
+
+   }
+
+   free((void *)res);
+   return NULL;
+}

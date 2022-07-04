@@ -4,6 +4,7 @@
 #include <test_util.h>
 
 void test_random();
+void test_key_dyn();
 
 #define SZ(this) sizeof(this)-1
 #define SHA1 "SHA1"
@@ -194,6 +195,7 @@ int main(int argc, char **argv) {
     test_signatures();
     verify_signatures_test();
     test_random();
+    test_key_dyn();
 
     end_tests();
     return 0;
@@ -631,4 +633,75 @@ void test_random() {
 #undef IS_RANDV_NOT_NULL
 #undef IS_RANDV_NULL
 #undef CLEAR_RANDV
+}
+
+void cb_test_key_dyn_on_error(void *ctx)
+{
+    ERROR_MSG_FMT("Error. Freeing %p ...", ctx)
+    free(ctx);
+}
+
+void cb_test_key_dyn_on_success(void *ctx)
+{
+    INFO_MSG_FMT("Success. Code generated: %s at %p\nFreeing ...", (const char *)ctx, ctx);
+    free(ctx);
+}
+
+void test_key_dyn()
+{
+    const char *result;
+    INFO_MSG("Begin \"test_key_dyn()\" ...\n\n")
+    cauth_random_detach();
+
+    result=generate_key_dynamic(ALG_SHA1_DEFAULT);
+    C_ASSERT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_key_dynamic == NULL"),
+            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+        )
+    )
+
+    cauth_random_attach(gen_rand_no_entropy_util);
+
+    result=generate_key_dynamic(ALG_SHA1_DEFAULT);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_key_dynamic(ALG_SHA1_DEFAULT) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result),
+            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+        )
+    )
+
+    result=generate_key_dynamic(ALG_SHA256);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_key_dynamic(ALG_SHA256) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result),
+            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+        )
+    )
+
+    result=generate_key_dynamic(ALG_SHA512);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_key_dynamic(ALG_SHA512) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result),
+            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+        )
+    )
+
+    result=generate_key_dynamic(123456);
+    C_ASSERT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_key_dynamic(123456) == NULL"),
+            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+        )
+    )
+
+    INFO_MSG("End \"test_key_dyn()\"")
 }

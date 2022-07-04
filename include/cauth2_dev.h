@@ -475,4 +475,6 @@ void cauth_random_detach();
 
 CAUTH_BOOL cauth_random(uint8_t *, size_t);
 
+const char *generate_key_dynamic(int);
+
 #endif

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['hex2str_5ftype',['HEX2STR_TYPE',['../d0/dd4/cauth2_8h.html#a53650bcb565801b4669b3141568200b9',1,'cauth2.h']]],
-  ['hex2str_5ftype_5ft',['hex2str_type_t',['../d0/dd4/cauth2_8h.html#a845abf149bfb7bb245ca4cc3e509b2b7',1,'cauth2.h']]]
+  ['generate_5fkey_5fdynamic',['generate_key_dynamic',['../d0/dd4/cauth2_8h.html#a7772a7cae35435f5142f632e7c6d12ae',1,'cauth2.h']]]
 ];
