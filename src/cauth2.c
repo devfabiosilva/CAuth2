@@ -464,7 +464,8 @@ const char _cauth_rnd_1[]={
 
 _Static_assert(sizeof(_cauth_rnd_1)==128, "_cauth_rnd_1 wrong size");
 
-const char *generate_key_dynamic(int alg)
+static
+const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL double_key)
 {
    uint16_t u16_sz;
    size_t sz;
@@ -490,12 +491,17 @@ const char *generate_key_dynamic(int alg)
          return NULL;
    }
 
-   if (!(res=malloc(sz=(4*((size_t)u16_sz)+1))))
+   if (!(res=malloc(sz=(2*((size_t)(double_key)?u16_sz<<=1:u16_sz)+1))))
       return NULL;
 
    if (cauth_random((uint8_t *)(p=(char *)res), sz)) {
 
-      sz=(size_t)(u16_sz<<=1);
+      //sz=(size_t)(u16_sz<<=1);
+      sz=(size_t)(u16_sz);
+
+      if (key_size)
+         *key_size=sz;
+
       p[sz++]=0;
 
       do {
@@ -509,4 +515,31 @@ const char *generate_key_dynamic(int alg)
 
    free((void *)res);
    return NULL;
+}
+
+inline
+const char *generate_key_dynamic(int alg)
+{
+   return generate_key_dynamic_util(NULL, alg, TRUE);
+}
+
+inline
+const char *generate_totp_key_dynamic(size_t *totp_key_size, int alg, CAUTH_BOOL is_base32)
+{
+
+   size_t sz1, sz2;
+   const char *
+      value=generate_key_dynamic_util(&sz1, alg, FALSE),
+      res;
+
+   if (totp_key_size)
+      *totp_key_size=0;
+
+   if (!value)
+      return NULL;
+
+   if (is_base32)
+      return NULL; // TODO
+
+   return value;
 }
