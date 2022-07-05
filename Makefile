@@ -23,10 +23,12 @@ all: main
 cyodecode_shared.o: src/CyoDecode.c src/CyoEncode.c
 	@echo "Build Base32 Utilities shared object"
 	@$(CC) -O2 -c src/CyoDecode.c -Iinclude -fPIC -o cyodecode_shared.o -Wall
+	@$(CC) -O2 -c src/CyoEncode.c -Iinclude -fPIC -o cyoencode_shared.o -Wall
 
 cyodecode.o: src/CyoDecode.c src/CyoEncode.c
 	@echo "Build Base32 Utilities object"
 	@$(CC) -O2 -c src/CyoDecode.c -Iinclude -o cyodecode.o -Wall
+	@$(CC) -O2 -c src/CyoEncode.c -Iinclude -o cyoencode.o -Wall
 
 mbedtls:
 ifeq ("$(wildcard $(CURDIR)/downloads)","")
@@ -86,7 +88,7 @@ ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a)","")
 	@echo "Build static library $(LIBANAME).a ..."
 	@cp $(MBED_LIB_DIR)/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib -v
 	@mv $(CAUTH_BUILD_DIR)/lib/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a
-	@ar -q $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a cauth.o cyodecode.o
+	@ar -q $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a cauth.o cyodecode.o cyoencode.o
 else
 	@echo "Nothing to do lib$(LIBANAME).a already exists"
 endif
@@ -98,7 +100,7 @@ ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so)","")
 	cd $(CAUTH_BUILD_DIR)/lib/shared -v; pwd; \
 	mv $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared.a $(CAUTH_BUILD_DIR)/lib/shared -v
 	@$(CC) -D$(ENDIANESS) -O2 -c $(CURDIR)/src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -fPIC -o cauth_shared.o -Wall
-	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared.a $(CURDIR)/cauth_shared.o $(CURDIR)/cyodecode_shared.o
+	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared.a $(CURDIR)/cauth_shared.o $(CURDIR)/cyodecode_shared.o $(CURDIR)/cyoencode_shared.o
 	@$(CC) -D$(ENDIANESS) -shared -O2 -fPIC $(CURDIR)/src/cauth2.c -I$(INCLUDEDIR) -I$(MBED_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so -Wall
 	@strip $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so
 else

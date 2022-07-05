@@ -669,8 +669,7 @@ void test_key_dyn()
         (void *)result,
         CTEST_SETTER(
             CTEST_INFO("Expecting generate_key_dynamic(ALG_SHA1_DEFAULT) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
         )
     )
 
@@ -679,8 +678,7 @@ void test_key_dyn()
         (void *)result,
         CTEST_SETTER(
             CTEST_INFO("Expecting generate_key_dynamic(ALG_SHA256) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
         )
     )
 
@@ -689,8 +687,7 @@ void test_key_dyn()
         (void *)result,
         CTEST_SETTER(
             CTEST_INFO("Expecting generate_key_dynamic(ALG_SHA512) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
         )
     )
 
@@ -700,6 +697,24 @@ void test_key_dyn()
         CTEST_SETTER(
             CTEST_INFO("Expecting generate_key_dynamic(123456) == NULL"),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+        )
+    )
+// TODO: Add new separated test scenario
+    result=generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(ALG_SHA512, FALSE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    result=generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(ALG_SHA512, FALSE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
         )
     )
 

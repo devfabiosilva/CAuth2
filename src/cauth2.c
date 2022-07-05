@@ -1,5 +1,6 @@
 #include <cauth2_dev.h>
 #include <cyoencode/CyoDecode.h>
+#include <cyoencode/CyoEncode.h>
 #include <mbedtls/sha256.h>
 #include <mbedtls/md.h>
 #include <stdio.h>
@@ -523,14 +524,18 @@ const char *generate_key_dynamic(int alg)
    return generate_key_dynamic_util(NULL, alg, TRUE);
 }
 
+#define CLEAR_AND_FREE(p, s) \
+   memset(p, 0, s);\
+   free(p);
+
 inline
 const char *generate_totp_key_dynamic(size_t *totp_key_size, int alg, CAUTH_BOOL is_base32)
 {
 
    size_t sz1, sz2;
-   const char *
-      value=generate_key_dynamic_util(&sz1, alg, FALSE),
-      res;
+   char
+      *value=(char *)generate_key_dynamic_util(&sz1, alg, FALSE),
+      *res;
 
    if (totp_key_size)
       *totp_key_size=0;
@@ -538,8 +543,19 @@ const char *generate_totp_key_dynamic(size_t *totp_key_size, int alg, CAUTH_BOOL
    if (!value)
       return NULL;
 
-   if (is_base32)
-      return NULL; // TODO
+   if (is_base32) {
+      if ((res=malloc(cyoBase32EncodeGetLength(sz2=sz1)))) {
+         if (!(sz1=cyoBase32Encode(res, (const void *)value, sz1))) {
+            free(res);
+            res=NULL;
+         }
+      }
+      CLEAR_AND_FREE(value, sz2)
+   } else
+      res=value;
 
-   return value;
+   if (totp_key_size)
+      *totp_key_size=sz1;
+
+   return (const char *)res;
 }

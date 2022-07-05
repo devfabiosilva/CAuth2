@@ -477,4 +477,11 @@ CAUTH_BOOL cauth_random(uint8_t *, size_t);
 
 const char *generate_key_dynamic(int);
 
+const char *
+generate_totp_key_dynamic(
+   size_t *, 
+   int,
+   CAUTH_BOOL
+);
+
 #endif
