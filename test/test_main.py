@@ -50,7 +50,7 @@ def test_module_build_date(caplog) -> None:
 
     info(k.buildDate.__doc__)
     info(k.buildDate())
-    assert k.buildDate() == "202206011949"
+    assert k.buildDate() == "202207141501"
 
 def test_module_get_version(caplog) -> None:
 
@@ -60,7 +60,7 @@ def test_module_get_version(caplog) -> None:
 
     info(k.getVersion.__doc__)
     info(k.getVersion())
-    assert k.getVersion() == "0.1.0"
+    assert k.getVersion() == "0.2.0"
 
 def test_module_get_totp_exception(caplog) -> None:
 
