@@ -5,6 +5,7 @@
 
 void test_random();
 void test_key_dyn();
+void test_totp_key();
 
 #define SZ(this) sizeof(this)-1
 #define SHA1 "SHA1"
@@ -196,6 +197,7 @@ int main(int argc, char **argv) {
     verify_signatures_test();
     test_random();
     test_key_dyn();
+    test_totp_key();
 
     end_tests();
     return 0;
@@ -699,12 +701,49 @@ void test_key_dyn()
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
         )
     )
-// TODO: Add new separated test scenario
+
+    INFO_MSG("End \"test_key_dyn()\"")
+}
+
+void test_totp_key()
+{
+    const char *result;
+    size_t key_size;
+
+    INFO_MSG("Begin \"test_totp_key()\" ...\n\n")
+    cauth_random_detach();
+
+    result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE);
+    C_ASSERT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic == NULL"),
+            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+        )
+    )
+
+    result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE);
+    C_ASSERT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic == NULL"),
+            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)result)
+        )
+    )
+
+    C_ASSERT_EQUAL_U64(0, (uint64_t)key_size,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting key size equal zero")
+        )
+    )
+
+    cauth_random_attach(gen_rand_no_entropy_util);
+
     result=generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE);
     C_ASSERT_NOT_NULL(
         (void *)result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(ALG_SHA512, FALSE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
         )
     )
@@ -713,10 +752,136 @@ void test_key_dyn()
     C_ASSERT_NOT_NULL(
         (void *)result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(ALG_SHA512, FALSE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
         )
     )
 
-    INFO_MSG("End \"test_key_dyn()\"")
+    result=generate_totp_key_dynamic(&key_size, ALG_SHA512, FALSE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    C_ASSERT_EQUAL_U64(64, (uint64_t)key_size,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting key size equal 64")
+        )
+    )
+
+    result=generate_totp_key_dynamic(&key_size, ALG_SHA512, TRUE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    C_ASSERT_EQUAL_U64(104, (uint64_t)key_size,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting key size equal 104")
+        )
+    )
+
+    result=generate_totp_key_dynamic(NULL, ALG_SHA256, FALSE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA256, FALSE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    result=generate_totp_key_dynamic(NULL, ALG_SHA256, TRUE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA256, TRUE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    result=generate_totp_key_dynamic(&key_size, ALG_SHA256, FALSE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA256, FALSE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    C_ASSERT_EQUAL_U64(32, (uint64_t)key_size,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting key size equal 32")
+        )
+    )
+
+    result=generate_totp_key_dynamic(&key_size, ALG_SHA256, TRUE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA256, TRUE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    C_ASSERT_EQUAL_U64(56, (uint64_t)key_size,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting key size equal 56")
+        )
+    )
+
+    result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, TRUE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, TRUE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    C_ASSERT_EQUAL_U64(20, (uint64_t)key_size,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting key size equal 20")
+        )
+    )
+
+    result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, TRUE);
+    C_ASSERT_NOT_NULL(
+        (void *)result,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, TRUE) != NULL"),
+            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)result)
+        )
+    )
+
+    C_ASSERT_EQUAL_U64(32, (uint64_t)key_size,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting key size equal 32")
+        )
+    )
+
+    INFO_MSG("Begin \"test_totp_key()\" ...\n\n")
 }

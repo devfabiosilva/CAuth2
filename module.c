@@ -203,11 +203,38 @@ static PyObject *c_getVersion(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kw
    return Py_BuildValue("s", cauth_getVersion());
 }
 
+static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
+{
+   static char
+      *kwlist[] = {"algType", NULL};
+
+   const char *result;
+   int alg;
+   PyObject *ret;
+
+   alg=ALG_SHA512;
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &alg))
+      PANEL_ERROR("Can't parse algorithm type", NULL)
+
+   if (!(result=generate_key_dynamic(alg)))
+      PANEL_ERROR("generate_key_dynamic(alg) fail", NULL)
+
+   ret=Py_BuildValue("s", result);
+   CLEAR_AND_FREE(result, strlen(result))
+
+   if (ret)
+      return ret;
+
+   PANEL_ERROR("Error. generate key to string", NULL)
+}
+
 static PyMethodDef panelauth_methods[] = {
     {"getAuthTotp", (PyCFunction)get_auth_totp, METH_NOARGS, "Get current TOTP authentication code with given initialized secret."},
     {"signMessage", (PyCFunction)sign_message, METH_VARARGS|METH_KEYWORDS, "Signs a message with a given private key"},
     {"buildDate", (PyCFunction)c_buildDate, METH_NOARGS, "Get C Auth2 current build date"},
     {"getVersion", (PyCFunction)c_getVersion, METH_NOARGS, "Get C Auth2 current version"},
+    {"genKey", (PyCFunction)c_generatekey, METH_VARARGS|METH_KEYWORDS, "Generates key given algorithm type"},
     {NULL}
 };
 
