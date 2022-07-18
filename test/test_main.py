@@ -1,3 +1,4 @@
+from tokenize import Ignore
 import pytest
 import logging
 import panelauth as p
@@ -206,3 +207,15 @@ def test_module_sign_message_sha512(caplog) -> None:
     info(signed_message_str)
 
     assert signed_message_str == "306f1a088b72a0d6e11b435a709af7fec9a9cce5cf1519f3fb1c4e395c7921ba43cca697821bdadf27bef1acd4315a6e807492eaf49f1130342e21cdf45e5ca2"
+
+def ignore_test_generate_key_sha512(caplog) -> None:
+    caplog.set_level(logging.INFO)
+
+    k = p.create(SIGN_SECRET_KEY)
+
+    genkey = k.genKey()
+    assert len(genkey) == 64
+
+    info(genkey)
+
+    assert genkey != None
