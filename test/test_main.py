@@ -1,4 +1,3 @@
-from tokenize import Ignore
 import pytest
 import logging
 import panelauth as p
