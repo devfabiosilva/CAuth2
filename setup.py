@@ -3,7 +3,7 @@ from distutils.core import setup, Extension
 def main():
 
     setup(name="panelauth",
-        version="0.1.0",
+        version="0.2.0",
         description="PLC panel / IoT AUTH2 and HMAC protocol modules for Python 3 using C library setup",
         author="Fábio Pereira da Silva",
         author_email="fabioegel@gmail.com",

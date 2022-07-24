@@ -3,9 +3,12 @@
 #include <mbedtls/md.h>
 #include <test_util.h>
 
-void test_random();
-void test_key_dyn();
-void test_totp_key();
+static void test_rfc6238_table();
+static void test_random();
+static void test_key_dyn();
+static void test_totp_key();
+static void test_signatures();
+static void verify_signatures_test();
 
 #define SZ(this) sizeof(this)-1
 #define SHA1 "SHA1"
@@ -70,13 +73,21 @@ struct test_table_t
 
 #undef SET_TEST_TABLE
 
-static void
-test_signatures();
-
-static void
-verify_signatures_test();
-
 int main(int argc, char **argv) {
+
+    test_rfc6238_table();
+    test_signatures();
+    verify_signatures_test();
+    test_random();
+    test_key_dyn();
+    test_totp_key();
+
+    end_tests();
+    return 0;
+}
+
+static void test_rfc6238_table()
+{
     int table_index=0;
     uint32_t result;
     struct test_table_t *test_table=TEST_TABLE;
@@ -192,15 +203,6 @@ int main(int argc, char **argv) {
             TRUE, T0, X, NULL, 8
         )
     )
-
-    test_signatures();
-    verify_signatures_test();
-    test_random();
-    test_key_dyn();
-    test_totp_key();
-
-    end_tests();
-    return 0;
 }
 
 typedef struct test_signature_t {
@@ -560,7 +562,7 @@ verify_signatures_test()
 #undef SECRET
 }
 
-void test_random() {
+static void test_random() {
     uint8_t randv[64];
 
 #define CLEAR_RANDV memset(randv, 0, sizeof(randv));
@@ -632,7 +634,6 @@ void test_random() {
 
     INFO_MSG("End \"test_random()\"")
 
-#undef IS_RANDV_NOT_NULL
 #undef IS_RANDV_NULL
 #undef CLEAR_RANDV
 }
@@ -649,7 +650,7 @@ void cb_test_key_dyn_on_success(void *ctx)
     free(ctx);
 }
 
-void test_key_dyn()
+static void test_key_dyn()
 {
     const char *result;
     INFO_MSG("Begin \"test_key_dyn()\" ...\n\n")
@@ -705,7 +706,7 @@ void test_key_dyn()
     INFO_MSG("End \"test_key_dyn()\"")
 }
 
-void test_totp_key()
+static void test_totp_key()
 {
     const char *result;
     size_t key_size;

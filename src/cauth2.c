@@ -5,7 +5,6 @@
 #include <mbedtls/md.h>
 #include <stdio.h>
 #include <version.h>
-#include <cauth2_dev.h>
 
 _Static_assert(sizeof(int)==sizeof(mbedtls_md_type_t), "wrong mbedtls_md_type_t size");
 _Static_assert(ALG_SHA1_DEFAULT==MBEDTLS_MD_SHA1, "wrong ALG_SHA1_DEFAULT value");
@@ -497,7 +496,6 @@ const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL doub
 
    if (cauth_random((uint8_t *)(p=(char *)res), sz)) {
 
-      //sz=(size_t)(u16_sz<<=1);
       sz=(size_t)(u16_sz);
 
       if (key_size)

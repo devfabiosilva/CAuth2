@@ -77,6 +77,6 @@ MIT
 
 ## Donation
 
-Donations are wellcome :smile:
+Donations are welcome :smile:
 
 **Bitcoin**: `1EcvCevxkbDvYXLuo8UzyG8YxJk78Lwe3e`
