@@ -1,6 +1,8 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <cauth2.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 typedef struct {
    PyObject_HEAD
@@ -210,7 +212,7 @@ static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
       *kwlist[] = {"algType", NULL};
 
    const char *result;
-   int alg;
+   int alg, fd, err;
    PyObject *ret;
 
    alg=ALG_SHA512;
@@ -218,7 +220,15 @@ static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &alg))
       PANEL_ERROR("Can't parse algorithm type", NULL)
 
-   if (!(result=generate_key_dynamic(alg)))
+   if ((fd=open("/dev/urandom", O_RDONLY)<0))
+      PANEL_ERROR("Could not open file descriptor", NULL)
+
+   result=generate_key_dynamic(alg, &fd);
+
+   if ((err=close(fd)))
+      printf("\nWarn. Could not close file descriptor %d with error %d\n", fd, err);
+
+   if (!result)
       PANEL_ERROR("generate_key_dynamic(alg) fail", NULL)
 
    ret=Py_BuildValue("s", result);

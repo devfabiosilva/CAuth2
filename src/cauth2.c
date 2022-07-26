@@ -446,9 +446,9 @@ inline void cauth_random_detach()
    _fn_rand=NULL;
 }
 
-inline CAUTH_BOOL cauth_random(uint8_t *ptr, size_t ptr_size)
+inline CAUTH_BOOL cauth_random(uint8_t *ptr, size_t ptr_size, int *fd)
 {
-   return ((_fn_rand!=NULL)&&(_fn_rand(ptr, ptr_size)==0));
+   return ((_fn_rand!=NULL)&&(_fn_rand(ptr, ptr_size, fd)==0));
 }
 
 const char _cauth_rnd_1[]={
@@ -465,7 +465,7 @@ const char _cauth_rnd_1[]={
 _Static_assert(sizeof(_cauth_rnd_1)==128, "_cauth_rnd_1 wrong size");
 
 static
-const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL double_key)
+const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL double_key, int *fd)
 {
    uint16_t u16_sz;
    size_t sz;
@@ -494,7 +494,7 @@ const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL doub
    if (!(res=malloc(sz=(2*((size_t)(double_key)?u16_sz<<=1:u16_sz)+1))))
       return NULL;
 
-   if (cauth_random((uint8_t *)(p=(char *)res), sz)) {
+   if (cauth_random((uint8_t *)(p=(char *)res), sz, fd)) {
 
       sz=(size_t)(u16_sz);
 
@@ -517,9 +517,9 @@ const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL doub
 }
 
 inline
-const char *generate_key_dynamic(int alg)
+const char *generate_key_dynamic(int alg, int *fd)
 {
-   return generate_key_dynamic_util(NULL, alg, TRUE);
+   return generate_key_dynamic_util(NULL, alg, TRUE, fd);
 }
 
 #define CLEAR_AND_FREE(p, s) \
@@ -527,12 +527,12 @@ const char *generate_key_dynamic(int alg)
    free(p);
 
 inline
-const char *generate_totp_key_dynamic(size_t *totp_key_size, int alg, CAUTH_BOOL is_base32)
+const char *generate_totp_key_dynamic(size_t *totp_key_size, int alg, CAUTH_BOOL is_base32, int *fd)
 {
 
    size_t sz1, sz2;
    char
-      *value=(char *)generate_key_dynamic_util(&sz1, alg, FALSE),
+      *value=(char *)generate_key_dynamic_util(&sz1, alg, FALSE, fd),
       *res;
 
    if (totp_key_size)
