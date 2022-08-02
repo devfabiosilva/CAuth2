@@ -65,3 +65,4 @@ __pycache__
 .pytest_cache
 
 example01
+testcstr
