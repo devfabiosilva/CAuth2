@@ -1,5 +1,6 @@
 #include <cstring/cstring.h>
 
+#define CSTRING_MAGIC (uint64_t)0x2d618d7e854823a1
 #define CREATESTR(s, size) \
     if (!(s=malloc(size))) \
         return NULL;
@@ -14,6 +15,7 @@ CSTRING *newstr(const char *source)
 
     CREATESTR(cstr, sz_tmp2=(sz_tmp1+sizeof(*cstr)))
 
+    cstr->magic=CSTRING_MAGIC;
     cstr->ctype=STRING_CONST_SELF_CONTAINED;
     cstr->header_description=NULL; // For a while
     cstr->size=(uint64_t)sz_tmp2;
@@ -25,7 +27,7 @@ CSTRING *newstr(const char *source)
 
 void free_str(CSTRING **cstr)
 {
-    if (*cstr) {
+    if (((*cstr)!=NULL)&&((*cstr)->magic==CSTRING_MAGIC)) {
         switch ((*cstr)->ctype) {
             case STRING_DYNAMIC:
                 free((void *)(*cstr)->string);
@@ -37,4 +39,5 @@ void free_str(CSTRING **cstr)
     }
 }
 
-#undef _CREATESTR
+#undef CREATESTR
+#undef CSTRING_MAGIC

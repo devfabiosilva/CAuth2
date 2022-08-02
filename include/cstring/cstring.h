@@ -16,13 +16,14 @@ enum ctype_e {
 
 typedef struct cstring_t {
     // BEGIN COMMON HEADER
+    uint64_t magic;
     int32_t ctype;
     uint8_t pad1[4];
     const char *header_description;
     uint64_t size;
     // END COMMON HEADER
     uint64_t string_size;
-    uint8_t pad2[8];
+    //uint8_t pad2[8];
     char *string;
 } __attribute__((aligned(_CSTRING_ALIGN_SIZE))) CSTRING;
 
