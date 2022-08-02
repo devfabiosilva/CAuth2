@@ -49,7 +49,14 @@ _Static_assert(sizeof(CSTRING)==offsetof(CSTRING, string)+sizeof(((CSTRING *)NUL
     \
     memset(&cstr->string[size], 0, size_aligned-size);
 
+#define CSTR_COPY_DYNAMIC \
+    cstr->string_size=(uint64_t)str_sz; \
+    cstr->string=(char *)source;
+
 CSTRING *newstr(const char *);
+CSTRING *newstr_fmt(const char *, ...);
+size_t cstrlen(CSTRING *);
+CSTRING *cstrcpy(CSTRING *);
 void free_str(CSTRING **);
 
 #endif
