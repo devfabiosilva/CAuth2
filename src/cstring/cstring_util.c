@@ -82,7 +82,7 @@ CSTRING *newstr_fmt(const char *fmt, ...)
 inline
 size_t cstrlen(CSTRING *cstr)
 {
-    return cstr->size;
+    return cstr->string_size;
 }
 
 inline
@@ -91,8 +91,17 @@ CSTRING *cstrcpy(CSTRING *source)
     return newstr_util((const char *)source->string, (size_t)source->string_size);
 }
 
+inline
+const char *cstr_get(CSTRING *cstr)
+{
+    return (const char *)cstr->string;
+}
+
 void free_str(CSTRING **cstr)
 {
+    if (!cstr)
+        return;
+
     if (((*cstr)!=NULL)&&((*cstr)->magic==CSTRING_MAGIC)) {
         switch ((*cstr)->ctype) {
             case STRING_DYNAMIC:
