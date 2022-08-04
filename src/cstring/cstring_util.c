@@ -93,9 +93,64 @@ CSTRING *cstrcpy(CSTRING *source)
 
 int cstrconcat(CSTRING **dest, CSTRING *source)
 {
-    //TODO
-    return -1;
+    char *aux;
+    CSTRING *realloc_dest, *cstr_tmp;
+    size_t
+        sz_tmp1, // Aligned s1 + s2 (Always > sz_tmp2)
+        sz_tmp2, // Size = s1 + s2
+        sz_tmp3; // Total CSTRING object size
+
+    if (source->string_size==0)
+        return 0;
+
+    if ((*dest)->string_size==0) {
+        if (!(cstr_tmp=cstrcpy(source)))
+            return -2;
+ 
+        free_str(dest);
+
+        if ((*dest)==NULL) {
+            *dest=cstr_tmp;
+            return 0;
+        }
+
+        return -3;
+    }
+
+    CSTR_ALIGN(sz_tmp1, (sz_tmp2=((*dest)->string_size+source->string_size)));
+
+    if (!(realloc_dest=(CSTRING *)realloc((void *)*dest, sz_tmp3=(sizeof(CSTRING)+sz_tmp1))))
+        return -1;
+
+    aux=_CSTR_PTR_SELF_CONTAINED(realloc_dest);
+
+    if (realloc_dest->ctype==STRING_CONST_SELF_CONTAINED)
+        memcpy(
+            (void *)((char *)(aux+realloc_dest->string_size)),
+            source->string, source->string_size
+        );
+    else {
+        memcpy((void *)aux, realloc_dest->string, realloc_dest->string_size);
+        memcpy((void *)(
+            (char *)(aux+realloc_dest->string_size)
+        ), source->string, source->string_size);
+
+        if (realloc_dest->ctype==STRING_DYNAMIC)
+            free(realloc_dest->string);
+    }
+
+    memset((void *)((char *)(aux+sz_tmp2)), 0, sz_tmp1-sz_tmp2);
+
+    realloc_dest->ctype=STRING_CONST_SELF_CONTAINED;
+    realloc_dest->size=sz_tmp3;
+    realloc_dest->string_size=sz_tmp2;
+    realloc_dest->string=aux;
+
+    (*dest)=realloc_dest;
+
+    return 0;
 }
+
 inline
 const char *cstr_get(CSTRING *cstr)
 {
@@ -104,9 +159,6 @@ const char *cstr_get(CSTRING *cstr)
 
 void free_str(CSTRING **cstr)
 {
-    if (!cstr)
-        return;
-
     if (((*cstr)!=NULL)&&((*cstr)->magic==CSTRING_MAGIC)) {
         switch ((*cstr)->ctype) {
             case STRING_DYNAMIC:
