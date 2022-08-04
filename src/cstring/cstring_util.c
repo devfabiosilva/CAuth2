@@ -91,6 +91,11 @@ CSTRING *cstrcpy(CSTRING *source)
     return newstr_util((const char *)source->string, (size_t)source->string_size);
 }
 
+int cstrconcat(CSTRING **dest, CSTRING *source)
+{
+    //TODO
+    return -1;
+}
 inline
 const char *cstr_get(CSTRING *cstr)
 {

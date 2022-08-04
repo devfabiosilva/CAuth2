@@ -56,6 +56,7 @@ _Static_assert(sizeof(CSTRING)==offsetof(CSTRING, string)+sizeof(((CSTRING *)NUL
 CSTRING *newstr(const char *);
 CSTRING *newstr_fmt(const char *, ...);
 CSTRING *cstrcpy(CSTRING *);
+int cstrconcat(CSTRING **, CSTRING *);
 size_t cstrlen(CSTRING *);
 const char *cstr_get(CSTRING *);
 void free_str(CSTRING **);
