@@ -96,7 +96,7 @@ int cstrconcat(CSTRING **dest, CSTRING *source)
     char *aux;
     CSTRING *realloc_dest, *cstr_tmp;
     size_t
-        sz_tmp1, // Aligned s1 + s2 (Always > sz_tmp2)
+        sz_tmp1, // Aligned s1 + s2 (Always > sz_tmp2 in STRING_CONST_SELF_CONTAINED)
         sz_tmp2, // Size = s1 + s2
         sz_tmp3; // Total CSTRING object size
 
@@ -114,7 +114,12 @@ int cstrconcat(CSTRING **dest, CSTRING *source)
             return 0;
         }
 
-        return -3;
+        free_str(&cstr_tmp);
+
+        if (cstr_tmp==NULL)
+            return -3;
+
+        return -4;
     }
 
     CSTR_ALIGN(sz_tmp1, (sz_tmp2=((*dest)->string_size+source->string_size)));
