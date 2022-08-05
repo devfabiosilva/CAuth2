@@ -1,6 +1,7 @@
 #include <test/asserts.h>
+#include <test/test_util.h>
 #include <cstring/cstring.h>
-//gcc -O2 -g -o testcstr testcstr.c ../src/cstring/cstring_util.c ../src/ctest/asserts.c -I../include -I../include/test -fsanitize=leak,address -Wall
+//gcc -O2 -g -o testcstr testcstr.c ../test/test_util.c  ../src/cstring/cstring_util.c ../src/ctest/asserts.c -I../include -I../include/test -fsanitize=leak,address -Wall
 
 #define MAX_CSTRING_PTRS (size_t)4
 typedef struct cstrs_t {
@@ -22,6 +23,91 @@ static void free_all_cstrs(void *ctx)
             WARN_MSG_FMT("Was expected *cstr=NULL at index %d. Please fix it", (int)i)
     }
 
+}
+
+void check_cstring_object(CSTRING_PTRS *cstr_ptr)
+{
+    size_t i=0, alignement, tmp;
+    CSTRING *cstr;
+
+    while (i<MAX_CSTRING_PTRS) {
+        WARN_MSG_FMT("Checking %p at index %d.", (cstr=cstr_ptr->cstrs[i]), i)
+
+        if (cstr==NULL) {
+            WARN_MSG_FMT("cstr[%d]=NULL. Ignoring check ...", (int)i++)
+            continue;
+        }
+
+        if (cstr->ctype==STRING_CONST_SELF_CONTAINED) {
+            WARN_MSG_FMT(
+                "Type at index %d: STRING_CONST_SELF_CONTAINED\nChecking object coerence ...",
+                (int)i
+            )
+            C_ASSERT_TRUE(
+                cstr->size>cstr->string_size,
+                CTEST_SETTER(
+                    CTEST_INFO(
+                        "\tChecking object size cstr->size = %u is greater than string size %u ...",
+                        (unsigned int)cstr->size, (unsigned int)cstr->string_size
+                    ),
+                    CTEST_ON_ERROR_CB(free_all_cstrs, (void *)cstr_ptr)
+                )
+            )
+
+            CSTR_ALIGN(alignement, cstr->string_size)
+
+            C_ASSERT_TRUE(
+                ((alignement&(_CSTRING_ALIGN_SIZE-1))==0),
+                CTEST_SETTER(
+                    CTEST_INFO("\t* check alignment %u", (unsigned int)alignement),
+                    CTEST_ON_ERROR_CB(free_all_cstrs, (void *)cstr_ptr)
+                )
+            )
+
+            C_ASSERT_TRUE(
+                alignement>cstr->string_size,
+                CTEST_SETTER(
+                    CTEST_INFO(
+                        "\t* check alignment %u is greater than string size %u ...",
+                        alignement, cstr->string_size
+                    ),
+                    CTEST_ON_ERROR_CB(free_all_cstrs, (void *)cstr_ptr)
+                )
+            )
+
+            tmp=alignement-cstr->string_size;
+
+            C_ASSERT_TRUE(
+                (test_vector((uint8_t *)(&cstr->string[cstr->string_size]), tmp, 0)==0),
+                CTEST_SETTER(
+                    CTEST_INFO(
+                        "\t* cheking pads with size %u has null terminated string ...",
+                        (unsigned int)tmp
+                    ),
+                    CTEST_ON_ERROR_CB(free_all_cstrs, (void *)cstr_ptr)
+                )
+            )
+        } else if (cstr->ctype==STRING_CONST)
+            WARN_MSG_FMT(
+                "Type at index %d: STRING_CONST\nIgnoring ...",
+                (int)i
+            )
+        else if (cstr->ctype==STRING_DYNAMIC)
+            WARN_MSG_FMT(
+                "Type at index %d: STRING_DYNAMIC\nIgnoring ...",
+                (int)i
+            )
+        else {
+            free_all_cstrs(cstr_ptr);
+            C_ASSERT_FAIL(NULL,
+                CTEST_SETTER(
+                    CTEST_WARN("Unknown cstr->ctype(%u)", (unsigned int)cstr->ctype)
+                )
+            )
+        }
+
+        ++i;
+    }
 }
 
 int main(int argc, char *argv[])
@@ -125,6 +211,8 @@ int main(int argc, char *argv[])
             CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
         )
     )
+
+    check_cstring_object(&cstrings_ptr);
 
     free_all_cstrs((void *)&cstrings_ptr);
 
