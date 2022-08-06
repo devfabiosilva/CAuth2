@@ -49,6 +49,16 @@ _Static_assert(sizeof(CSTRING)==offsetof(CSTRING, string)+sizeof(((CSTRING *)NUL
     \
     memset(&cstr->string[size], 0, size_aligned-size);
 
+#define CSTR_COPY_SELF_CONTAINED_DUPLICATED(size, size_aligned) \
+    cstr->string_size=(uint64_t)(2*size); \
+    cstr->string=_CSTR_PTR_SELF_CONTAINED(cstr); \
+    if (size) {\
+        memcpy(cstr->string, source, size); \
+        memcpy(&cstr->string[size], source, size);\
+    } \
+    \
+    memset(&cstr->string[cstr->string_size], 0, size_aligned-cstr->string_size);
+
 #define CSTR_COPY_DYNAMIC \
     cstr->string_size=(uint64_t)str_sz; \
     cstr->string=(char *)source;

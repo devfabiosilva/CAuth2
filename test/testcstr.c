@@ -3,7 +3,7 @@
 #include <cstring/cstring.h>
 //gcc -O2 -g -o testcstr testcstr.c ../test/test_util.c  ../src/cstring/cstring_util.c ../src/ctest/asserts.c -I../include -I../include/test -fsanitize=leak,address -Wall
 
-#define MAX_CSTRING_PTRS (size_t)4
+#define MAX_CSTRING_PTRS (size_t)8
 typedef struct cstrs_t {
     CSTRING *cstrs[MAX_CSTRING_PTRS];
 } CSTRING_PTRS;
@@ -118,27 +118,39 @@ int main(int argc, char *argv[])
     #define MESSAGE_FORMAT "This is message with number %d and real number %0.3f and string \"%s\""
     #define MESSAGE_FORMAT_EXPECTED_SIZE sizeof(MESSAGE_FORMAT_EXPECTED)-1
 
+    int err;
     CSTRING_PTRS cstrings_ptr;
     CSTRING *p;
 
     memset((void *)&cstrings_ptr, 0, sizeof(cstrings_ptr));
 
-    cstrings_ptr.cstrs[0]=(p=newstr(MESSAGE));
+#define CSTR_ADD_AND_CHECK_NEW_STR(idx, message, expected_message) \
+    cstrings_ptr.cstrs[idx]=(p=newstr(message)); \
+\
+    C_ASSERT_NOT_NULL( \
+        (void *)p, \
+        CTEST_SETTER( \
+            CTEST_INFO("Expecting cstr[%d] is NOT NULL", idx) \
+        ) \
+    ) \
+\
+    C_ASSERT_EQUAL_U64( \
+        (uint64_t)(sizeof(message)-1), \
+        (uint64_t)cstrlen(p), \
+        CTEST_SETTER( \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
+    ) \
+\
+    C_ASSERT_EQUAL_STRING( \
+        expected_message, \
+        cstr_get(cstrings_ptr.cstrs[idx]), \
+        CTEST_SETTER( \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
+    ) \
 
-    C_ASSERT_NOT_NULL(
-        (void *)p,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting cstr[0] is NOT NULL")
-        )
-    )
-
-    C_ASSERT_EQUAL_U64(
-        (uint64_t)MESSAGE_SIZE,
-        (uint64_t)cstrlen(p),
-        CTEST_SETTER(
-            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
-        )
-    )
+    CSTR_ADD_AND_CHECK_NEW_STR(0, MESSAGE, MESSAGE)
 
     cstrings_ptr.cstrs[1]=(p=cstrcpy(p));
 
@@ -212,6 +224,92 @@ int main(int argc, char *argv[])
         )
     )
 
+
+#define CSTR_ADD_AND_CHECK_EMPTY_STRING(idx) \
+    cstrings_ptr.cstrs[idx]=(p=newstr("")); \
+\
+    C_ASSERT_NOT_NULL( \
+        (void *)p, \
+        CTEST_SETTER( \
+            CTEST_INFO("Expecting cstr[%d] is NOT NULL", idx), \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
+    ) \
+\
+    C_ASSERT_EQUAL_U64( \
+        (uint64_t)0, \
+        (uint64_t)cstrlen(p), \
+        CTEST_SETTER( \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
+    ) \
+\
+    C_ASSERT_TRUE( \
+        p->string[0]==0, \
+        CTEST_SETTER( \
+            CTEST_INFO( \
+                "Check null string terminated at object %p at address %p", p,  p->string \
+            ), \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
+    )
+
+    CSTR_ADD_AND_CHECK_EMPTY_STRING(4)
+
+    CSTR_ADD_AND_CHECK_EMPTY_STRING(5)
+
+#define MESSAGE_CONCATENED_1 "This message will be concatened with"
+
+    CSTR_ADD_AND_CHECK_NEW_STR(6, MESSAGE_CONCATENED_1, MESSAGE_CONCATENED_1)
+
+#define MESSAGE_CONCATENED_2 "<<concatened string here :)>>"
+
+    CSTR_ADD_AND_CHECK_NEW_STR(7, MESSAGE_CONCATENED_2, MESSAGE_CONCATENED_2)
+
+    p=cstrings_ptr.cstrs[6];
+
+    err=cstrconcat(&cstrings_ptr.cstrs[6], cstrings_ptr.cstrs[7]);
+
+    C_ASSERT_NOT_NULL(
+        (void *)cstrings_ptr.cstrs[6],
+        CTEST_SETTER(
+            CTEST_INFO("Expecting cstr[6] is NOT NULL"),
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
+        )
+    )
+
+    if (p!=cstrings_ptr.cstrs[6])
+        WARN_MSG_FMT("cstrconcat address changed: [old = %p] [new = %p]", p, cstrings_ptr.cstrs[6])
+
+    p=cstrings_ptr.cstrs[6];
+
+    C_ASSERT_TRUE(
+        err==0,
+        CTEST_SETTER(
+            CTEST_INFO(
+                "Check if expected err == 0 at index. Found err=%d",
+                err
+            ),
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
+        )
+    )
+
+    C_ASSERT_EQUAL_U64(
+        (uint64_t)(sizeof(MESSAGE_CONCATENED_1)+sizeof(MESSAGE_CONCATENED_2)-2),
+        (uint64_t)cstrlen(p),
+        CTEST_SETTER(
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
+        )
+    )
+
+    C_ASSERT_EQUAL_STRING(
+        MESSAGE_CONCATENED_1 MESSAGE_CONCATENED_2,
+        cstr_get(p),
+        CTEST_SETTER(
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
+        )
+    )
+
     check_cstring_object(&cstrings_ptr);
 
     free_all_cstrs((void *)&cstrings_ptr);
@@ -220,6 +318,10 @@ int main(int argc, char *argv[])
 
     return 0;
 
+    #undef MESSAGE_CONCATENED_2
+    #undef MESSAGE_CONCATENED_1
+    #undef CSTR_ADD_AND_CHECK_EMPTY_STRING
+    #undef CSTR_ADD_AND_CHECK_NEW_STR
     #undef MESSAGE_FORMAT_EXPECTED_SIZE
     #undef MESSAGE_FORMAT
     #undef MESSAGE_FORMAT_EXPECTED

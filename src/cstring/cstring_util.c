@@ -32,6 +32,26 @@ CSTRING *newstr_util(const char *source, size_t str_sz)
 }
 
 static
+CSTRING *newstr_duplicate_util(const char *source, size_t str_sz)
+{
+    CSTRING *cstr;
+    size_t sz_tmp1, sz_tmp2;
+
+    CSTR_ALIGN(sz_tmp1, (2*str_sz));
+
+    CREATESTR(cstr, sz_tmp2=(sz_tmp1+sizeof(*cstr)))
+
+    cstr->magic=CSTRING_MAGIC;
+    cstr->ctype=STRING_CONST_SELF_CONTAINED;
+    cstr->header_description=NULL; // For a while
+    cstr->size=(uint64_t)sz_tmp2;
+
+    CSTR_COPY_SELF_CONTAINED_DUPLICATED(str_sz, sz_tmp1)
+
+    return cstr;    
+}
+
+static
 CSTRING *newstr_dyn_util(const char *source, size_t str_sz)
 {
     CSTRING *cstr;
@@ -120,6 +140,25 @@ int cstrconcat(CSTRING **dest, CSTRING *source)
             return -3;
 
         return -4;
+    }
+
+    if ((*dest)==source) {
+        if (!(cstr_tmp=newstr_duplicate_util(source->string, source->string_size)))
+            return -5;
+
+        free_str(dest);
+
+        if (*dest==NULL) {
+            (*dest)=cstr_tmp;
+            return 0;
+        }
+
+        free_str(&cstr_tmp);
+
+        if (cstr_tmp)
+            return -7;
+
+        return -6;
     }
 
     CSTR_ALIGN(sz_tmp1, (sz_tmp2=((*dest)->string_size+source->string_size)));
