@@ -52,14 +52,14 @@ CSTRING *newstr_duplicate_util(const char *source, size_t str_sz)
 }
 
 static
-CSTRING *newstr_dyn_util(const char *source, size_t str_sz)
+CSTRING *newstr_dyn_or_const_util(const char *source, size_t str_sz, int32_t ctype)
 {
     CSTRING *cstr;
 
     CREATESTR(cstr, sizeof(*cstr))
 
     cstr->magic=CSTRING_MAGIC;
-    cstr->ctype=STRING_DYNAMIC;
+    cstr->ctype=ctype;
     cstr->header_description=NULL; // For a while
     cstr->size=(uint64_t)sizeof(*cstr);
 
@@ -86,7 +86,7 @@ CSTRING *newstr_fmt(const char *fmt, ...)
     va_end(args);
 
     if (size>0) {
-        if (!(cstr=newstr_dyn_util((const char *)str, (size_t)size)))
+        if (!(cstr=newstr_dyn_or_const_util((const char *)str, (size_t)size, STRING_DYNAMIC)))
             free((void *)str);
         return cstr;
     }
@@ -97,6 +97,18 @@ CSTRING *newstr_fmt(const char *fmt, ...)
     }
 
     return NULL;
+}
+
+inline
+CSTRING *newstrconst(const char *source)
+{
+    return newstr_dyn_or_const_util(source, strlen(source), STRING_CONST);
+}
+
+inline
+CSTRING *anewstr(const char *source)
+{
+    return newstr_dyn_or_const_util(source, strlen(source), STRING_DYNAMIC);
 }
 
 inline

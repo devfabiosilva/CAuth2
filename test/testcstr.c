@@ -1,9 +1,11 @@
+#define _GNU_SOURCE
+#include <stdio.h>
 #include <test/asserts.h>
 #include <test/test_util.h>
 #include <cstring/cstring.h>
 //gcc -O2 -g -o testcstr testcstr.c ../test/test_util.c  ../src/cstring/cstring_util.c ../src/ctest/asserts.c -I../include -I../include/test -fsanitize=leak,address -Wall
 
-#define MAX_CSTRING_PTRS (size_t)8
+#define MAX_CSTRING_PTRS (size_t)12
 typedef struct cstrs_t {
     CSTRING *cstrs[MAX_CSTRING_PTRS];
 } CSTRING_PTRS;
@@ -15,12 +17,13 @@ static void free_all_cstrs(void *ctx)
     CSTRING **cstr;
 
     while (i<MAX_CSTRING_PTRS) {
-        cstr=&cstring_ptrs->cstrs[i++];
+        cstr=&cstring_ptrs->cstrs[i];
         WARN_MSG_FMT("Index[%d]. Freeing %p (if not null)", (int)i, cstr)
         free_str(cstr);
 
         if (*cstr!=NULL)
             WARN_MSG_FMT("Was expected *cstr=NULL at index %d. Please fix it", (int)i)
+        ++i;
     }
 
 }
@@ -28,7 +31,7 @@ static void free_all_cstrs(void *ctx)
 void check_cstring_object(CSTRING_PTRS *cstr_ptr)
 {
     size_t i=0, alignement, tmp;
-    uint32_t ctype;
+    int32_t ctype;
     CSTRING *cstr;
 
     while (i<MAX_CSTRING_PTRS) {
@@ -122,26 +125,17 @@ int main(int argc, char *argv[])
     #define MESSAGE_FORMAT_EXPECTED_SIZE sizeof(MESSAGE_FORMAT_EXPECTED)-1
 
     int err;
+    char *charptr;
     CSTRING_PTRS cstrings_ptr;
     CSTRING *p;
 
     memset((void *)&cstrings_ptr, 0, sizeof(cstrings_ptr));
 
-#define CSTR_ADD_AND_CHECK_NEW_STR(idx, message, expected_message) \
-    cstrings_ptr.cstrs[idx]=(p=newstr(message)); \
-\
+#define CSTR_ADD_AND_CHECK_NEW_STR_UTIL(idx, message, expected_message) \
     C_ASSERT_NOT_NULL( \
         (void *)p, \
         CTEST_SETTER( \
             CTEST_INFO("Expecting cstr[%d] is NOT NULL", idx) \
-        ) \
-    ) \
-\
-    C_ASSERT_EQUAL_U64( \
-        (uint64_t)(sizeof(message)-1), \
-        (uint64_t)cstrlen(p), \
-        CTEST_SETTER( \
-            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
         ) \
     ) \
 \
@@ -152,6 +146,17 @@ int main(int argc, char *argv[])
             CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
         ) \
     ) \
+    C_ASSERT_EQUAL_U64( \
+        (uint64_t)(sizeof(message)-1), \
+        (uint64_t)cstrlen(p), \
+        CTEST_SETTER( \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
+    ) \
+
+#define CSTR_ADD_AND_CHECK_NEW_STR(idx, message, expected_message) \
+    cstrings_ptr.cstrs[idx]=(p=newstr(message)); \
+    CSTR_ADD_AND_CHECK_NEW_STR_UTIL(idx, message, expected_message)
 
     CSTR_ADD_AND_CHECK_NEW_STR(0, MESSAGE, MESSAGE)
 
@@ -309,17 +314,16 @@ int main(int argc, char *argv[])
         ) \
     ) \
 \
-    C_ASSERT_EQUAL_U64( \
-        (uint64_t)(sizeof(message1)+sizeof(message2)-2), \
-        (uint64_t)cstrlen(p), \
+    C_ASSERT_EQUAL_STRING( \
+        message1 message2, \
+        cstr_get(p), \
         CTEST_SETTER( \
             CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
         ) \
     ) \
-\
-    C_ASSERT_EQUAL_STRING( \
-        message1 message2, \
-        cstr_get(p), \
+    C_ASSERT_EQUAL_U64( \
+        (uint64_t)(sizeof(message1)+sizeof(message2)-2), \
+        (uint64_t)cstrlen(p), \
         CTEST_SETTER( \
             CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
         ) \
@@ -339,6 +343,55 @@ int main(int argc, char *argv[])
 
     CSTR_ADD_AND_CHECK_CONCATENED(2, 6, MESSAGE_FORMAT_EXPECTED, MESSAGE_CONCATENED_1 MESSAGE_CONCATENED_2, C_TEST_FALSE)
 
+#define CSTR_ADD_AND_CHECK_NEW_STR_DYN(idx, message_ptr, message, expected_message) \
+    cstrings_ptr.cstrs[idx]=(p=anewstr(message_ptr)); \
+    CSTR_ADD_AND_CHECK_NEW_STR_UTIL(idx, message, expected_message)
+
+#define NEW_ALLOC_STRING "New string allocated dynamically"
+
+    C_ASSERT_TRUE(
+        (asprintf(&charptr, "%s", NEW_ALLOC_STRING)>-1),
+        CTEST_SETTER(
+            CTEST_INFO(
+                "Check if new string is allocated dynamically in memory ..."
+            ),
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
+        )
+    )
+
+    CSTR_ADD_AND_CHECK_NEW_STR_DYN(8, charptr, NEW_ALLOC_STRING, NEW_ALLOC_STRING)
+
+#define CSTR_ADD_AND_CHECK_NEW_STR_CONST(idx, message, expected_message) \
+    cstrings_ptr.cstrs[idx]=(p=newstrconst(message)); \
+    CSTR_ADD_AND_CHECK_NEW_STR_UTIL(idx, message, expected_message)
+
+#define NEW_CONST_STRING "New const string added"
+
+    CSTR_ADD_AND_CHECK_NEW_STR_CONST(9, NEW_CONST_STRING, NEW_CONST_STRING)
+
+#define NEW_CONST_STRING_2 "Second new const string added"
+    CSTR_ADD_AND_CHECK_NEW_STR_CONST(10, NEW_CONST_STRING_2, NEW_CONST_STRING_2)
+
+    CSTR_ADD_AND_CHECK_CONCATENED(10, 10, NEW_CONST_STRING_2, NEW_CONST_STRING_2, C_TEST_FALSE)
+
+    CSTR_ADD_AND_CHECK_CONCATENED(10, 9, NEW_CONST_STRING_2 NEW_CONST_STRING_2, NEW_CONST_STRING, C_TEST_FALSE)
+
+#define NEW_ALLOC_STRING_2 "New string allocated dynamically"
+
+    C_ASSERT_TRUE(
+        (asprintf(&charptr, "%s", NEW_ALLOC_STRING_2)>-1),
+        CTEST_SETTER(
+            CTEST_INFO(
+                "Check if new string is allocated dynamically in memory (second allocation)..."
+            ),
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
+        )
+    )
+
+    CSTR_ADD_AND_CHECK_NEW_STR_DYN(11, charptr, NEW_ALLOC_STRING_2, NEW_ALLOC_STRING_2)
+
+    CSTR_ADD_AND_CHECK_CONCATENED(11, 9, NEW_ALLOC_STRING_2, NEW_CONST_STRING, C_TEST_FALSE)
+
     check_cstring_object(&cstrings_ptr);
 
     free_all_cstrs((void *)&cstrings_ptr);
@@ -347,11 +400,18 @@ int main(int argc, char *argv[])
 
     return 0;
 
+    #undef NEW_ALLOC_STRING_2
+    #undef NEW_CONST_STRING_2
+    #undef NEW_CONST_STRING
+    #undef CSTR_ADD_AND_CHECK_NEW_STR_CONST
+    #undef NEW_ALLOC_STRING
+    #undef CSTR_ADD_AND_CHECK_NEW_STR_DYN
     #undef CSTR_ADD_AND_CHECK_CONCATENED
     #undef MESSAGE_CONCATENED_2
     #undef MESSAGE_CONCATENED_1
     #undef CSTR_ADD_AND_CHECK_EMPTY_STRING
     #undef CSTR_ADD_AND_CHECK_NEW_STR
+    #undef CSTR_ADD_AND_CHECK_NEW_STR_UTIL
     #undef MESSAGE_FORMAT_EXPECTED_SIZE
     #undef MESSAGE_FORMAT
     #undef MESSAGE_FORMAT_EXPECTED
