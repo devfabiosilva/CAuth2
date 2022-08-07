@@ -266,49 +266,75 @@ int main(int argc, char *argv[])
 
     CSTR_ADD_AND_CHECK_NEW_STR(7, MESSAGE_CONCATENED_2, MESSAGE_CONCATENED_2)
 
-    p=cstrings_ptr.cstrs[6];
-
-    err=cstrconcat(&cstrings_ptr.cstrs[6], cstrings_ptr.cstrs[7]);
-
-    C_ASSERT_NOT_NULL(
-        (void *)cstrings_ptr.cstrs[6],
-        CTEST_SETTER(
-            CTEST_INFO("Expecting cstr[6] is NOT NULL"),
-            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
-        )
+#define CSTR_ADD_AND_CHECK_CONCATENED(idx1, idx2, message1, message2, must_have_same_pointer) \
+    p=cstrings_ptr.cstrs[idx1]; \
+\
+    err=cstrconcat(&cstrings_ptr.cstrs[idx1], cstrings_ptr.cstrs[idx2]); \
+\
+    C_ASSERT_NOT_NULL( \
+        (void *)cstrings_ptr.cstrs[idx1], \
+        CTEST_SETTER( \
+            CTEST_INFO("Expecting cstr[%d] is NOT NULL", idx1), \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
+    ) \
+\
+    if (p!=cstrings_ptr.cstrs[idx1]) \
+        WARN_MSG_FMT("cstrconcat address changed: [old = %p] [new = %p]", p, cstrings_ptr.cstrs[idx1]) \
+\
+    if (must_have_same_pointer) \
+        C_ASSERT_TRUE( \
+            (p==cstrings_ptr.cstrs[idx1]), \
+            CTEST_SETTER( \
+                CTEST_INFO( \
+                    "It MUST have same pointer. Checking if is TRUE" \
+                ), \
+                CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+            ) \
+        ) \
+\
+    p=cstrings_ptr.cstrs[idx1]; \
+\
+    C_ASSERT_TRUE( \
+        err==0, \
+        CTEST_SETTER( \
+            CTEST_INFO( \
+                "Check if expected err == 0 at index. Found err=%d", \
+                err \
+            ), \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
+    ) \
+\
+    C_ASSERT_EQUAL_U64( \
+        (uint64_t)(sizeof(message1)+sizeof(message2)-2), \
+        (uint64_t)cstrlen(p), \
+        CTEST_SETTER( \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
+    ) \
+\
+    C_ASSERT_EQUAL_STRING( \
+        message1 message2, \
+        cstr_get(p), \
+        CTEST_SETTER( \
+            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr) \
+        ) \
     )
 
-    if (p!=cstrings_ptr.cstrs[6])
-        WARN_MSG_FMT("cstrconcat address changed: [old = %p] [new = %p]", p, cstrings_ptr.cstrs[6])
+    CSTR_ADD_AND_CHECK_CONCATENED(6, 7, MESSAGE_CONCATENED_1, MESSAGE_CONCATENED_2, C_TEST_FALSE)
 
-    p=cstrings_ptr.cstrs[6];
+    CSTR_ADD_AND_CHECK_CONCATENED(4, 5, "", "", C_TEST_TRUE)
 
-    C_ASSERT_TRUE(
-        err==0,
-        CTEST_SETTER(
-            CTEST_INFO(
-                "Check if expected err == 0 at index. Found err=%d",
-                err
-            ),
-            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
-        )
-    )
+    CSTR_ADD_AND_CHECK_CONCATENED(4, 1, "", MESSAGE, C_TEST_FALSE)
 
-    C_ASSERT_EQUAL_U64(
-        (uint64_t)(sizeof(MESSAGE_CONCATENED_1)+sizeof(MESSAGE_CONCATENED_2)-2),
-        (uint64_t)cstrlen(p),
-        CTEST_SETTER(
-            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
-        )
-    )
+    CSTR_ADD_AND_CHECK_CONCATENED(4, 5, MESSAGE, "", C_TEST_TRUE)
 
-    C_ASSERT_EQUAL_STRING(
-        MESSAGE_CONCATENED_1 MESSAGE_CONCATENED_2,
-        cstr_get(p),
-        CTEST_SETTER(
-            CTEST_ON_ERROR_CB(free_all_cstrs, (void *)&cstrings_ptr)
-        )
-    )
+    CSTR_ADD_AND_CHECK_CONCATENED(4, 4, MESSAGE, MESSAGE, C_TEST_FALSE)
+
+    CSTR_ADD_AND_CHECK_CONCATENED(2, 5, MESSAGE_FORMAT_EXPECTED, "", C_TEST_TRUE)
+
+    CSTR_ADD_AND_CHECK_CONCATENED(2, 6, MESSAGE_FORMAT_EXPECTED, MESSAGE_CONCATENED_1 MESSAGE_CONCATENED_2, C_TEST_FALSE)
 
     check_cstring_object(&cstrings_ptr);
 
@@ -318,6 +344,7 @@ int main(int argc, char *argv[])
 
     return 0;
 
+    #undef CSTR_ADD_AND_CHECK_CONCATENED
     #undef MESSAGE_CONCATENED_2
     #undef MESSAGE_CONCATENED_1
     #undef CSTR_ADD_AND_CHECK_EMPTY_STRING
