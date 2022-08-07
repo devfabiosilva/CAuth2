@@ -28,6 +28,7 @@ static void free_all_cstrs(void *ctx)
 void check_cstring_object(CSTRING_PTRS *cstr_ptr)
 {
     size_t i=0, alignement, tmp;
+    uint32_t ctype;
     CSTRING *cstr;
 
     while (i<MAX_CSTRING_PTRS) {
@@ -98,10 +99,12 @@ void check_cstring_object(CSTRING_PTRS *cstr_ptr)
                 (int)i
             )
         else {
+            ctype=cstr->ctype;
+
             free_all_cstrs(cstr_ptr);
             C_ASSERT_FAIL(NULL,
                 CTEST_SETTER(
-                    CTEST_WARN("Unknown cstr->ctype(%u)", (unsigned int)cstr->ctype)
+                    CTEST_WARN("Unknown cstr->ctype(%u)", (unsigned int)ctype)
                 )
             )
         }
