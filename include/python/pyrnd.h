@@ -85,8 +85,8 @@ typedef struct _pyrnd_thread {
 } PYRND_THREAD;
 
 typedef struct rand_entropy_t {
+	uint8_t __rand_data[DISCRETE_LOG_MAX];
     uint32_t __entropy_val[_ENTROPY_NUMBER_OF_ELEMENTS];
-    uint8_t __rand_data[DISCRETE_LOG_MAX];
 } RAND_ENTROPY;
 
 #endif
