@@ -636,7 +636,7 @@ static void test_random() {
     CLEAR_RANDV
 
     C_ASSERT_FALSE(
-        cauth_random(randv, sizeof(randv), NULL),
+        cauth_random(randv, sizeof(randv), NULL, NULL),
         CTEST_SETTER(
             CTEST_INFO("Expecting random false because it has not initialized"),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
@@ -662,7 +662,7 @@ static void test_random() {
     )
 
     C_ASSERT_TRUE(
-        cauth_random(randv, sizeof(randv), &test_key_dyn_res.fd),
+        cauth_random(randv, sizeof(randv), &test_key_dyn_res.fd, NULL),
         CTEST_SETTER(
             CTEST_INFO("Generate random value"),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
@@ -678,7 +678,7 @@ static void test_random() {
     )
 
     C_ASSERT_FALSE(
-        cauth_random(NULL, sizeof(randv), &test_key_dyn_res.fd),
+        cauth_random(NULL, sizeof(randv), &test_key_dyn_res.fd, NULL),
         CTEST_SETTER(
             CTEST_INFO("Expecting false on generate random value because it has invalid parameter"),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
@@ -686,7 +686,7 @@ static void test_random() {
     )
 
     C_ASSERT_FALSE(
-        cauth_random(randv, 0, &test_key_dyn_res.fd),
+        cauth_random(randv, 0, &test_key_dyn_res.fd, NULL),
         CTEST_SETTER(
             CTEST_INFO("Expecting false on generate random value because it has invalid parameter in size"),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
@@ -696,7 +696,7 @@ static void test_random() {
     cauth_random_detach();
 
     C_ASSERT_FALSE(
-        cauth_random(randv, sizeof(randv), &test_key_dyn_res.fd),
+        cauth_random(randv, sizeof(randv), &test_key_dyn_res.fd, NULL),
         CTEST_SETTER(
             CTEST_INFO("Expecting fail on generate random value because custom function has detached"),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
@@ -723,7 +723,7 @@ static void test_key_dyn()
 
     cauth_random_detach();
 
-    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA1_DEFAULT, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA1_DEFAULT, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
@@ -734,7 +734,7 @@ static void test_key_dyn()
 
     cauth_random_attach(gen_rand_no_entropy_util);
 
-    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA1_DEFAULT, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA1_DEFAULT, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
@@ -744,7 +744,7 @@ static void test_key_dyn()
         )
     )
 
-    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA256, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA256, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
@@ -754,7 +754,7 @@ static void test_key_dyn()
         )
     )
 
-    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA512, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA512, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
@@ -764,7 +764,7 @@ static void test_key_dyn()
         )
     )
 
-    test_key_dyn_res.result=generate_key_dynamic(123456, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_key_dynamic(123456, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
@@ -791,7 +791,7 @@ static void test_totp_key()
 
     cauth_random_detach();
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
@@ -800,7 +800,7 @@ static void test_totp_key()
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
@@ -818,31 +818,31 @@ static void test_totp_key()
 
     cauth_random_attach(gen_rand_no_entropy_util);
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE, NULL != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA512, FALSE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA512, FALSE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
@@ -857,11 +857,11 @@ static void test_totp_key()
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA512, TRUE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA512, TRUE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
@@ -876,31 +876,31 @@ static void test_totp_key()
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA256, FALSE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA256, FALSE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA256, FALSE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA256, FALSE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA256, TRUE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA256, TRUE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA256, TRUE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA256, TRUE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA256, FALSE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA256, FALSE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA256, FALSE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA256, FALSE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
@@ -915,11 +915,11 @@ static void test_totp_key()
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA256, TRUE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA256, TRUE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA256, TRUE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA256, TRUE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
@@ -934,31 +934,31 @@ static void test_totp_key()
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE, NULL, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, TRUE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, TRUE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, TRUE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, TRUE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )
@@ -973,11 +973,11 @@ static void test_totp_key()
         )
     )
 
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, TRUE, &test_key_dyn_res.fd);
+    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, TRUE, &test_key_dyn_res.fd, NULL);
     C_ASSERT_NOT_NULL(
         (void *)test_key_dyn_res.result,
         CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, TRUE) != NULL"),
+            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, TRUE, NULL) != NULL"),
             CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
             CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
         )

@@ -223,7 +223,7 @@ static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
    if ((fd=open("/dev/urandom", O_RDONLY)<0))
       PANEL_ERROR("Could not open file descriptor", NULL)
 
-   result=generate_key_dynamic(alg, &fd);
+   result=generate_key_dynamic(alg, &fd, NULL);
 
    if ((err=close(fd)))
       printf("\nWarn. Could not close file descriptor %d with error %d\n", fd, err);

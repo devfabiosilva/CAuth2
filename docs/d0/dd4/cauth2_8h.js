@@ -10,7 +10,7 @@ var cauth2_8h =
     [ "CAUTH_BOOL", "d0/dd4/cauth2_8h.html#a699f49d3aa97dbe30db6f058004a781a", null ],
     [ "CAUTH_SIGN_CODE_ERR", "d0/dd4/cauth2_8h.html#a8d360d29e052cff23c138bb8f7509dc0", null ],
     [ "CAUTH_VERIFY_CODE_ERR", "d0/dd4/cauth2_8h.html#a5094d9222e15c43ca18ba7ae29872166", null ],
-    [ "fn_rand", "d0/dd4/cauth2_8h.html#a626d1d8226b915149f062229fe50548e", null ],
+    [ "fn_rand", "d0/dd4/cauth2_8h.html#aaa3795f37916c56c3d281c586ffd5970", null ],
     [ "HEX2STR_TYPE", "d0/dd4/cauth2_8h.html#a53650bcb565801b4669b3141568200b9", null ],
     [ "cauth_2fa_auth_code_err_t", "d0/dd4/cauth2_8h.html#a615f6bd994017bdae5a7770d654094c2", [
       [ "CAUTH_2FA_ERR_EMPTY_KEY_SIZE", "d0/dd4/cauth2_8h.html#a615f6bd994017bdae5a7770d654094c2a62f5647f1c479295098bcb66c75b25a1", null ],
@@ -45,14 +45,14 @@ var cauth2_8h =
     [ "cauth_endianess", "d0/dd4/cauth2_8h.html#a30bc9c77c992c6e7a7246d6a93b2a3fe", null ],
     [ "cauth_getVersion", "d0/dd4/cauth2_8h.html#ab28d655edcd149d3602b3625e5624f60", null ],
     [ "cauth_hex2str_dynamic", "d0/dd4/cauth2_8h.html#a5af366db0665dcf2d36c22d5b0793231", null ],
-    [ "cauth_random", "d0/dd4/cauth2_8h.html#a7b34912143c89964fcf862b6b4bc469b", null ],
+    [ "cauth_random", "d0/dd4/cauth2_8h.html#a6c60dee0c40fea107ea57f5f25b5c499", null ],
     [ "cauth_random_attach", "d0/dd4/cauth2_8h.html#abc55b624935c2be7171423307a75ef5b", null ],
     [ "cauth_random_detach", "d0/dd4/cauth2_8h.html#a03b0c0cd63d5403de8a931c8a38c18e5", null ],
     [ "cauth_str_to_hex", "d0/dd4/cauth2_8h.html#ab0bcd1e26642ed2da740e2fff4d54001", null ],
     [ "cauth_verify_message", "d0/dd4/cauth2_8h.html#a71e4f471c71faa1b394373ce9b0b03de", null ],
     [ "cauth_verify_message_with_err", "d0/dd4/cauth2_8h.html#a46f92d357a77b5eea7be6ba18b103caa", null ],
     [ "check_base32_oauth_key_valid", "d0/dd4/cauth2_8h.html#aa4236f08bcb351c0e804c2d8420cc768", null ],
-    [ "generate_key_dynamic", "d0/dd4/cauth2_8h.html#ab8c7e622d0f2d0ec7358bd5567767423", null ],
-    [ "generate_totp_key_dynamic", "d0/dd4/cauth2_8h.html#ad4f32c13cd5e202ec21827f724212477", null ],
+    [ "generate_key_dynamic", "d0/dd4/cauth2_8h.html#a7c038167b0faa55218e0b75589e3f70f", null ],
+    [ "generate_totp_key_dynamic", "d0/dd4/cauth2_8h.html#a8fab1bf66263bedf78724272357d437c", null ],
     [ "sign_message_dynamic", "d0/dd4/cauth2_8h.html#a6fd990ad82a8127238bda1706b55fba5", null ]
 ];

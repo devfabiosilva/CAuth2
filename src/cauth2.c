@@ -446,9 +446,9 @@ inline void cauth_random_detach()
    _fn_rand=NULL;
 }
 
-inline CAUTH_BOOL cauth_random(uint8_t *ptr, size_t ptr_size, int *fd)
+inline CAUTH_BOOL cauth_random(uint8_t *ptr, size_t ptr_size, int *fd, void *ctx)
 {
-   return ((_fn_rand!=NULL)&&(_fn_rand(ptr, ptr_size, fd)==0));
+   return ((_fn_rand!=NULL)&&(_fn_rand(ptr, ptr_size, fd, ctx)==0));
 }
 
 const char _cauth_rnd_1[]={
@@ -465,7 +465,7 @@ const char _cauth_rnd_1[]={
 _Static_assert(sizeof(_cauth_rnd_1)==128, "_cauth_rnd_1 wrong size");
 
 static
-const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL double_key, int *fd)
+const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL double_key, int *fd, void *ctx)
 {
    uint16_t u16_sz;
    size_t sz;
@@ -494,7 +494,7 @@ const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL doub
    if (!(res=malloc(sz=(2*((size_t)(double_key)?u16_sz<<=1:u16_sz)+1))))
       return NULL;
 
-   if (cauth_random((uint8_t *)(p=(char *)res), sz, fd)) {
+   if (cauth_random((uint8_t *)(p=(char *)res), sz, fd, ctx)) {
 
       sz=(size_t)(u16_sz);
 
@@ -517,9 +517,9 @@ const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL doub
 }
 
 inline
-const char *generate_key_dynamic(int alg, int *fd)
+const char *generate_key_dynamic(int alg, int *fd, void *ctx)
 {
-   return generate_key_dynamic_util(NULL, alg, TRUE, fd);
+   return generate_key_dynamic_util(NULL, alg, TRUE, fd, ctx);
 }
 
 #define CLEAR_AND_FREE(p, s) \
@@ -527,12 +527,12 @@ const char *generate_key_dynamic(int alg, int *fd)
    free(p);
 
 inline
-const char *generate_totp_key_dynamic(size_t *totp_key_size, int alg, CAUTH_BOOL is_base32, int *fd)
+const char *generate_totp_key_dynamic(size_t *totp_key_size, int alg, CAUTH_BOOL is_base32, int *fd, void *ctx)
 {
 
    size_t sz1, sz2;
    char
-      *value=(char *)generate_key_dynamic_util(&sz1, alg, FALSE, fd),
+      *value=(char *)generate_key_dynamic_util(&sz1, alg, FALSE, fd, ctx),
       *res;
 
    if (totp_key_size)

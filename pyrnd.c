@@ -32,7 +32,7 @@ int verify_system_entropy(
 
 verify_system_entropy_RET:
 
-    if (cauth_random(rand_entropy->__rand_data, sizeof(rand_entropy->__rand_data), fd)==FALSE) {
+    if (cauth_random(rand_entropy->__rand_data, sizeof(rand_entropy->__rand_data), fd, NULL)==FALSE) {
         err=51;
         goto verify_system_entropy_EXIT;
     }

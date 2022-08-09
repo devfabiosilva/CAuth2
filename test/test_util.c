@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
-int gen_rand_no_entropy_util(uint8_t *output, size_t output_len, int *fd)
+int gen_rand_no_entropy_util(uint8_t *output, size_t output_len, int *fd, void *ctx)
 {
     ssize_t bytes_read;
 

@@ -125,8 +125,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a5094d9222e15c43ca18ba7ae29872166"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53650bcb565801b4669b3141568200b9"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="../../d0/dd4/cauth2_8h.html#a845abf149bfb7bb245ca4cc3e509b2b7">hex2str_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a53650bcb565801b4669b3141568200b9">HEX2STR_TYPE</a></td></tr>
 <tr class="separator:a53650bcb565801b4669b3141568200b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a626d1d8226b915149f062229fe50548e"><td class="memItemLeft" align="right" valign="top">typedef int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a626d1d8226b915149f062229fe50548e">fn_rand</a>) (uint8_t *, size_t, int *)</td></tr>
-<tr class="separator:a626d1d8226b915149f062229fe50548e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa3795f37916c56c3d281c586ffd5970"><td class="memItemLeft" align="right" valign="top">typedef int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#aaa3795f37916c56c3d281c586ffd5970">fn_rand</a>) (uint8_t *, size_t, int *, void *)</td></tr>
+<tr class="separator:aaa3795f37916c56c3d281c586ffd5970"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -185,16 +185,16 @@ Functions</h2></td></tr>
 <tr class="separator:a0aad74305c65a6037c543b2d56c3d5a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30bc9c77c992c6e7a7246d6a93b2a3fe"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a30bc9c77c992c6e7a7246d6a93b2a3fe">cauth_endianess</a> ()</td></tr>
 <tr class="separator:a30bc9c77c992c6e7a7246d6a93b2a3fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc55b624935c2be7171423307a75ef5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#abc55b624935c2be7171423307a75ef5b">cauth_random_attach</a> (<a class="el" href="../../d0/dd4/cauth2_8h.html#a626d1d8226b915149f062229fe50548e">fn_rand</a>)</td></tr>
+<tr class="memitem:abc55b624935c2be7171423307a75ef5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#abc55b624935c2be7171423307a75ef5b">cauth_random_attach</a> (<a class="el" href="../../d0/dd4/cauth2_8h.html#aaa3795f37916c56c3d281c586ffd5970">fn_rand</a>)</td></tr>
 <tr class="separator:abc55b624935c2be7171423307a75ef5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03b0c0cd63d5403de8a931c8a38c18e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a03b0c0cd63d5403de8a931c8a38c18e5">cauth_random_detach</a> ()</td></tr>
 <tr class="separator:a03b0c0cd63d5403de8a931c8a38c18e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b34912143c89964fcf862b6b4bc469b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/dd4/cauth2_8h.html#a699f49d3aa97dbe30db6f058004a781a">CAUTH_BOOL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a7b34912143c89964fcf862b6b4bc469b">cauth_random</a> (uint8_t *, size_t, int *)</td></tr>
-<tr class="separator:a7b34912143c89964fcf862b6b4bc469b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8c7e622d0f2d0ec7358bd5567767423"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#ab8c7e622d0f2d0ec7358bd5567767423">generate_key_dynamic</a> (int, int *)</td></tr>
-<tr class="separator:ab8c7e622d0f2d0ec7358bd5567767423"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4f32c13cd5e202ec21827f724212477"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#ad4f32c13cd5e202ec21827f724212477">generate_totp_key_dynamic</a> (size_t *, int, <a class="el" href="../../d0/dd4/cauth2_8h.html#a699f49d3aa97dbe30db6f058004a781a">CAUTH_BOOL</a>, int *)</td></tr>
-<tr class="separator:ad4f32c13cd5e202ec21827f724212477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c60dee0c40fea107ea57f5f25b5c499"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/dd4/cauth2_8h.html#a699f49d3aa97dbe30db6f058004a781a">CAUTH_BOOL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a6c60dee0c40fea107ea57f5f25b5c499">cauth_random</a> (uint8_t *, size_t, int *, void *)</td></tr>
+<tr class="separator:a6c60dee0c40fea107ea57f5f25b5c499"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c038167b0faa55218e0b75589e3f70f"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a7c038167b0faa55218e0b75589e3f70f">generate_key_dynamic</a> (int, int *, void *)</td></tr>
+<tr class="separator:a7c038167b0faa55218e0b75589e3f70f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fab1bf66263bedf78724272357d437c"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a8fab1bf66263bedf78724272357d437c">generate_totp_key_dynamic</a> (size_t *, int, <a class="el" href="../../d0/dd4/cauth2_8h.html#a699f49d3aa97dbe30db6f058004a781a">CAUTH_BOOL</a>, int *, void *)</td></tr>
+<tr class="separator:a8fab1bf66263bedf78724272357d437c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>CAuth2 is a tiny C TOTP Auth2 authenticator. </p>
@@ -376,14 +376,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a626d1d8226b915149f062229fe50548e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a626d1d8226b915149f062229fe50548e">&#9670;&nbsp;</a></span>fn_rand</h2>
+<a id="aaa3795f37916c56c3d281c586ffd5970"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa3795f37916c56c3d281c586ffd5970">&#9670;&nbsp;</a></span>fn_rand</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef int(* fn_rand) (uint8_t *, size_t, int *)</td>
+          <td class="memname">typedef int(* fn_rand) (uint8_t *, size_t, int *, void *)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -727,8 +727,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a7b34912143c89964fcf862b6b4bc469b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b34912143c89964fcf862b6b4bc469b">&#9670;&nbsp;</a></span>cauth_random()</h2>
+<a id="a6c60dee0c40fea107ea57f5f25b5c499"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c60dee0c40fea107ea57f5f25b5c499">&#9670;&nbsp;</a></span>cauth_random()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -749,6 +749,12 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -770,7 +776,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void cauth_random_attach </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d0/dd4/cauth2_8h.html#a626d1d8226b915149f062229fe50548e">fn_rand</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d0/dd4/cauth2_8h.html#aaa3795f37916c56c3d281c586ffd5970">fn_rand</a>&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -1070,8 +1076,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab8c7e622d0f2d0ec7358bd5567767423"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8c7e622d0f2d0ec7358bd5567767423">&#9670;&nbsp;</a></span>generate_key_dynamic()</h2>
+<a id="a7c038167b0faa55218e0b75589e3f70f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c038167b0faa55218e0b75589e3f70f">&#9670;&nbsp;</a></span>generate_key_dynamic()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1086,6 +1092,12 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1098,8 +1110,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad4f32c13cd5e202ec21827f724212477"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad4f32c13cd5e202ec21827f724212477">&#9670;&nbsp;</a></span>generate_totp_key_dynamic()</h2>
+<a id="a8fab1bf66263bedf78724272357d437c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fab1bf66263bedf78724272357d437c">&#9670;&nbsp;</a></span>generate_totp_key_dynamic()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1126,6 +1138,12 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
