@@ -7,6 +7,10 @@
 #define CSTRING_ARRAY_MAGIC (uint64_t)0x65293a175b5de5c4
 
 #define _CSTRING_ARRAY_MAX_NUMBER_OF_ELEMENTS_PER_BLOCK 128
+_Static_assert(
+    (_CSTRING_ARRAY_MAX_NUMBER_OF_ELEMENTS_PER_BLOCK>2)&&((_CSTRING_ARRAY_MAX_NUMBER_OF_ELEMENTS_PER_BLOCK&1)==0),
+    "Incoerence _CSTRING_ARRAY_MAX_NUMBER_OF_ELEMENTS_PER_BLOCK"
+);
 
 #define CREATESTR(s, size) \
     if (!(s=malloc(size))) \
@@ -230,9 +234,11 @@ void free_str(CSTRING **cstr)
     }
 }
 
+#define CSTRING_ARRAY_INITIAL_ARRAY_SIZE sizeof(((CSTRING_ARRAY *)NULL)->cstring_objects)*_CSTRING_ARRAY_MAX_NUMBER_OF_ELEMENTS_PER_BLOCK
+#define CSTRING_BLOCK_SIZE CSTRING_ARRAY_INITIAL_ARRAY_SIZE
+
 CSTRING_ARRAY *new_cstring_array()
 {
-    #define CSTRING_ARRAY_INITIAL_ARRAY_SIZE sizeof(((CSTRING_ARRAY *)NULL)->cstring_objects)*_CSTRING_ARRAY_MAX_NUMBER_OF_ELEMENTS_PER_BLOCK
     #define CSTRING_ARRAY_NEW_OBJ_SIZE sizeof(CSTRING_ARRAY)+CSTRING_ARRAY_INITIAL_ARRAY_SIZE
     #define C_STRING_HEADER_ARRAY_INIT(cstr_array_obj) \
         cstr_array_obj->magic=CSTRING_ARRAY_MAGIC; \
@@ -263,23 +269,74 @@ CSTRING_ARRAY *new_cstring_array()
     #undef C_STRING_ARRAY_INIT
     #undef C_STRING_HEADER_ARRAY_INIT
     #undef CSTRING_ARRAY_NEW_OBJ_SIZE
-    #undef CSTRING_ARRAY_INITIAL_ARRAY_SIZE
+}
+
+int c_add_string_to_array(CSTRING_ARRAY **cstr_array_object, CSTRING *cstring)
+{
+    size_t new_size, offset;
+    int32_t element_index;
+    CSTRING_ARRAY *cstr_array_ptr;
+
+    if (cstring==NULL)
+        return 60;
+
+    if (C_STR_ARRAY_UNITIALIZED>(element_index=(*cstr_array_object)->element_index))
+        return 61;
+
+    new_size=(((size_t)(++element_index))+2)*sizeof(((CSTRING_ARRAY *)NULL)->cstring_objects)+sizeof(*cstr_array_object);
+
+    if ((*cstr_array_object)->size>=new_size) {
+        offset=0;
+        cstr_array_ptr=(*cstr_array_object);
+    } else if ((
+        cstr_array_ptr=realloc(*cstr_array_object, 
+        (new_size=(((size_t)(*cstr_array_object)->size)+(offset=CSTRING_BLOCK_SIZE))))
+    )) {
+        cstr_array_ptr->size=(uint64_t)new_size;
+        cstr_array_ptr->cstring_objects=_CSTRING_ARRAY_PTR_SELF_CONTAINED(cstr_array_ptr);
+        (*cstr_array_object)=cstr_array_ptr;
+    } else
+        return 62;
+
+    cstr_array_ptr->element_index=element_index;
+    cstr_array_ptr->total_string_size+=cstring->string_size;
+
+    if (cstring->ctype==STRING_CONST_SELF_CONTAINED)
+        cstr_array_ptr->total_cstring_objects_size+=(uint64_t)(new_size=(size_t)cstring->size);
+    else
+        cstr_array_ptr->total_cstring_objects_size+=(uint64_t)(new_size=(size_t)(cstring->string_size+cstring->size+1));
+
+    cstr_array_ptr->total_size+=(uint64_t)(new_size+offset);
+    cstr_array_ptr->cstring_objects[(size_t)element_index]=cstring;
+    cstr_array_ptr->cstring_objects[(size_t)(++element_index)]=NULL;
+
+    return 0;
+}
+
+CSTRING *cstring_array_index(CSTRING_ARRAY *cstr_array_object, int32_t index)
+{
+    if ((cstr_array_object!=NULL)&&(cstr_array_object->element_index>=index)&&(index>-1))
+        return cstr_array_object->cstring_objects[index];
+
+    return NULL;
 }
 
 void free_cstring_array(CSTRING_ARRAY **cstr_array_object)
 {
-    CSTRING *cstr;
+    CSTRING **cstr;
     if ((*cstr_array_object!=NULL)&&((*cstr_array_object)->magic==CSTRING_ARRAY_MAGIC)&&((*cstr_array_object)->ctype==STRING_ARRAY)) {
         cstr=(*cstr_array_object)->cstring_objects;
 
-        while (cstr++)
-            free_str(&cstr);
+        while (*cstr)
+            free_str(cstr++);
 
         free((void *)*cstr_array_object);
         *cstr_array_object=NULL;
     }
 }
 
+#undef CSTRING_BLOCK_SIZE
+#undef CSTRING_ARRAY_INITIAL_ARRAY_SIZE
 #undef NEW_EMPTY_CSTR
 #undef CREATESTR
 #undef CSTRING_MAGIC

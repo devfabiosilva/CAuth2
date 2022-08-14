@@ -40,7 +40,7 @@ typedef struct cstring_array_t {
     uint64_t total_string_size;
     uint64_t total_cstring_objects_size;
     uint64_t total_size;
-    CSTRING *cstring_objects;
+    CSTRING **cstring_objects;
 } __attribute__((aligned(_CSTRING_ALIGN_SIZE))) CSTRING_ARRAY;
 
 _Static_assert(sizeof(CSTRING_ARRAY)==(5*_CSTRING_ALIGN_SIZE), "Error align CSTRING_ARRAY");
@@ -57,7 +57,7 @@ _Static_assert(sizeof(CSTRING_ARRAY)==offsetof(CSTRING_ARRAY, cstring_objects)+s
     (char *)(((char *)ptr)+offsetof(CSTRING, string)+sizeof(((CSTRING *)0)->string))
 
 #define _CSTRING_ARRAY_PTR_SELF_CONTAINED(ptr) \
-    (CSTRING *)(((uint8_t *)ptr)+offsetof(CSTRING_ARRAY, cstring_objects)+sizeof(((CSTRING_ARRAY *)0)->cstring_objects))
+    (CSTRING **)(((uint8_t *)ptr)+offsetof(CSTRING_ARRAY, cstring_objects)+sizeof(((CSTRING_ARRAY *)0)->cstring_objects))
 
 #define CSTR_COPY_SELF_CONTAINED(size, size_aligned) \
     cstr->string_size=(uint64_t)size; \
@@ -90,5 +90,10 @@ int cstrconcat(CSTRING **, CSTRING *);
 size_t cstrlen(CSTRING *);
 const char *cstr_get(CSTRING *);
 void free_str(CSTRING **);
+
+CSTRING_ARRAY *new_cstring_array();
+int c_add_string_to_array(CSTRING_ARRAY **, CSTRING *);
+CSTRING *cstring_array_index(CSTRING_ARRAY *, int32_t);
+void free_cstring_array(CSTRING_ARRAY **);
 
 #endif
