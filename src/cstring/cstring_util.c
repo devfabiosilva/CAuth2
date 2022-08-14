@@ -3,7 +3,10 @@
 #include <stdarg.h>
 #include <cstring/cstring.h>
 
-#define CSTRING_MAGIC (uint64_t)0x2d618d7e854823a1
+#define CSTRING_MAGIC       (uint64_t)0x2d618d7e854823a1
+#define CSTRING_ARRAY_MAGIC (uint64_t)0x65293a175b5de5c4
+
+#define _CSTRING_ARRAY_MAX_NUMBER_OF_ELEMENTS_PER_BLOCK 128
 
 #define CREATESTR(s, size) \
     if (!(s=malloc(size))) \
@@ -224,6 +227,56 @@ void free_str(CSTRING **cstr)
                 free(*cstr);
                 *cstr=NULL;
         }
+    }
+}
+
+CSTRING_ARRAY *new_cstring_array()
+{
+    #define CSTRING_ARRAY_INITIAL_ARRAY_SIZE sizeof(((CSTRING_ARRAY *)NULL)->cstring_objects)*_CSTRING_ARRAY_MAX_NUMBER_OF_ELEMENTS_PER_BLOCK
+    #define CSTRING_ARRAY_NEW_OBJ_SIZE sizeof(CSTRING_ARRAY)+CSTRING_ARRAY_INITIAL_ARRAY_SIZE
+    #define C_STRING_HEADER_ARRAY_INIT(cstr_array_obj) \
+        cstr_array_obj->magic=CSTRING_ARRAY_MAGIC; \
+        cstr_array_obj->ctype=STRING_ARRAY; \
+        memset(cstr_array_obj->pad1, 0, sizeof(cstr_array_obj->pad1)); \
+        cstr_array_obj->header_description=NULL; \
+        cstr_array_obj->size=CSTRING_ARRAY_NEW_OBJ_SIZE;
+
+    #define C_STRING_ARRAY_INIT(cstr_array_obj) \
+        cstr_array_obj->element_index=C_STR_ARRAY_UNITIALIZED; \
+        memset(cstr_array_obj->pad2, 0, sizeof(cstr_array_obj->pad2)); \
+        cstr_array_obj->total_string_size=0; \
+        cstr_array_obj->total_cstring_objects_size=0; \
+        cstr_array_obj->total_size=CSTRING_ARRAY_NEW_OBJ_SIZE; \
+        memset((void *)(cstr_array_obj->cstring_objects=_CSTRING_ARRAY_PTR_SELF_CONTAINED(cstr_array_obj)), 0, CSTRING_ARRAY_INITIAL_ARRAY_SIZE);
+
+    CSTRING_ARRAY *cstr_array=malloc(CSTRING_ARRAY_NEW_OBJ_SIZE);
+
+    if (!cstr_array)
+        return NULL;
+
+    C_STRING_HEADER_ARRAY_INIT(cstr_array)
+
+    C_STRING_ARRAY_INIT(cstr_array)
+
+    return cstr_array;
+
+    #undef C_STRING_ARRAY_INIT
+    #undef C_STRING_HEADER_ARRAY_INIT
+    #undef CSTRING_ARRAY_NEW_OBJ_SIZE
+    #undef CSTRING_ARRAY_INITIAL_ARRAY_SIZE
+}
+
+void free_cstring_array(CSTRING_ARRAY **cstr_array_object)
+{
+    CSTRING *cstr;
+    if ((*cstr_array_object!=NULL)&&((*cstr_array_object)->magic==CSTRING_ARRAY_MAGIC)&&((*cstr_array_object)->ctype==STRING_ARRAY)) {
+        cstr=(*cstr_array_object)->cstring_objects;
+
+        while (cstr++)
+            free_str(&cstr);
+
+        free((void *)*cstr_array_object);
+        *cstr_array_object=NULL;
     }
 }
 

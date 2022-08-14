@@ -9,7 +9,8 @@
 enum ctype_e {
     STRING_CONST=1,
     STRING_CONST_SELF_CONTAINED,
-    STRING_DYNAMIC
+    STRING_DYNAMIC,
+    STRING_ARRAY
 };
 
 #define _CSTRING_ALIGN_SIZE (size_t)16
@@ -23,19 +24,18 @@ enum ctype_e {
 
 typedef struct cstring_t {
     C_OBJECT_HEADER
-    struct cstring_t *previous;
-    struct cstring_t *next;
     uint64_t string_size;
     char *string;
 } __attribute__((aligned(_CSTRING_ALIGN_SIZE))) CSTRING;
 
-_Static_assert(sizeof(CSTRING)==(4*_CSTRING_ALIGN_SIZE), "Error align CSTRING");
+_Static_assert(sizeof(CSTRING)==(3*_CSTRING_ALIGN_SIZE), "Error align CSTRING");
 _Static_assert(sizeof(uint64_t)>=sizeof(size_t), "Arch error");
 _Static_assert(sizeof(CSTRING)==offsetof(CSTRING, string)+sizeof(((CSTRING *)NULL)->string), "Error align string");
 
+#define C_STR_ARRAY_UNITIALIZED (int32_t)-1
 typedef struct cstring_array_t {
     C_OBJECT_HEADER
-    uint32_t number_of_elements;
+    int32_t element_index;
     uint8_t pad2[4+8];
     uint64_t total_string_size;
     uint64_t total_cstring_objects_size;
@@ -57,7 +57,7 @@ _Static_assert(sizeof(CSTRING_ARRAY)==offsetof(CSTRING_ARRAY, cstring_objects)+s
     (char *)(((char *)ptr)+offsetof(CSTRING, string)+sizeof(((CSTRING *)0)->string))
 
 #define _CSTRING_ARRAY_PTR_SELF_CONTAINED(ptr) \
-    (char *)(((char *)ptr)+offsetof(CSTRING_ARRAY, cstring_objects)+sizeof(((CSTRING_ARRAY *)0)->cstring_objects))
+    (CSTRING *)(((uint8_t *)ptr)+offsetof(CSTRING_ARRAY, cstring_objects)+sizeof(((CSTRING_ARRAY *)0)->cstring_objects))
 
 #define CSTR_COPY_SELF_CONTAINED(size, size_aligned) \
     cstr->string_size=(uint64_t)size; \
