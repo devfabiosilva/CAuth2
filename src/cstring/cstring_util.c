@@ -283,7 +283,7 @@ int c_add_string_to_array(CSTRING_ARRAY **cstr_array_object, CSTRING *cstring)
     if (C_STR_ARRAY_UNITIALIZED>(element_index=(*cstr_array_object)->element_index))
         return 61;
 
-    new_size=(((size_t)(++element_index))+2)*sizeof(((CSTRING_ARRAY *)NULL)->cstring_objects)+sizeof(*cstr_array_object);
+    new_size=(((size_t)(++element_index))+2)*sizeof(((CSTRING_ARRAY *)NULL)->cstring_objects)+sizeof(**cstr_array_object);
 
     if ((*cstr_array_object)->size>=new_size) {
         offset=0;
