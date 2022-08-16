@@ -36,7 +36,8 @@ _Static_assert(sizeof(CSTRING)==offsetof(CSTRING, string)+sizeof(((CSTRING *)NUL
 typedef struct cstring_array_t {
     C_OBJECT_HEADER
     int32_t element_index;
-    uint8_t pad2[4+8];
+    int32_t element_index_pointer;
+    uint8_t pad2[8];
     uint64_t total_string_size;
     uint64_t total_cstring_objects_size;
     uint64_t total_size;
@@ -94,6 +95,9 @@ void free_str(CSTRING **);
 CSTRING_ARRAY *new_cstring_array();
 int c_add_string_to_array(CSTRING_ARRAY **, CSTRING *);
 CSTRING *cstring_array_index(CSTRING_ARRAY *, int32_t);
+CSTRING *cstring_array_next(CSTRING_ARRAY *);
+CSTRING *cstring_array_previous(CSTRING_ARRAY *);
+int32_t cstring_array_num_elements(CSTRING_ARRAY *);
 void free_cstring_array(CSTRING_ARRAY **);
 
 #endif

@@ -249,6 +249,7 @@ CSTRING_ARRAY *new_cstring_array()
 
     #define C_STRING_ARRAY_INIT(cstr_array_obj) \
         cstr_array_obj->element_index=C_STR_ARRAY_UNITIALIZED; \
+        cstr_array_obj->element_index_pointer=C_STR_ARRAY_UNITIALIZED; \
         memset(cstr_array_obj->pad2, 0, sizeof(cstr_array_obj->pad2)); \
         cstr_array_obj->total_string_size=0; \
         cstr_array_obj->total_cstring_objects_size=0; \
@@ -319,6 +320,36 @@ CSTRING *cstring_array_index(CSTRING_ARRAY *cstr_array_object, int32_t index)
         return cstr_array_object->cstring_objects[index];
 
     return NULL;
+}
+
+CSTRING *cstring_array_next(CSTRING_ARRAY *cstr_array_object)
+{
+    if ((cstr_array_object->element_index)>(cstr_array_object->element_index_pointer)) {
+        if (cstr_array_object->element_index_pointer>=C_STR_ARRAY_UNITIALIZED)
+            return cstr_array_object->cstring_objects[(size_t)(++cstr_array_object->element_index_pointer)];
+
+        cstr_array_object->element_index_pointer=cstr_array_object->element_index;
+    }
+
+    return NULL;
+}
+
+CSTRING *cstring_array_previous(CSTRING_ARRAY *cstr_array_object)
+{
+    if (cstr_array_object->element_index_pointer>0) {
+        if ((cstr_array_object->element_index)>=(cstr_array_object->element_index_pointer))
+            return cstr_array_object->cstring_objects[(size_t)(--cstr_array_object->element_index_pointer)];
+
+        cstr_array_object->element_index_pointer=C_STR_ARRAY_UNITIALIZED;
+    }
+
+    return NULL;
+}
+
+inline
+int32_t cstring_array_num_elements(CSTRING_ARRAY *cstr_array_object)
+{
+    return (cstr_array_object->element_index+1);
 }
 
 void free_cstring_array(CSTRING_ARRAY **cstr_array_object)
