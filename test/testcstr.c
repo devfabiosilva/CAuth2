@@ -123,12 +123,8 @@ void testcstr_array_free(void *ctx)
 
     free_cstring_array(&a);
 
-    C_ASSERT_NULL(
-        (void *)a,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting cstring_array is NULL")
-        )
-    )
+    if (a!=NULL)
+        WARN_MSG_FMT("Was expected a=NULL but found %p. Please. Fix it", a)
 }
 
 static
@@ -138,6 +134,8 @@ void testcstr_array()
     CSTRING *p;
     CSTRING_ARRAY *a, *a_old;
     size_t t=0;
+    int32_t s32_tmp;
+
     WARN_MSG("Begin TEST CSTRING ARRAY")
 
     a=new_cstring_array();
@@ -177,6 +175,16 @@ void testcstr_array()
         //TODO add more tests
         WARN_MSG_FMT("Text \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
     }
+
+    s32_tmp=cstring_array_num_elements(a);
+
+    C_ASSERT_EQUAL_S32(
+        (int32_t)CONST_STR_TEST_ELEMENTS,
+        s32_tmp,
+        CTEST_SETTER(
+            CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+        )
+    )
 
     testcstr_array_free((void *)a);
 
