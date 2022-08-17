@@ -116,6 +116,73 @@ void check_cstring_object(CSTRING_PTRS *cstr_ptr)
     }
 }
 
+static
+void testcstr_array_free(void *ctx)
+{
+    CSTRING_ARRAY *a=(CSTRING_ARRAY *)ctx;
+
+    free_cstring_array(&a);
+
+    C_ASSERT_NULL(
+        (void *)a,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting cstring_array is NULL")
+        )
+    )
+}
+
+static
+void testcstr_array()
+{
+    int res;
+    CSTRING *p;
+    CSTRING_ARRAY *a, *a_old;
+    size_t t=0;
+    WARN_MSG("Begin TEST CSTRING ARRAY")
+
+    a=new_cstring_array();
+
+    C_ASSERT_NOT_NULL(
+        (void *)a,
+        CTEST_SETTER(
+            CTEST_INFO("Expecting new_cstring_array is NOT NULL")
+        )
+    )
+
+    for(t=0;t<CONST_STR_TEST_ELEMENTS;t++) {
+        p=newstr(CONST_STR_TEST[t]);
+
+        C_ASSERT_NOT_NULL(
+            (void *)p,
+            CTEST_SETTER(
+                CTEST_INFO("Check newstr[%d]=(%p) is NOT NULL", (unsigned int)t, p),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+
+        a_old=a;
+
+        res=c_add_string_to_array(&a, p);
+
+        C_ASSERT_TRUE(
+            res==0,
+            CTEST_SETTER(
+                CTEST_INFO(
+                    "Check array string has add the item %d at %p into %p with text message \"%.*s\".",
+                    (unsigned int)t, p, a, cstrlen(p), cstr_get(p)
+                ),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+        //TODO add more tests
+        WARN_MSG_FMT("Text \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
+    }
+
+    testcstr_array_free((void *)a);
+
+    WARN_MSG("End TEST CSTRING ARRAY")
+}
+
 int main(int argc, char *argv[])
 {
     #define MESSAGE "Tesing 123"
@@ -395,6 +462,8 @@ int main(int argc, char *argv[])
     check_cstring_object(&cstrings_ptr);
 
     free_all_cstrs((void *)&cstrings_ptr);
+
+    testcstr_array();
 
     end_tests();
 
