@@ -220,18 +220,20 @@ const char *cstr_get(CSTRING *cstr)
     return (const char *)cstr->string;
 }
 
+#define _FREE_CSTR_CTYPE \
+    switch ((*cstr)->ctype) { \
+        case STRING_DYNAMIC: \
+            free((void *)(*cstr)->string); \
+        case STRING_CONST: \
+        case STRING_CONST_SELF_CONTAINED: \
+            free(*cstr); \
+            *cstr=NULL; \
+    }
+
 void free_str(CSTRING **cstr)
 {
-    if (((*cstr)!=NULL)&&((*cstr)->magic==CSTRING_MAGIC)) {
-        switch ((*cstr)->ctype) {
-            case STRING_DYNAMIC:
-                free((void *)(*cstr)->string);
-            case STRING_CONST:
-            case STRING_CONST_SELF_CONTAINED:
-                free(*cstr);
-                *cstr=NULL;
-        }
-    }
+    if (((*cstr)!=NULL)&&((*cstr)->magic==CSTRING_MAGIC))
+        _FREE_CSTR_CTYPE
 }
 
 #define CSTRING_ARRAY_INITIAL_ARRAY_SIZE sizeof(((CSTRING_ARRAY *)NULL)->cstring_objects)*_CSTRING_ARRAY_MAX_NUMBER_OF_ELEMENTS_PER_BLOCK
@@ -358,8 +360,10 @@ void free_cstring_array(CSTRING_ARRAY **cstr_array_object)
     if ((*cstr_array_object!=NULL)&&((*cstr_array_object)->magic==CSTRING_ARRAY_MAGIC)&&((*cstr_array_object)->ctype==STRING_ARRAY)) {
         cstr=(*cstr_array_object)->cstring_objects;
 
-        while (*cstr)
-            free_str(cstr++);
+        while (*cstr) {
+            _FREE_CSTR_CTYPE
+            cstr++;
+        }
 
         free((void *)*cstr_array_object);
         *cstr_array_object=NULL;
@@ -368,6 +372,7 @@ void free_cstring_array(CSTRING_ARRAY **cstr_array_object)
 
 #undef CSTRING_BLOCK_SIZE
 #undef CSTRING_ARRAY_INITIAL_ARRAY_SIZE
+#undef _FREE_CSTR_CTYPE
 #undef NEW_EMPTY_CSTR
 #undef CREATESTR
 #undef CSTRING_MAGIC
