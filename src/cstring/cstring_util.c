@@ -354,6 +354,24 @@ int32_t cstring_array_num_elements(CSTRING_ARRAY *cstr_array_object)
     return (cstr_array_object->element_index+1);
 }
 
+inline
+uint64_t cstring_array_total_string_size(CSTRING_ARRAY *cstr_array_object)
+{
+    return (cstr_array_object->total_string_size);
+}
+
+inline
+uint64_t cstring_array_total_objects_size(CSTRING_ARRAY *cstr_array_object)
+{
+    return (cstr_array_object->total_cstring_objects_size);
+}
+
+inline
+uint64_t cstring_array_total_size(CSTRING_ARRAY *cstr_array_object)
+{
+    return (cstr_array_object->total_size);
+}
+
 void free_cstring_array(CSTRING_ARRAY **cstr_array_object)
 {
     CSTRING **cstr;

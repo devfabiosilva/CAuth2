@@ -98,6 +98,10 @@ CSTRING *cstring_array_index(CSTRING_ARRAY *, int32_t);
 CSTRING *cstring_array_next(CSTRING_ARRAY *);
 CSTRING *cstring_array_previous(CSTRING_ARRAY *);
 int32_t cstring_array_num_elements(CSTRING_ARRAY *);
+uint64_t cstring_array_total_string_size(CSTRING_ARRAY *);
+uint64_t cstring_array_total_objects_size(CSTRING_ARRAY *);
+uint64_t cstring_array_total_size(CSTRING_ARRAY *);
+
 void free_cstring_array(CSTRING_ARRAY **);
 
 #endif

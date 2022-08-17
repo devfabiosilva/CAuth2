@@ -121,6 +121,17 @@ void testcstr_array_free(void *ctx)
 {
     CSTRING_ARRAY *a=(CSTRING_ARRAY *)ctx;
 
+    if (a!=NULL)
+        INFO_MSG_FMT(
+            "OBJECT INFO:\n\tAddress: %p\n\tNumber of elements: %d\n\t"\
+            "Total string size: %lu\n\tTotal objects size: %lu\n\tTotal Size: %lu\n",
+            a, cstring_array_num_elements(a),
+            (unsigned long int)cstring_array_total_string_size(a), (unsigned long int)cstring_array_total_objects_size(a),
+            (unsigned long int)cstring_array_total_size(a)
+        )
+    else
+        WARN_MSG("Was expected ctx!=NULL. Please. Fix it")
+
     free_cstring_array(&a);
 
     if (a!=NULL)
@@ -172,7 +183,10 @@ void testcstr_array()
                 CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
             )
         )
-        //TODO add more tests
+
+        if (a!=a_old)
+            WARN_MSG_FMT("WARNING: Array address has changed [new=%p] [old=%p]", a, p);
+
         WARN_MSG_FMT("Text \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
     }
 
@@ -180,6 +194,90 @@ void testcstr_array()
 
     C_ASSERT_EQUAL_S32(
         (int32_t)CONST_STR_TEST_ELEMENTS,
+        s32_tmp,
+        CTEST_SETTER(
+            CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+        )
+    )
+
+    for(t=CONST_STR_TEST_ELEMENTS;t<(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2);t++) {
+        p=newstrconst(CONST_STR_TEST_2[t-CONST_STR_TEST_ELEMENTS]);
+
+        C_ASSERT_NOT_NULL(
+            (void *)p,
+            CTEST_SETTER(
+                CTEST_INFO("Check (const) newstr[%d]=(%p) is NOT NULL", (unsigned int)t, p),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+
+        a_old=a;
+
+        res=c_add_string_to_array(&a, p);
+
+        C_ASSERT_TRUE(
+            res==0,
+            CTEST_SETTER(
+                CTEST_INFO(
+                    "Check array string has add the item const %d at %p into %p with text message \"%.*s\".",
+                    (unsigned int)t, p, a, cstrlen(p), cstr_get(p)
+                ),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+
+        if (a!=a_old)
+            WARN_MSG_FMT("WARNING step 2: Array address has changed [new=%p] [old=%p]", a, p);
+
+        WARN_MSG_FMT("Text const \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
+    }
+
+    s32_tmp=cstring_array_num_elements(a);
+
+    C_ASSERT_EQUAL_S32(
+        (int32_t)(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2),
+        s32_tmp,
+        CTEST_SETTER(
+            CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+        )
+    )
+
+    for(t=(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2);t<(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2+CONST_STR_TEST_ELEMENTS_3);t++) {
+        p=newstrconst(CONST_STR_TEST_3[t-(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2)]);
+
+        C_ASSERT_NOT_NULL(
+            (void *)p,
+            CTEST_SETTER(
+                CTEST_INFO("Check (dyn) newstr[%d]=(%p) is NOT NULL", (unsigned int)t, p),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+
+        a_old=a;
+
+        res=c_add_string_to_array(&a, p);
+
+        C_ASSERT_TRUE(
+            res==0,
+            CTEST_SETTER(
+                CTEST_INFO(
+                    "Check array string has add the item dyn %d at %p into %p with text message \"%.*s\".",
+                    (unsigned int)t, p, a, cstrlen(p), cstr_get(p)
+                ),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+
+        if (a!=a_old)
+            WARN_MSG_FMT("WARNING step 3: Array address has changed [new=%p] [old=%p]", a, p);
+
+        WARN_MSG_FMT("Text const \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
+    }
+
+    s32_tmp=cstring_array_num_elements(a);
+
+    C_ASSERT_EQUAL_S32(
+        (int32_t)(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2+CONST_STR_TEST_ELEMENTS_3),
         s32_tmp,
         CTEST_SETTER(
             CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
