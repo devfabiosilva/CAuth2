@@ -220,6 +220,31 @@ const char *cstr_get(CSTRING *cstr)
     return (const char *)cstr->string;
 }
 
+const char *cstr_substrA_dyn(CSTRING *cstr, uint32_t start, uint32_t end)
+{
+    int64_t cstr_diff;
+    char *res;
+
+    if ((cstr->string_size>=(uint64_t)end)&&((cstr_diff=(((int64_t)end)-((int64_t)start)))>=0)) {
+        if ((res=malloc((size_t)(cstr_diff+1)))) {
+            memcpy((void *)res, (void *)((char *)(cstr->string+start)), (size_t)cstr_diff);
+            res[(size_t)cstr_diff]=0;
+            return (const char *)res;
+        }
+    }
+
+    return NULL;
+}
+
+inline
+void free_substrA(const char **substrA)
+{
+    if (!(*substrA)) {
+        free((void *)*substrA);
+        *substrA=NULL;
+    }
+}
+
 #define _FREE_CSTR_CTYPE \
     switch ((*cstr)->ctype) { \
         case STRING_DYNAMIC: \

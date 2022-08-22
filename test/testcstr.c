@@ -146,6 +146,7 @@ void testcstr_array()
     CSTRING_ARRAY *a, *a_old;
     size_t t=0;
     int32_t s32_tmp;
+    char *msg;
 
     WARN_MSG("Begin TEST CSTRING ARRAY")
 
@@ -185,7 +186,7 @@ void testcstr_array()
         )
 
         if (a!=a_old)
-            WARN_MSG_FMT("WARNING: Array address has changed [new=%p] [old=%p]", a, p);
+            WARN_MSG_FMT("WARNING: Array address has changed [new = %p] [old = %p]", a, p);
 
         WARN_MSG_FMT("Text \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
     }
@@ -201,6 +202,7 @@ void testcstr_array()
     )
 
     for(t=CONST_STR_TEST_ELEMENTS;t<(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2);t++) {
+
         p=newstrconst(CONST_STR_TEST_2[t-CONST_STR_TEST_ELEMENTS]);
 
         C_ASSERT_NOT_NULL(
@@ -227,7 +229,7 @@ void testcstr_array()
         )
 
         if (a!=a_old)
-            WARN_MSG_FMT("WARNING step 2: Array address has changed [new=%p] [old=%p]", a, p);
+            WARN_MSG_FMT("WARNING step 2: Array address has changed [new = %p] [old = %p]", a, p);
 
         WARN_MSG_FMT("Text const \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
     }
@@ -243,7 +245,28 @@ void testcstr_array()
     )
 
     for(t=(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2);t<(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2+CONST_STR_TEST_ELEMENTS_3);t++) {
-        p=newstrconst(CONST_STR_TEST_3[t-(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2)]);
+
+        s32_tmp=asprintf(&msg, "%s", CONST_STR_TEST_3[t-(CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2)]);
+
+        C_ASSERT_TRUE(
+            s32_tmp>-1,
+            CTEST_SETTER(
+                CTEST_INFO(
+                    "Check if message pointer at index %u has been allocated with valid size",
+                    (unsigned int)t
+                ),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+
+        if ((p=anewstr((const char *)msg))==NULL) {
+            WARN_MSG_FMT(
+                "Test fail. Exiting and free %u bytes at %p at index %u",
+                (unsigned int)(s32_tmp+1), msg, (unsigned int)t
+            )
+
+            free(msg);
+        }
 
         C_ASSERT_NOT_NULL(
             (void *)p,
@@ -269,7 +292,7 @@ void testcstr_array()
         )
 
         if (a!=a_old)
-            WARN_MSG_FMT("WARNING step 3: Array address has changed [new=%p] [old=%p]", a, p);
+            WARN_MSG_FMT("WARNING step 3: Array address has changed [new = %p] [old = %p]", a, p);
 
         WARN_MSG_FMT("Text const \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
     }

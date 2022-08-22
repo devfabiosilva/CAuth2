@@ -90,6 +90,8 @@ CSTRING *cstrcpy(CSTRING *);
 int cstrconcat(CSTRING **, CSTRING *);
 size_t cstrlen(CSTRING *);
 const char *cstr_get(CSTRING *);
+void free_substrA(const char **);
+const char *cstr_substrA_dyn(CSTRING *, uint32_t, uint32_t);
 void free_str(CSTRING **);
 
 CSTRING_ARRAY *new_cstring_array();
