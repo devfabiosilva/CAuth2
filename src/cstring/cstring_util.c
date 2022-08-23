@@ -327,6 +327,7 @@ int c_add_string_to_array(CSTRING_ARRAY **cstr_array_object, CSTRING *cstring)
         return 62;
 
     cstr_array_ptr->element_index=element_index;
+    cstr_array_ptr->element_index_pointer=C_STR_ARRAY_UNITIALIZED;
     cstr_array_ptr->total_string_size+=cstring->string_size;
 
     if (cstring->ctype==STRING_CONST_SELF_CONTAINED)
@@ -354,9 +355,9 @@ CSTRING *cstring_array_next(CSTRING_ARRAY *cstr_array_object)
     if ((cstr_array_object->element_index)>(cstr_array_object->element_index_pointer)) {
         if (cstr_array_object->element_index_pointer>=C_STR_ARRAY_UNITIALIZED)
             return cstr_array_object->cstring_objects[(size_t)(++cstr_array_object->element_index_pointer)];
-
-        cstr_array_object->element_index_pointer=cstr_array_object->element_index;
     }
+
+    cstr_array_object->element_index_pointer=(cstr_array_object->element_index+1);
 
     return NULL;
 }
@@ -367,8 +368,11 @@ CSTRING *cstring_array_previous(CSTRING_ARRAY *cstr_array_object)
         if ((cstr_array_object->element_index)>=(cstr_array_object->element_index_pointer))
             return cstr_array_object->cstring_objects[(size_t)(--cstr_array_object->element_index_pointer)];
 
-        cstr_array_object->element_index_pointer=C_STR_ARRAY_UNITIALIZED;
+        if ((--cstr_array_object->element_index_pointer)==cstr_array_object->element_index)
+            return cstr_array_object->cstring_objects[(size_t)(cstr_array_object->element_index_pointer)];
     }
+
+    cstr_array_object->element_index_pointer=C_STR_ARRAY_UNITIALIZED;
 
     return NULL;
 }

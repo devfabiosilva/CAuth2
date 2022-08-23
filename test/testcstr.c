@@ -310,7 +310,6 @@ void testcstr_array()
         )
     )
 
-    //testcstr_array_free((void *)a);
     testcstr_array_index_next_previous_helper((void *)a);
     WARN_MSG("End TEST CSTRING ARRAY")
 }
@@ -318,16 +317,24 @@ void testcstr_array()
 static
 void testcstr_array_index_next_previous_helper(void *ctx)
 {
-    int i=0;
-    const char *str;
-    CSTRING *p;
+
+    typedef CSTRING *(*f)(CSTRING_ARRAY *);
+
+    int i;
+    int32_t s32_tmp;
+    const char *str, *msg_tmp="next";
+    f h=cstring_array_next;
     CSTRING_ARRAY *a=(CSTRING_ARRAY *)ctx;
+    CSTRING *p;
 
-    WARN_MSG("Begin test (Next, Previous and Index)")
+testcstr_array_index_next_previous_helper_START:
 
-    // TODO
-    while ((p=cstring_array_next(a))) {
-        WARN_MSG_FMT("Test next array at index %d at (%p)", i, p)
+    i=0;
+
+    WARN_MSG_FMT("Begin test (%s and index)", msg_tmp)
+
+    while ((p=h(a))) {
+        WARN_MSG_FMT("Test %s array at index %d at (%p)", msg_tmp, i, p)
 
         str=cstr_get(p);
 
@@ -342,6 +349,23 @@ void testcstr_array_index_next_previous_helper(void *ctx)
         INFO_MSG_FMT("Test[%d] at (%p) is \"%s\"", i, str, str)
 
         ++i;
+    }
+
+    s32_tmp=cstring_array_num_elements(a);
+
+    C_ASSERT_EQUAL_S32(
+        i,
+        s32_tmp,
+        CTEST_SETTER(
+            CTEST_INFO("Check %s function has reached all elements ... ([scan: %d] == [number of elements: %d])", msg_tmp, i, s32_tmp),
+            CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+        )
+    )
+
+    if (h==cstring_array_next) {
+        h=cstring_array_previous;
+        msg_tmp="previous";
+        goto testcstr_array_index_next_previous_helper_START;
     }
 
     testcstr_array_free((void *)a);
