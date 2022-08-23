@@ -13,16 +13,17 @@ const char *CONST_STR_TEST[]={
     "", "Empty", "Main text", "Source code", "Hello World", "HELLO WORLD", "Santos Dummond", "Tesla, Nikola",
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890", "Blá blá, blá", "Linux inside here", "IoT", "Embedded systems",
     "CTest is amazing !!!", "C is powerful", "Testing CSRTRING Array objects", "The art of living alone",
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+    "Daniel Fraga is a brazilian bitcoiner pioneer", "We love cryptography", "We love open source"
 };
 
 const char *CONST_STR_TEST_2[]={
-    "Testing const string", "123", "456", "7890", "ABC", "XYZ", "???Á[[s]]2881*(81876***(938 txt",
+    "Testing const string", "123", "456", "7890", "ABC", "XYZ", "???Á[[s]]2881*(81876***(938 txt", "Chocolate", "Coffe", "I want coffe !!!", "We need freedom",
     "Any text goes here", "Blochain", "Cryptocurrency", "We love C", "C is faster", "We love assembly",
     "Satoshi", "Nakamoto Satoshi", "Einstein", "We love physics", "Control panel", "Panel auth2",
     "Liberty", "Hi Tech", "Cryptography is cool", "GNU World", "Private property in mankind", "Unix is beautiful",
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id nibh tortor id aliquet lectus proin. Fermentum leo vel orci porta non pulvinar neque. Integer feugiat scelerisque varius morbi enim nunc faucibus. Mattis enim ut tellus elementum sagittis vitae et. Egestas diam in arcu cursus euismod quis viverra nibh. Condimentum id venenatis a condimentum. Malesuada bibendum arcu vitae elementum curabitur vitae nunc sed velit. Proin sed libero enim sed faucibus. Suspendisse interdum consectetur libero id faucibus nisl tincidunt. Feugiat nisl pretium fusce id velit ut tortor. Elementum integer enim neque volutpat ac tincidunt vitae. Feugiat nisl pretium fusce id velit ut tortor pretium viverra. Bibendum at varius vel pharetra vel. Eu consequat ac felis donec et odio pellentesque diam. Cras ornare arcu dui vivamus arcu. Orci ac auctor augue mauris. Vel facilisis volutpat est velit egestas dui id ornare.",
-    "myTeslaSMPS is a cute switching mode power supply", "Lightning network", "Proof of Work"
+    "myTeslaSMPS is a cute switching mode power supply", "Lightning network", "Proof of Work", "Hey there. I am proograming in C", "Private property", "We need liberty"
 };
 
 const char *CONST_STR_TEST_3[]={
@@ -35,7 +36,12 @@ Curabitur erat leo, iaculis porttitor facilisis et, mollis id quam. Donec consec
 Maecenas mattis in ipsum eget condimentum. Morbi gravida purus sit amet odio tincidunt consequat. Donec rutrum odio ut dolor tincidunt dapibus. Nunc eget sollicitudin magna. Sed tristique, eros vel pharetra laoreet, magna arcu aliquet nulla, eu suscipit est nulla vitae massa. Proin at justo eget ligula suscipit mollis placerat non leo. Vestibulum congue turpis nunc, a dignissim metus scelerisque eget. Sed a nisi neque. Cras nec turpis ante. Suspendisse vitae luctus lorem, vitae suscipit ante. In et nibh at elit sodales sollicitudin. Nullam vitae mi aliquam, imperdiet diam eget, varius justo.\
 Fusce rhoncus sodales maximus. Duis imperdiet aliquam mi ac fermentum. Nulla facilisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus non tortor pharetra, lacinia purus nec, condimentum sapien. Curabitur metus massa, lacinia nec leo quis, euismod lacinia erat. Fusce vitae tincidunt libero, non pulvinar enim. Aliquam at consectetur nisi. Etiam ac volutpat quam. Suspendisse nec metus id arcu ornare convallis at et dolor. Donec facilisis nisi orci, et pulvinar nunc egestas ac. Sed mattis iaculis dolor, vel hendrerit lacus ultricies eu. Vivamus ac massa consectetur, commodo justo at, imperdiet nunc. Praesent ipsum nisl, pharetra tempus dapibus ut, rutrum in lorem. Mauris ac tincidunt ante.\
 Proin egestas, elit nec mattis tristique, nisi ex viverra velit, eget consectetur dui massa eget nisi. Pellentesque gravida, tellus ut ultricies fringilla, est nisl pretium erat, et rhoncus urna nisl vel est. Praesent volutpat convallis erat vitae facilisis. Donec convallis elit arcu, id sollicitudin dui fringilla et. Morbi tristique diam ac diam tristique, dictum aliquet erat sagittis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean tincidunt, neque vel blandit suscipit, risus lorem faucibus orci, et sollicitudin tortor turpis vestibulum est. Sed neque nunc, interdum sit amet luctus id, posuere dignissim metus. Morbi mattis interdum auctor.",
-"", "Regina caeli", "x86_64", "ARM Cortex", "你好", "안녕", "こんにちは", "مرحبا", "नमस्ते", "היי", "Γεια σου", "سلام", "CSTRING library is cool"
+"", "Regina caeli", "x86_64", "ARM Cortex", "你好", "안녕", "こんにちは", "مرحبا", "नमस्ते", "היי", "Γεια σου", "سلام", "CSTRING library is cool", "Arduino", "Armibian", "Raspberry PI", "Ramdom text here :)", "Denis Richie", "Federico Faggin is a great engineer", "Open source iniciative", "Smart contract is cool", "Math is amazing", "We love physics", "We love electronics",
+"We love analog devices", "The world is analogic", "The quieter you are more you are able to hear",
+"Christus vincit, Christus reignat, Christus imperat!", "Rex Gloriae", "GIT is love <3", "Linus", "OS Kernel inside",
+"My little firmware", "My tesla SMPS", "Proof of Work is better than Proof of Stake :)", "Keep it clear. No abstraction",
+"C is simple. Easy to understand", "GNU is not Unix", "U N I X  S Y S T E M", "Binary world", "Ampère's Law", "Sir Isaac Newton",
+"Where is Fermat?", "Where is Gauss?", "Fiber optic system"
 };
 
 #define CONST_STR_TEST_ELEMENTS (sizeof(CONST_STR_TEST)/sizeof(CONST_STR_TEST[0]))

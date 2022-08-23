@@ -5,6 +5,9 @@
 #include <cstring/cstring.h>
 //gcc -O2 -g -o testcstr testcstr.c ../test/test_util.c  ../src/cstring/cstring_util.c ../src/ctest/asserts.c -I../include -I../include/test -fsanitize=leak,address -Wall
 
+static
+void testcstr_array_index_next_previous_helper(void *);
+
 #define MAX_CSTRING_PTRS (size_t)12
 typedef struct cstrs_t {
     CSTRING *cstrs[MAX_CSTRING_PTRS];
@@ -186,7 +189,7 @@ void testcstr_array()
         )
 
         if (a!=a_old)
-            WARN_MSG_FMT("WARNING: Array address has changed [new = %p] [old = %p]", a, p);
+            WARN_MSG_FMT("WARNING: Array address has changed [new = %p] [old = %p]", a, a_old);
 
         WARN_MSG_FMT("Text \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
     }
@@ -229,7 +232,7 @@ void testcstr_array()
         )
 
         if (a!=a_old)
-            WARN_MSG_FMT("WARNING step 2: Array address has changed [new = %p] [old = %p]", a, p);
+            WARN_MSG_FMT("WARNING step 2: Array address has changed [new = %p] [old = %p]", a, a_old);
 
         WARN_MSG_FMT("Text const \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
     }
@@ -292,7 +295,7 @@ void testcstr_array()
         )
 
         if (a!=a_old)
-            WARN_MSG_FMT("WARNING step 3: Array address has changed [new = %p] [old = %p]", a, p);
+            WARN_MSG_FMT("WARNING step 3: Array address has changed [new = %p] [old = %p]", a, a_old);
 
         WARN_MSG_FMT("Text const \"%s\" added", cstr_get(cstring_array_index(a, (int32_t)t)))
     }
@@ -307,9 +310,42 @@ void testcstr_array()
         )
     )
 
-    testcstr_array_free((void *)a);
-
+    //testcstr_array_free((void *)a);
+    testcstr_array_index_next_previous_helper((void *)a);
     WARN_MSG("End TEST CSTRING ARRAY")
+}
+
+static
+void testcstr_array_index_next_previous_helper(void *ctx)
+{
+    int i=0;
+    const char *str;
+    CSTRING *p;
+    CSTRING_ARRAY *a=(CSTRING_ARRAY *)ctx;
+
+    WARN_MSG("Begin test (Next, Previous and Index)")
+
+    // TODO
+    while ((p=cstring_array_next(a))) {
+        WARN_MSG_FMT("Test next array at index %d at (%p)", i, p)
+
+        str=cstr_get(p);
+
+        C_ASSERT_NOT_NULL(
+            (void *)str,
+            CTEST_SETTER(
+                CTEST_INFO("Check if string pointer (%p) at index %d is NOT null ...", str, i),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+
+        INFO_MSG_FMT("Test[%d] at (%p) is \"%s\"", i, str, str)
+
+        ++i;
+    }
+
+    testcstr_array_free((void *)a);
+    WARN_MSG("End test (Next, Previous and Index)")
 }
 
 int main(int argc, char *argv[])
