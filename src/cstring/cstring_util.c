@@ -378,6 +378,24 @@ CSTRING *cstring_array_previous(CSTRING_ARRAY *cstr_array_object)
 }
 
 inline
+CSTRING *cstring_array_first(CSTRING_ARRAY *cstr_array_object)
+{
+    if (cstr_array_object->element_index>=0)
+        return cstr_array_object->cstring_objects[0];
+
+    return NULL;
+}
+
+inline
+CSTRING *cstring_array_last(CSTRING_ARRAY *cstr_array_object)
+{
+    if (cstr_array_object->element_index>C_STR_ARRAY_UNITIALIZED)
+        return cstr_array_object->cstring_objects[cstr_array_object->element_index];
+
+    return NULL;
+}
+
+inline
 int32_t cstring_array_num_elements(CSTRING_ARRAY *cstr_array_object)
 {
     return (cstr_array_object->element_index+1);

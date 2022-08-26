@@ -99,6 +99,8 @@ int c_add_string_to_array(CSTRING_ARRAY **, CSTRING *);
 CSTRING *cstring_array_index(CSTRING_ARRAY *, int32_t);
 CSTRING *cstring_array_next(CSTRING_ARRAY *);
 CSTRING *cstring_array_previous(CSTRING_ARRAY *);
+CSTRING *cstring_array_first(CSTRING_ARRAY *);
+CSTRING *cstring_array_last(CSTRING_ARRAY *);
 int32_t cstring_array_num_elements(CSTRING_ARRAY *);
 uint64_t cstring_array_total_string_size(CSTRING_ARRAY *);
 uint64_t cstring_array_total_objects_size(CSTRING_ARRAY *);
