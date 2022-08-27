@@ -5,9 +5,6 @@
 #include <cstring/cstring.h>
 //gcc -O2 -g -o testcstr testcstr.c ../test/test_util.c  ../src/cstring/cstring_util.c ../src/ctest/asserts.c -I../include -I../include/test -fsanitize=leak,address -Wall
 
-static
-void testcstr_array_index_next_previous_helper(void *);
-
 #define MAX_CSTRING_PTRS (size_t)12
 typedef struct cstrs_t {
     CSTRING *cstrs[MAX_CSTRING_PTRS];
@@ -139,6 +136,165 @@ void testcstr_array_free(void *ctx)
 
     if (a!=NULL)
         WARN_MSG_FMT("Was expected a=NULL but found %p. Please. Fix it", a)
+}
+
+static
+void testcstr_index_element_helper(void *ctx)
+{
+    typedef CSTRING *(*f)(CSTRING_ARRAY *);
+
+    int i;
+    const char 
+        *str,
+        *expected,
+        *msg_tmp="first";
+
+    CSTRING_ARRAY *a=(CSTRING_ARRAY *)ctx;
+    CSTRING *p;
+
+    f h;
+
+    WARN_MSG("Begin index element test ...")
+
+    p=cstring_array_previous(a);
+
+    C_ASSERT_NULL(
+        (void *)p,
+        CTEST_SETTER(
+            CTEST_INFO("Check if previous is NULL"),
+            CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+        )
+    )
+
+#define CHECK_INDEX 10
+
+_Static_assert(CHECK_INDEX<=CONST_STR_TEST_ELEMENTS, "ERROR. CHECK_INDEX > CONST_STR_TEST_ELEMENTS");
+
+    for (i=0;i<CHECK_INDEX;i++) {
+        p=cstring_array_next(a);
+
+#undef CHECK_INDEX
+
+        C_ASSERT_NOT_NULL(
+            (void *)p,
+            CTEST_SETTER(
+                CTEST_INFO("Check if next (%p) at index %i is NOT NULL", p, i),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+
+        str=cstr_get(p);
+
+        C_ASSERT_EQUAL_STRING(
+            CONST_STR_TEST[i],
+            str,
+            CTEST_SETTER(
+                CTEST_INFO(
+                    "Check if next CSTRING[%d] at pointer (%p) with string at (%p) is equal to CONST_STR_TEST[%i]",
+                    i, p, str, i
+                ),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+    }
+
+    i=0;
+    expected=CONST_STR_TEST[0];
+    h=cstring_array_first;
+
+testcstr_index_element_helper_START:
+    p=h(a);
+
+    C_ASSERT_NOT_NULL(
+        (void *)p,
+        CTEST_SETTER(
+            CTEST_INFO("Check if %s index (%p) at index %d is NOT NULL", msg_tmp, p, i),
+            CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+        )
+    )
+
+    str=cstr_get(p);
+
+    C_ASSERT_EQUAL_STRING(
+        expected,
+        str,
+        CTEST_SETTER(
+            CTEST_INFO(
+                "Check if %s CSTRING[%d] at pointer (%p) with string at (%p) is equal to CONST_STR_TEST[0]",
+                msg_tmp, i, p, str
+            ),
+            CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+        )
+    )
+
+    if (h!=cstring_array_last) {
+        i=(int)CONST_STR_TEST_ELEMENTS_LAST_ELEMENT;
+        expected=CONST_STR_TEST_3[CONST_STR_TEST_ELEMENTS_3_LAST_INDEX];
+        h=cstring_array_last;
+        goto testcstr_index_element_helper_START;
+    }
+
+    testcstr_array_free((void *)a);
+    WARN_MSG("End index element test ...")
+}
+
+static
+void testcstr_array_index_next_previous_helper(void *ctx)
+{
+
+    typedef CSTRING *(*f)(CSTRING_ARRAY *);
+
+    int i;
+    int32_t s32_tmp;
+    const char *str, *msg_tmp="next";
+    f h=cstring_array_next;
+    CSTRING_ARRAY *a=(CSTRING_ARRAY *)ctx;
+    CSTRING *p;
+
+testcstr_array_index_next_previous_helper_START:
+
+    i=0;
+
+    WARN_MSG_FMT("Begin test (%s and index)", msg_tmp)
+
+    while ((p=h(a))) {
+        WARN_MSG_FMT("Test %s array at index %d at (%p)", msg_tmp, i, p)
+
+        str=cstr_get(p);
+
+        C_ASSERT_NOT_NULL(
+            (void *)str,
+            CTEST_SETTER(
+                CTEST_INFO("Check if string pointer (%p) at index %d is NOT null ...", str, i),
+                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+            )
+        )
+
+        INFO_MSG_FMT("Test[%d] at (%p) is \"%s\"", i, str, str)
+
+        ++i;
+    }
+
+    s32_tmp=cstring_array_num_elements(a);
+
+    C_ASSERT_EQUAL_S32(
+        i,
+        s32_tmp,
+        CTEST_SETTER(
+            CTEST_INFO("Check %s function has reached all elements ... ([scan: %d] == [number of elements: %d])", msg_tmp, i, s32_tmp),
+            CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
+        )
+    )
+
+    if (h==cstring_array_next) {
+        h=cstring_array_previous;
+        msg_tmp="previous";
+        goto testcstr_array_index_next_previous_helper_START;
+    }
+
+    //testcstr_array_free((void *)a);
+    testcstr_index_element_helper((void *)a);
+    WARN_MSG("End test (Next, Previous and Index)")
 }
 
 static
@@ -312,64 +468,6 @@ void testcstr_array()
 
     testcstr_array_index_next_previous_helper((void *)a);
     WARN_MSG("End TEST CSTRING ARRAY")
-}
-
-static
-void testcstr_array_index_next_previous_helper(void *ctx)
-{
-
-    typedef CSTRING *(*f)(CSTRING_ARRAY *);
-
-    int i;
-    int32_t s32_tmp;
-    const char *str, *msg_tmp="next";
-    f h=cstring_array_next;
-    CSTRING_ARRAY *a=(CSTRING_ARRAY *)ctx;
-    CSTRING *p;
-
-testcstr_array_index_next_previous_helper_START:
-
-    i=0;
-
-    WARN_MSG_FMT("Begin test (%s and index)", msg_tmp)
-
-    while ((p=h(a))) {
-        WARN_MSG_FMT("Test %s array at index %d at (%p)", msg_tmp, i, p)
-
-        str=cstr_get(p);
-
-        C_ASSERT_NOT_NULL(
-            (void *)str,
-            CTEST_SETTER(
-                CTEST_INFO("Check if string pointer (%p) at index %d is NOT null ...", str, i),
-                CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
-            )
-        )
-
-        INFO_MSG_FMT("Test[%d] at (%p) is \"%s\"", i, str, str)
-
-        ++i;
-    }
-
-    s32_tmp=cstring_array_num_elements(a);
-
-    C_ASSERT_EQUAL_S32(
-        i,
-        s32_tmp,
-        CTEST_SETTER(
-            CTEST_INFO("Check %s function has reached all elements ... ([scan: %d] == [number of elements: %d])", msg_tmp, i, s32_tmp),
-            CTEST_ON_ERROR_CB(testcstr_array_free, (void *)a)
-        )
-    )
-
-    if (h==cstring_array_next) {
-        h=cstring_array_previous;
-        msg_tmp="previous";
-        goto testcstr_array_index_next_previous_helper_START;
-    }
-
-    testcstr_array_free((void *)a);
-    WARN_MSG("End test (Next, Previous and Index)")
 }
 
 int main(int argc, char *argv[])

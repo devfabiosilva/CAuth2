@@ -14,7 +14,7 @@ const char *CONST_STR_TEST[]={
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890", "Blá blá, blá", "Linux inside here", "IoT", "Embedded systems",
     "CTest is amazing !!!", "C is powerful", "Testing CSRTRING Array objects", "The art of living alone",
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
-    "Daniel Fraga is a brazilian bitcoiner pioneer", "We love cryptography", "We love open source"
+    "Daniel Fraga is a brazilian bitcoiner pioneer", "We love cryptography", "We love open source", "Power Electronics", "VLSI world"
 };
 
 const char *CONST_STR_TEST_2[]={
@@ -23,7 +23,7 @@ const char *CONST_STR_TEST_2[]={
     "Satoshi", "Nakamoto Satoshi", "Einstein", "We love physics", "Control panel", "Panel auth2",
     "Liberty", "Hi Tech", "Cryptography is cool", "GNU World", "Private property in mankind", "Unix is beautiful",
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id nibh tortor id aliquet lectus proin. Fermentum leo vel orci porta non pulvinar neque. Integer feugiat scelerisque varius morbi enim nunc faucibus. Mattis enim ut tellus elementum sagittis vitae et. Egestas diam in arcu cursus euismod quis viverra nibh. Condimentum id venenatis a condimentum. Malesuada bibendum arcu vitae elementum curabitur vitae nunc sed velit. Proin sed libero enim sed faucibus. Suspendisse interdum consectetur libero id faucibus nisl tincidunt. Feugiat nisl pretium fusce id velit ut tortor. Elementum integer enim neque volutpat ac tincidunt vitae. Feugiat nisl pretium fusce id velit ut tortor pretium viverra. Bibendum at varius vel pharetra vel. Eu consequat ac felis donec et odio pellentesque diam. Cras ornare arcu dui vivamus arcu. Orci ac auctor augue mauris. Vel facilisis volutpat est velit egestas dui id ornare.",
-    "myTeslaSMPS is a cute switching mode power supply", "Lightning network", "Proof of Work", "Hey there. I am proograming in C", "Private property", "We need liberty"
+    "myTeslaSMPS is a cute switching mode power supply", "Lightning network", "Proof of Work", "Hey there. I am proograming in C", "Private property", "We need liberty", "I2C Protocol"
 };
 
 const char *CONST_STR_TEST_3[]={
@@ -41,11 +41,21 @@ Proin egestas, elit nec mattis tristique, nisi ex viverra velit, eget consectetu
 "Christus vincit, Christus reignat, Christus imperat!", "Rex Gloriae", "GIT is love <3", "Linus", "OS Kernel inside",
 "My little firmware", "My tesla SMPS", "Proof of Work is better than Proof of Stake :)", "Keep it clear. No abstraction",
 "C is simple. Easy to understand", "GNU is not Unix", "U N I X  S Y S T E M", "Binary world", "Ampère's Law", "Sir Isaac Newton",
-"Where is Fermat?", "Where is Gauss?", "Fiber optic system"
+"Where is Fermat?", "Where is Gauss?", "Fiber optic system", "Nuclear energy is the future",
+"Solar energy for descentralization and alternative is a good choice", "Free market for environment and innovation",
+"Unix is very simple. It just needs a genius to understand its simplicity"
 };
 
 #define CONST_STR_TEST_ELEMENTS (sizeof(CONST_STR_TEST)/sizeof(CONST_STR_TEST[0]))
 #define CONST_STR_TEST_ELEMENTS_2 (sizeof(CONST_STR_TEST_2)/sizeof(CONST_STR_TEST_2[0]))
 #define CONST_STR_TEST_ELEMENTS_3 (sizeof(CONST_STR_TEST_3)/sizeof(CONST_STR_TEST_3[0]))
+
+#define CONST_STR_TEST_ELEMENTS_LAST \
+    CONST_STR_TEST_ELEMENTS+CONST_STR_TEST_ELEMENTS_2+CONST_STR_TEST_ELEMENTS_3
+
+#define CONST_STR_TEST_ELEMENTS_3_LAST_INDEX CONST_STR_TEST_ELEMENTS_3-1
+
+#define CONST_STR_TEST_ELEMENTS_LAST_ELEMENT CONST_STR_TEST_ELEMENTS_LAST-1
+
 
 #endif
