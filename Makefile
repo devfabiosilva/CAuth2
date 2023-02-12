@@ -194,7 +194,7 @@ endif
 
 	cd $(CURDIR)/build/lib.*; \
 	export PYTHONPATH=$$(pwd); \
-	cd $(CURDIR)/test; pytest
+	cd $(CURDIR)/test; pytest-3
 
 .PHONY: panelauth_install
 panelauth_install: panelauth_build
