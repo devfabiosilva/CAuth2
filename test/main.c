@@ -77,6 +77,9 @@ struct test_table_t
 
 int main(int argc, char **argv) {
 
+    C_ASSERT_EQUAL_STRING("0.2.1", cauth_getVersion(), CTEST_SETTER(
+      CTEST_TITLE("Check CAuth2 version is correct")
+    ))
     test_rfc6238_table();
     test_signatures();
     verify_signatures_test();

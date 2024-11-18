@@ -83,7 +83,7 @@
  *
  * @author Fábio Pereira da Silva
  * @date Jun 19 2022
- * @version 0.1.0
+ * @version 0.2.1
  * @copyright License MIT <a href="https://github.com/devfabiosilva/CAuth2/blob/master/LICENSE">see here</a>
  *
  * ## Contact
@@ -119,19 +119,19 @@
  * @def ALG_SHA1_DEFAULT
  * @brief SHA1 Algorithm (Default)
  */
-#define ALG_SHA1_DEFAULT (int)2
+#define ALG_SHA1_DEFAULT (int)5
 
 /**
  * @def ALG_SHA256
  * @brief SHA256 Algorithm
  */
-#define ALG_SHA256 (int)4
+#define ALG_SHA256 (int)9
 
 /**
  * @def ALG_SHA512
  * @brief SHA512 Algorithm
  */
-#define ALG_SHA512 (int)6
+#define ALG_SHA512 (int)0x0b
 
 /**
  * @typedef CAUTH_BOOL

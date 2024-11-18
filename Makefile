@@ -3,7 +3,7 @@ STRIP=strip
 CURDIR=$(PWD)
 INCLUDEDIR=$(CURDIR)/include
 MBEDTLS_GIT=https://github.com/Mbed-TLS/mbedtls.git
-MBEDTLS_BRANCH=v3.3.0
+MBEDTLS_BRANCH=v3.6.2
 MBED_INCLUDE_DIR=$(CURDIR)/downloads/mbedtls/build/compiled/include
 MBED_LIB_DIR=$(CURDIR)/downloads/mbedtls/build/compiled/lib
 MBED_LIB_OBJ_DIR=$(CURDIR)/downloads/mbedtls/build/library/CMakeFiles/mbedcrypto.dir
@@ -41,7 +41,7 @@ ifneq ("$(wildcard $(CURDIR)/downloads/mbedtls)","")
 	@echo "Already cloned. Skip"
 else
 	@echo "Cloning branch $(MBEDTLS_BRANCH) from $(MBEDTLS_GIT)"
-	pwd; cd $(CURDIR)/downloads; pwd; git clone -b $(MBEDTLS_BRANCH) $(MBEDTLS_GIT); cd ..; pwd
+	pwd; cd $(CURDIR)/downloads; pwd; git clone --recursive -b $(MBEDTLS_BRANCH) $(MBEDTLS_GIT); cd ..; pwd
 endif
 
 ifneq ("$(wildcard $(CURDIR)/downloads/mbedtls/build/compiled)","")
