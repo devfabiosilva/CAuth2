@@ -4,6 +4,7 @@
 #include <test_util.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cauth_test.h>
 
 static void test_rfc6238_table();
 static void test_random();
@@ -11,6 +12,9 @@ static void test_key_dyn();
 static void test_totp_key();
 static void test_signatures();
 static void verify_signatures_test();
+static void test_dummy_memory_buffer();
+static void test_memory_copy_buffer();
+static void test_time_const_comparator();
 
 #define SZ(this) sizeof(this)-1
 #define SHA1 "SHA1"
@@ -77,8 +81,11 @@ struct test_table_t
 
 int main(int argc, char **argv) {
 
-    C_ASSERT_EQUAL_STRING("0.2.1", cauth_getVersion(), CTEST_SETTER(
+    C_ASSERT_EQUAL_STRING("0.3.0", cauth_getVersion(), CTEST_SETTER(
       CTEST_TITLE("Check CAuth2 version is correct")
+    ))
+    C_ASSERT_EQUAL_STRING("202412122358", cauth_buildDate(), CTEST_SETTER(
+      CTEST_TITLE("Check CAuth2 build date is correct")
     ))
     test_rfc6238_table();
     test_signatures();
@@ -86,7 +93,9 @@ int main(int argc, char **argv) {
     test_random();
     test_key_dyn();
     test_totp_key();
-
+    test_dummy_memory_buffer();
+    test_memory_copy_buffer();
+    test_time_const_comparator();
     end_tests();
     return 0;
 }
@@ -1001,3 +1010,21 @@ static void test_totp_key()
 
     INFO_MSG("Begin \"test_totp_key()\" ...\n\n")
 }
+
+//TODO deprecate random generator
+
+static void test_dummy_memory_buffer()
+{
+// TODO add dummy memory test
+}
+
+static void test_memory_copy_buffer()
+{
+// TODO add memory comparator test
+}
+
+static void test_time_const_comparator()
+{
+// TODO add time const comaprator
+}
+

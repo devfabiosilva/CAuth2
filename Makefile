@@ -2,6 +2,7 @@ CC=gcc
 STRIP=strip
 CURDIR=$(PWD)
 INCLUDEDIR=$(CURDIR)/include
+TESTDIR=$(CURDIR)/test
 MBEDTLS_GIT=https://github.com/Mbed-TLS/mbedtls.git
 MBEDTLS_BRANCH=v3.6.2
 MBED_INCLUDE_DIR=$(CURDIR)/downloads/mbedtls/build/compiled/include
@@ -120,7 +121,7 @@ test: main
 	@echo "Execute test ..."
 ifeq ("$(wildcard $(CURDIR)/test/test)","")
 	@echo "Starting build tests"
-	@$(CC) -g -O2 test/main.c test/test_util.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -o test/test -fsanitize=leak,address -Wall
+	@$(CC) -g -O2 test/main.c test/test_util.c src/ctest/asserts.c -I$(TESTDIR) -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -DVISIBLE_FOR_TEST -o test/test -fsanitize=leak,address -Wall
 endif
 	@echo "Executing tests (static) ..."
 	@$(CURDIR)/test/test
@@ -128,7 +129,7 @@ endif
 	@echo "Execute test_shared ..."
 ifeq ("$(wildcard $(CURDIR)/test/test_shared)","")
 	@echo "Starting build tests (shared)"
-	@$(CC) -g -O2 test/main.c test/test_util.c src/ctest/asserts.c -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME) -o test/test_shared -fsanitize=leak,address -Wall
+	@$(CC) -g -O2 test/main.c test/test_util.c src/ctest/asserts.c -I$(TESTDIR) -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME) -DVISIBLE_FOR_TEST -o test/test_shared -fsanitize=leak,address -Wall
 endif
 	pwd; export LD_LIBRARY_PATH=$(CAUTH_BUILD_DIR)/lib/shared; \
 	$(CURDIR)/test/test_shared; pwd;

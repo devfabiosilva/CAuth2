@@ -50,7 +50,7 @@ def test_module_build_date(caplog) -> None:
 
     info(k.buildDate.__doc__)
     info(k.buildDate())
-    assert k.buildDate() == "202207141501"
+    assert k.buildDate() == "202412122358"
 
 def test_module_get_version(caplog) -> None:
 
@@ -60,7 +60,7 @@ def test_module_get_version(caplog) -> None:
 
     info(k.getVersion.__doc__)
     info(k.getVersion())
-    assert k.getVersion() == "0.2.1"
+    assert k.getVersion() == "0.3.0"
 
 def test_module_get_totp_exception(caplog) -> None:
 
@@ -207,6 +207,7 @@ def test_module_sign_message_sha512(caplog) -> None:
 
     assert signed_message_str == "306f1a088b72a0d6e11b435a709af7fec9a9cce5cf1519f3fb1c4e395c7921ba43cca697821bdadf27bef1acd4315a6e807492eaf49f1130342e21cdf45e5ca2"
 
+# TODO implement this function in Python3
 def ignore_test_generate_key_sha512(caplog) -> None:
     caplog.set_level(logging.INFO)
 

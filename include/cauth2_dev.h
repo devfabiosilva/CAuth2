@@ -102,6 +102,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 /**
  * @def TRUE
@@ -487,3 +488,4 @@ generate_totp_key_dynamic(
 );
 
 #endif
+

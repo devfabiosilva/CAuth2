@@ -62,8 +62,7 @@ int cauth_sha256_digest_dynamic_util(
    if ((err=mbedtls_sha256_update(sha256, msg, msg_size)))
       goto cauth_sha256_digest_EXIT;
 
-   if ((err=mbedtls_sha256_finish(sha256, (unsigned char *)*res)))
-      goto cauth_sha256_digest_EXIT;
+   err=mbedtls_sha256_finish(sha256, (unsigned char *)*res);
 
 cauth_sha256_digest_EXIT:
    mbedtls_sha256_free(sha256);
@@ -384,6 +383,84 @@ cauth_str_to_hex(
    return 0;
 }
 
+#define TC_BUF_SZ 72
+
+const uint8_t buf_cmp1_dummy[TC_BUF_SZ] = {0xF0};
+const uint8_t buf_cmp2_dummy[TC_BUF_SZ] = {0x0A};
+
+#ifdef VISIBLE_FOR_TEST
+inline const uint8_t *get_buf_cmp1_dummy()
+{
+  return buf_cmp1_dummy;
+}
+
+inline size_t get_buf_cmp1_dummy_size()
+{
+  return sizeof(buf_cmp1_dummy);
+}
+
+inline const uint8_t *get_buf_cmp2_dummy()
+{
+  return buf_cmp2_dummy;
+}
+
+inline size_t get_buf_cmp2_dummy_size()
+{
+  return sizeof(buf_cmp2_dummy);
+}
+#endif
+
+#ifndef VISIBLE_FOR_TEST
+static
+#endif
+void memcpy_max(uint8_t *dst, uint8_t *src, ssize_t src_size, ssize_t max_dest_size)
+{
+  ssize_t diff = max_dest_size - src_size;
+
+  while (diff > 0) {
+    --diff;
+    dst[(size_t)(src_size + diff)] = 0;
+  }
+
+  while (src_size > 0) {
+    --src_size;
+    dst[(size_t)src_size] = src[(size_t)src_size];
+  }
+}
+
+#ifndef VISIBLE_FOR_TEST
+static
+#endif
+bool time_const_compare(uint8_t *cmp1, uint8_t *cmp2, ssize_t cmp_sz)
+{
+  bool compare = true;
+
+  uint8_t buf_cmp1[TC_BUF_SZ];
+  uint8_t buf_cmp2[TC_BUF_SZ];
+
+  ssize_t size = (ssize_t)sizeof(buf_cmp1);
+
+  if (cmp_sz > 0 && cmp_sz <= size) {
+    memcpy_max(buf_cmp1, cmp1, cmp_sz, size);
+    memcpy_max(buf_cmp2, cmp2, cmp_sz, size);
+  } else {
+    memcpy_max(buf_cmp1, (uint8_t *)buf_cmp1_dummy, size, size);
+    memcpy_max(buf_cmp2, (uint8_t *)buf_cmp2_dummy, size, size);
+  }
+
+  do {
+    --size;
+    compare &= (buf_cmp1[size] == buf_cmp2[size]);
+  } while (size > 0);
+
+  memset(buf_cmp2, 0, sizeof(buf_cmp2));
+  memset(buf_cmp1, 0, sizeof(buf_cmp1));
+
+  return compare;
+}
+
+#undef TC_BUF_SZ
+
 CAUTH_VERIFY_CODE_ERR
 cauth_verify_message_with_err(
    uint8_t *signature, size_t signature_size,
@@ -409,7 +486,7 @@ cauth_verify_message_with_err(
 
    err=CAUTH_VERIFY_INVALID;
 
-   if (memcmp(signature_verify, signature, signature_verify_size)==0)
+   if (time_const_compare(signature_verify, signature, signature_verify_size))
       err=CAUTH_VERIFY_OK;
 
 cauth_veryfy_message_EXIT1:
