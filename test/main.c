@@ -1015,7 +1015,49 @@ static void test_totp_key()
 
 static void test_dummy_memory_buffer()
 {
-// TODO add dummy memory test
+    C_ASSERT_NOT_NULL(
+        (void *)get_buf_cmp1_dummy(),
+        CTEST_SETTER(
+            CTEST_INFO("Check vector buf_cmp1_dummy is not NULL ")
+        )
+    )
+
+    C_ASSERT_NOT_NULL(
+        (void *)get_buf_cmp2_dummy(),
+        CTEST_SETTER(
+            CTEST_INFO("Check vector buf_cmp2_dummy is not NULL ")
+        )
+    )
+
+#define CORRECT_VECTOR_SIZE (size_t)72
+    C_ASSERT_TRUE(
+        get_buf_cmp1_dummy_size() == CORRECT_VECTOR_SIZE,
+        CTEST_SETTER(
+            CTEST_INFO("Check buf_cmp1_dummy size is %lu", CORRECT_VECTOR_SIZE)
+        )
+    )
+
+    C_ASSERT_TRUE(
+        get_buf_cmp2_dummy_size() == CORRECT_VECTOR_SIZE,
+        CTEST_SETTER(
+            CTEST_INFO("Check buf_cmp2_dummy size is %lu", CORRECT_VECTOR_SIZE)
+        )
+    )
+#undef CORRECT_VECTOR_SIZE
+
+    C_ASSERT_TRUE(
+        (test_vector((uint8_t *)get_buf_cmp1_dummy(), get_buf_cmp1_dummy_size(), 0xF0) == 0),
+        CTEST_SETTER(
+            CTEST_INFO("Check buf_cmp1_dummy is filled with 0xF0 value ...")
+        )
+    )
+
+    C_ASSERT_TRUE(
+        (test_vector((uint8_t *)get_buf_cmp2_dummy(), get_buf_cmp2_dummy_size(), 0x0A) == 0),
+        CTEST_SETTER(
+            CTEST_INFO("Check buf_cmp2_dummy is filled with 0x0A value ...")
+        )
+    )
 }
 
 static void test_memory_copy_buffer()

@@ -18,18 +18,20 @@ CAUTH_BUILD_INCLUDE_DIR=$(CAUTH_BUILD_DIR)/$(CAUTH_BUILD_INCLUDE_DIR_NAME)
 CAUTH_EXAMPLE_DIR=$(CURDIR)/examples
 ENDIANESS?=CAUTH_LITTLE_ENDIAN
 DEBUG?=NONE
+ARG?=NONE
+SUFFIX?=
 
 all: main
 
 cyodecode_shared.o: src/CyoDecode.c src/CyoEncode.c
 	@echo "Build Base32 Utilities shared object"
-	@$(CC) -O2 -c src/CyoDecode.c -Iinclude -fPIC -o cyodecode_shared.o -Wall
-	@$(CC) -O2 -c src/CyoEncode.c -Iinclude -fPIC -o cyoencode_shared.o -Wall
+	@$(CC) -O2 -c src/CyoDecode.c -Iinclude -fPIC -o cyodecode_shared$(SUFFIX).o -Wall
+	@$(CC) -O2 -c src/CyoEncode.c -Iinclude -fPIC -o cyoencode_shared$(SUFFIX).o -Wall
 
 cyodecode.o: src/CyoDecode.c src/CyoEncode.c
 	@echo "Build Base32 Utilities object"
-	@$(CC) -O2 -c src/CyoDecode.c -Iinclude -o cyodecode.o -Wall
-	@$(CC) -O2 -c src/CyoEncode.c -Iinclude -o cyoencode.o -Wall
+	@$(CC) -O2 -c src/CyoDecode.c -Iinclude -o cyodecode$(SUFFIX).o -Wall
+	@$(CC) -O2 -c src/CyoEncode.c -Iinclude -o cyoencode$(SUFFIX).o -Wall
 
 mbedtls:
 ifeq ("$(wildcard $(CURDIR)/downloads)","")
@@ -83,29 +85,30 @@ ifeq ("$(wildcard $(CAUTH_BUILD_INCLUDE_DIR))","")
 endif
 
 main: libdir cyodecode_shared.o cyodecode.o mbedtls
-ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a)","")
+
+ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME)$(SUFFIX).a)","")
 	@echo "Build CAuth2 object"
-	@$(CC) -D$(ENDIANESS) -O2 -c src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(MBED_LIB_DIR) -lmbedcrypto -o cauth.o -Wall
-	@echo "Build static library $(LIBANAME).a ..."
+	@$(CC) -D$(ENDIANESS) -D$(ARG) -O2 -c src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(MBED_LIB_DIR) -lmbedcrypto -o cauth$(SUFFIX).o -Wall
+	@echo "Build static library $(LIBANAME)$(SUFFIX).a ..."
 	@cp $(MBED_LIB_DIR)/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib -v
-	@mv $(CAUTH_BUILD_DIR)/lib/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a
-	@ar -q $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME).a cauth.o cyodecode.o cyoencode.o
+	@mv $(CAUTH_BUILD_DIR)/lib/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME)$(SUFFIX).a
+	@ar -q $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME)$(SUFFIX).a cauth$(SUFFIX).o cyodecode$(SUFFIX).o cyoencode$(SUFFIX).o
 else
-	@echo "Nothing to do lib$(LIBANAME).a already exists"
+	@echo "Nothing to do lib$(LIBANAME)$(SUFFIX).a already exists"
 endif
 
-ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so)","")
+ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)$(SUFFIX).so)","")
 	@echo "Build CAuth2 object shared"
 	pwd; cd $(MBED_LIB_OBJ_DIR); pwd; \
-	$(AR) $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared.a *.o; \
+	$(AR) $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared$(SUFFIX).a *.o; \
 	cd $(CAUTH_BUILD_DIR)/lib/shared -v; pwd; \
-	mv $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared.a $(CAUTH_BUILD_DIR)/lib/shared -v
-	@$(CC) -D$(ENDIANESS) -O2 -c $(CURDIR)/src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -fPIC -o cauth_shared.o -Wall
-	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared.a $(CURDIR)/cauth_shared.o $(CURDIR)/cyodecode_shared.o $(CURDIR)/cyoencode_shared.o
-	@$(CC) -D$(ENDIANESS) -shared -O2 -fPIC $(CURDIR)/src/cauth2.c -I$(INCLUDEDIR) -I$(MBED_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so -Wall
-	@strip $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME).so
+	mv $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared$(SUFFIX).a $(CAUTH_BUILD_DIR)/lib/shared -v
+	@$(CC) -D$(ENDIANESS) -D$(ARG) -O2 -c $(CURDIR)/src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared$(SUFFIX) -fPIC -o cauth_shared$(SUFFIX).o -Wall
+	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared$(SUFFIX).a $(CURDIR)/cauth_shared$(SUFFIX).o $(CURDIR)/cyodecode_shared$(SUFFIX).o $(CURDIR)/cyoencode_shared$(SUFFIX).o
+	@$(CC) -D$(ENDIANESS) -D$(ARG) -shared -O2 -fPIC $(CURDIR)/src/cauth2.c -I$(INCLUDEDIR) -I$(MBED_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared$(SUFFIX) -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)$(SUFFIX).so -Wall
+	@strip $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)$(SUFFIX).so
 else
-	@echo "Nothing to do lib$(LIBANAME).so already exists"
+	@echo "Nothing to do lib$(LIBANAME)$(SUFFIX).so already exists"
 endif
 
 ifeq ("$(wildcard $(CAUTH_BUILD_INCLUDE_DIR)/cauth2.h)","")
@@ -117,11 +120,12 @@ else
 endif
 
 .PHONY: test
-test: main
+test:
 	@echo "Execute test ..."
 ifeq ("$(wildcard $(CURDIR)/test/test)","")
+	make -j4 main ARG=VISIBLE_FOR_TEST SUFFIX=_test
 	@echo "Starting build tests"
-	@$(CC) -g -O2 test/main.c test/test_util.c src/ctest/asserts.c -I$(TESTDIR) -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -DVISIBLE_FOR_TEST -o test/test -fsanitize=leak,address -Wall
+	@$(CC) -g -O2 test/main.c test/test_util.c src/ctest/asserts.c -I$(TESTDIR) -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME)_test -DVISIBLE_FOR_TEST -o test/test -fsanitize=leak,address -Wall
 endif
 	@echo "Executing tests (static) ..."
 	@$(CURDIR)/test/test
@@ -129,7 +133,7 @@ endif
 	@echo "Execute test_shared ..."
 ifeq ("$(wildcard $(CURDIR)/test/test_shared)","")
 	@echo "Starting build tests (shared)"
-	@$(CC) -g -O2 test/main.c test/test_util.c src/ctest/asserts.c -I$(TESTDIR) -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME) -DVISIBLE_FOR_TEST -o test/test_shared -fsanitize=leak,address -Wall
+	@$(CC) -g -O2 test/main.c test/test_util.c src/ctest/asserts.c -I$(TESTDIR) -I$(INCLUDEDIR)/test -I$(MBED_INCLUDE_DIR) -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_test -DVISIBLE_FOR_TEST -o test/test_shared -fsanitize=leak,address -Wall
 endif
 	pwd; export LD_LIBRARY_PATH=$(CAUTH_BUILD_DIR)/lib/shared; \
 	$(CURDIR)/test/test_shared; pwd;
@@ -186,7 +190,7 @@ else
 endif
 
 .PHONY: panelauth_build
-panelauth_build: test
+panelauth_build: main
 ifeq ($(DEBUG), P_DEBUG)
 	@python3 setup.py build_ext --define $(DEBUG)
 else
@@ -214,7 +218,7 @@ endif
 examples: test
 	@echo Building examples ...
 ifeq ("$(wildcard $(CAUTH_EXAMPLE_DIR)/example01)","")
-	@$(CC) -O2 $(CAUTH_EXAMPLE_DIR)/example01.c -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME) -o $(CAUTH_EXAMPLE_DIR)/example01 -Wall
+	@$(CC) -O2 $(CAUTH_EXAMPLE_DIR)/example01.c -I$(CAUTH_BUILD_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib -l$(LIBANAME)_test -o $(CAUTH_EXAMPLE_DIR)/example01 -Wall
 else
 	@echo "example01: Nothing to do"
 endif

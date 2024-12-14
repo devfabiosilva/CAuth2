@@ -24,10 +24,10 @@ int test_vector(uint8_t *v, size_t v_sz, uint8_t c)
     if (!v_sz)
         return -1;
 
-    do
-        if (*(v++)!=c)
+    do {
+        if (v[--v_sz]!=c)
             return -1;
-    while (--v_sz);
+    } while (v_sz > 0);
 
     return 0;
 }
