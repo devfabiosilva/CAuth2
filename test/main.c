@@ -1060,9 +1060,61 @@ static void test_dummy_memory_buffer()
     )
 }
 
+#define SET_MEMORY_VECTOR(val, val_expected)\
+ { val, sizeof(val)/sizeof(uint8_t), val_expected, sizeof(val_expected)/sizeof(uint8_t) }
+
+#define NULL_POINTER NULL, 0
+#define VEC(v) v, sizeof(v)
+static uint8_t ZERO_VEC[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+_Static_assert(sizeof(ZERO_VEC) == 16, "ZERO_VEC must have size 16 bytes");
+
+struct memory_copy_test_t {
+  const uint8_t *src;
+  size_t src_sz;
+  const uint8_t *expected_dest;
+  size_t expected_dest_sz;
+} MEMORY_COPY_TEST [] = {
+  SET_MEMORY_VECTOR(((uint8_t []){1, 2, 3, 4, 5, 6, 7, 8}), ((uint8_t []){1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0})),
+  SET_MEMORY_VECTOR(((uint8_t []){1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}), ((uint8_t []){1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16})),
+  SET_MEMORY_VECTOR(((uint8_t []){0, 0, 0, 0, 0, 0, 0, 0}), ZERO_VEC),
+  SET_MEMORY_VECTOR(((uint8_t []){0, 0, 0, 0, 1, 0, 0, 0}), ((uint8_t []){0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})),
+  SET_MEMORY_VECTOR(((uint8_t []){10, 11}), ((uint8_t []){10, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})),
+  {NULL_POINTER, VEC(ZERO_VEC)},
+  {NULL}
+};
+
+#undef SET_MEMORY_VECTOR
+
+#define COMPARE_VECTOR(a, b) \
+  is_vec_content_eq((uint8_t *)a, a##_sz, b, b##_sz)
+
 static void test_memory_copy_buffer()
 {
-// TODO add memory comparator test
+  int i = 0;
+  struct memory_copy_test_t *memory_copy_test = MEMORY_COPY_TEST;
+  uint8_t dest_vec[16] = {0};
+  size_t dest_vec_sz = sizeof(dest_vec);
+  INFO_MSG("Testing Memory copy buffer...")
+
+  while (memory_copy_test->expected_dest) {
+    memset(dest_vec, 0x0f, dest_vec_sz);
+    INFO_MSG_FMT("Testing %d vector %p with size %lu ...\n", ++i, memory_copy_test->src, memory_copy_test->src_sz)
+    debug_dump((uint8_t *)memory_copy_test->src, memory_copy_test->src_sz);
+    INFO_MSG_FMT("Expected vector %p with size %lu ...\n", memory_copy_test->expected_dest, memory_copy_test->expected_dest_sz)
+    debug_dump((uint8_t *)memory_copy_test->expected_dest, memory_copy_test->expected_dest_sz);
+
+    memcpy_max(dest_vec, (uint8_t *)memory_copy_test->src, memory_copy_test->src_sz, dest_vec_sz);
+
+    INFO_MSG_FMT("Result vector %p with size %lu ...\n", dest_vec, dest_vec_sz)
+    debug_dump((uint8_t *)dest_vec, dest_vec_sz);
+    C_ASSERT_TRUE(
+      COMPARE_VECTOR(memory_copy_test->expected_dest, dest_vec),
+      CTEST_SETTER(
+        CTEST_INFO("Check test %d equal memory vector\n", i)
+      )
+    )
+    ++memory_copy_test;
+  };
 }
 
 static void test_time_const_comparator()

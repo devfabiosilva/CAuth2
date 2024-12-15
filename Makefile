@@ -158,11 +158,11 @@ else
 	@echo "Nothing to do with objects"
 endif
 
-	@echo "Check build folder ..."
-ifneq ("$(wildcard $(CURDIR)/downloads/mbedtls/build)","")
-	@echo "Deleting all build folder ..."
-	@rm -rfv $(CURDIR)/downloads/mbedtls/build
-endif
+#	@echo "Check build folder ..."
+#ifneq ("$(wildcard $(CURDIR)/downloads/mbedtls/build)","")
+#	@echo "Deleting all build folder ..."
+#	@rm -rfv $(CURDIR)/downloads/mbedtls/build
+#endif
 
 	@echo "Check lib folder ..."
 ifneq ("$(wildcard $(CAUTH_BUILD_DIR))","")
