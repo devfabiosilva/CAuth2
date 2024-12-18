@@ -416,10 +416,10 @@ struct verify_signatures_t {
     CAUTH_VERIFY_CODE_ERR expected_err;
     CAUTH_BOOL is_valid_signature_expected;
 } VERIFY_SIGNATURES[]={
-    SET_VERIFY_SIGNATURE(SHA1, "abc", "1234", CAUTH_VERIFY_WRONG_SIZE_ERR, FALSE),
-    SET_VERIFY_SIGNATURE(SHA256, "abcde", "a234", CAUTH_VERIFY_WRONG_SIZE_ERR, FALSE),
+    SET_VERIFY_SIGNATURE(SHA1, "abc", "1234", CAUTH_VERIFY_INVALID, FALSE),
+    SET_VERIFY_SIGNATURE(SHA256, "abcde", "a234", CAUTH_VERIFY_INVALID, FALSE),
     SET_VERIFY_SIGNATURE(SHA512, "", "a23456", CAUTH_VERIFY_SIGNATURE_ERR, FALSE),
-    SET_VERIFY_SIGNATURE(SHA512, "abcdefg", "a234", CAUTH_VERIFY_WRONG_SIZE_ERR, FALSE),
+    SET_VERIFY_SIGNATURE(SHA512, "abcdefg", "a234", CAUTH_VERIFY_INVALID, FALSE),
     SET_VERIFY_SIGNATURE(SHA1234, "abcdefgh", "b234", CAUTH_VERIFY_SIGNATURE_ERR, FALSE),
     SET_VERIFY_SIGNATURE(
         SHA1, MESSAGE,
@@ -469,7 +469,7 @@ struct verify_signatures_t {
     SET_VERIFY_SIGNATURE(
         SHA1, MESSAGE,
         "21D280BB0197BB861C15C60CBF4635459CB49369D149A07610DCE5D7FD051661621C39A487C6D5BBA6D56A90699AFB01853C37A773C7AEF70DA846C35C3C5D3B",
-        CAUTH_VERIFY_WRONG_SIZE_ERR, FALSE
+        CAUTH_VERIFY_INVALID, FALSE
     ),
     SET_VERIFY_SIGNATURE(
         SHA1234, MESSAGE,
@@ -1064,7 +1064,7 @@ static void test_dummy_memory_buffer()
  { val, sizeof(val)/sizeof(uint8_t), val_expected, sizeof(val_expected)/sizeof(uint8_t) }
 
 #define NULL_POINTER NULL, 0
-#define VEC(v) v, sizeof(v)
+#define VEC(v) (uint8_t *)v, sizeof(v)
 static uint8_t ZERO_VEC[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 _Static_assert(sizeof(ZERO_VEC) == 16, "ZERO_VEC must have size 16 bytes");
 
@@ -1092,13 +1092,21 @@ static void test_memory_copy_buffer()
 {
   int i = 0;
   struct memory_copy_test_t *memory_copy_test = MEMORY_COPY_TEST;
-  uint8_t dest_vec[16] = {0};
+  uint8_t dest_vec[16];
   size_t dest_vec_sz = sizeof(dest_vec);
   INFO_MSG("Testing Memory copy buffer...")
 
   while (memory_copy_test->expected_dest) {
-    memset(dest_vec, 0x0f, dest_vec_sz);
     INFO_MSG_FMT("Testing %d vector %p with size %lu ...\n", ++i, memory_copy_test->src, memory_copy_test->src_sz)
+
+    C_ASSERT_TRUE(
+      dest_vec_sz >= memory_copy_test->src_sz,
+      CTEST_SETTER(
+        CTEST_INFO("Check %d dest_vec_sz %lu is equal or greater than memory vector size %lu\n", i, dest_vec_sz, memory_copy_test->src_sz)
+      )
+    )
+
+    memset(dest_vec, 0x0f, dest_vec_sz);
     debug_dump((uint8_t *)memory_copy_test->src, memory_copy_test->src_sz);
     INFO_MSG_FMT("Expected vector %p with size %lu ...\n", memory_copy_test->expected_dest, memory_copy_test->expected_dest_sz)
     debug_dump((uint8_t *)memory_copy_test->expected_dest, memory_copy_test->expected_dest_sz);
@@ -1117,8 +1125,51 @@ static void test_memory_copy_buffer()
   };
 }
 
+#define SET_TIME_CONST_COMPARE(val1, val2, expected)\
+ { val1, sizeof(val1)/sizeof(uint8_t), val2, sizeof(val2)/sizeof(uint8_t), expected }
+
+struct time_const_compare_test_t {
+  const uint8_t *cmp1;
+  size_t cmp1_sz;
+  const uint8_t *cmp2;
+  size_t cmp2_sz;
+  bool expected_value;
+} TIME_CONST_COMPARE_TEST [] = {
+  SET_TIME_CONST_COMPARE(((uint8_t []){1, 2, 3, 4, 5, 6, 7, 8}), ((uint8_t []){1, 2, 3, 4, 5, 6, 7, 8, 0}), false),
+  SET_TIME_CONST_COMPARE(((uint8_t []){1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}), ((uint8_t []){1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}), true),
+  SET_TIME_CONST_COMPARE(((uint8_t []){0, 0, 0, 0, 0, 0, 0, 0}), ((uint8_t []){0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), false),
+  SET_TIME_CONST_COMPARE(((uint8_t []){0, 0, 0, 0, 1, 0, 0, 0}), ((uint8_t []){0, 0, 0, 0, 1, 0, 0, 0}), true),
+  SET_TIME_CONST_COMPARE(((uint8_t []){10, 11}), ((uint8_t []){10, 11}), true),
+  {NULL}
+};
+
 static void test_time_const_comparator()
 {
-// TODO add time const comaprator
+  int i = 0;
+  struct time_const_compare_test_t *time_const_compare_test = TIME_CONST_COMPARE_TEST;
+
+  INFO_MSG("Testing time constant comparator ...")
+
+  while (time_const_compare_test->cmp1) {
+    INFO_MSG_FMT("Testing %d time constant comparator cmp1= %p with size %lu and cmp2 %p with size %lu is %s ...\n", ++i,
+      time_const_compare_test->cmp1, time_const_compare_test->cmp1_sz, time_const_compare_test->cmp2, time_const_compare_test->cmp2_sz,
+      time_const_compare_test->expected_value?"TRUE":"FALSE")
+
+    INFO_MSG_FMT("cmp1 vector %p with size %lu ...\n", time_const_compare_test->cmp1, time_const_compare_test->cmp1_sz)
+    debug_dump((uint8_t *)time_const_compare_test->cmp1, time_const_compare_test->cmp1_sz);
+
+    INFO_MSG_FMT("cmp2 vector %p with size %lu ...\n", time_const_compare_test->cmp2, time_const_compare_test->cmp2_sz)
+    debug_dump((uint8_t *)time_const_compare_test->cmp2, time_const_compare_test->cmp2_sz);
+
+    C_ASSERT_TRUE(
+       time_const_compare_test->expected_value == time_const_compare(
+        (uint8_t *)time_const_compare_test->cmp1, time_const_compare_test->cmp1_sz, (uint8_t *)time_const_compare_test->cmp2, time_const_compare_test->cmp2_sz),
+      CTEST_SETTER(
+        CTEST_INFO("Check time_const_compare returns %s\n", time_const_compare_test->expected_value?"TRUE":"FALSE")
+      )
+    )
+
+    ++time_const_compare_test;
+  };
 }
 

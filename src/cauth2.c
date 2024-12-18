@@ -454,7 +454,7 @@ void memcpy_max(uint8_t *dst, uint8_t *src, ssize_t src_size, ssize_t max_dest_s
 #ifndef VISIBLE_FOR_TEST
 static
 #endif
-bool time_const_compare(uint8_t *cmp1, uint8_t *cmp2, ssize_t cmp_sz)
+bool time_const_compare(uint8_t *cmp1, ssize_t cmp1_sz, uint8_t *cmp2, ssize_t cmp2_sz)
 {
   bool compare = true;
 
@@ -462,6 +462,7 @@ bool time_const_compare(uint8_t *cmp1, uint8_t *cmp2, ssize_t cmp_sz)
   uint8_t buf_cmp2[TC_BUF_SZ];
 
   ssize_t size = (ssize_t)sizeof(buf_cmp1);
+  ssize_t cmp_sz = (cmp1_sz <= cmp2_sz)?cmp1_sz:cmp2_sz;
 
   if (cmp_sz > 0 && cmp_sz <= size) {
     memcpy_max(buf_cmp1, cmp1, cmp_sz, size);
@@ -479,7 +480,7 @@ bool time_const_compare(uint8_t *cmp1, uint8_t *cmp2, ssize_t cmp_sz)
   memset(buf_cmp2, 0, sizeof(buf_cmp2));
   memset(buf_cmp1, 0, sizeof(buf_cmp1));
 
-  return compare;
+  return (compare) && (cmp1_sz == cmp2_sz);
 }
 
 #undef TC_BUF_SZ
@@ -502,17 +503,11 @@ cauth_verify_message_with_err(
       message, message_size
    )) return CAUTH_VERIFY_SIGNATURE_ERR;
 
-   if (signature_verify_size!=signature_size) {
-      err=CAUTH_VERIFY_WRONG_SIZE_ERR;
-      goto cauth_veryfy_message_EXIT1;
-   }
-
    err=CAUTH_VERIFY_INVALID;
 
-   if (time_const_compare(signature_verify, signature, signature_verify_size))
+   if (time_const_compare(signature_verify, signature_verify_size, signature, signature_size))
       err=CAUTH_VERIFY_OK;
 
-cauth_veryfy_message_EXIT1:
    memset(signature_verify, 0, signature_verify_size);
    free(signature_verify);
 
