@@ -5,13 +5,12 @@
 #include <mbedtls/md.h>
 #include <stdio.h>
 #include <version.h>
+#include <rnd.h>
 
 _Static_assert(sizeof(int)==sizeof(mbedtls_md_type_t), "wrong mbedtls_md_type_t size");
 _Static_assert(ALG_SHA1_DEFAULT==MBEDTLS_MD_SHA1, "wrong ALG_SHA1_DEFAULT value");
 _Static_assert(ALG_SHA256==MBEDTLS_MD_SHA256, "wrong ALG_SHA256 value");
 _Static_assert(ALG_SHA512==MBEDTLS_MD_SHA512, "wrong ALG_SHA512 value");
-
-static fn_rand _fn_rand=NULL;
 
 const char *
 cauth_getVersion()
@@ -531,124 +530,87 @@ cauth_verify_message(
    )==CAUTH_VERIFY_OK);
 }
 
-inline void cauth_random_attach(fn_rand function)
+int generate_key_dynamic(uint8_t **generated_key, size_t *generated_key_size, int alg, uint32_t entropy_type, uint64_t timeoutInS, const char *rand_dev)
 {
-   _fn_rand=function;
+  int err;
+  size_t sz;
+  *generated_key=NULL;
+
+  if (generated_key_size)
+    *generated_key_size=0;
+
+  switch (alg) {
+    case ALG_SHA1_DEFAULT:
+      sz=20;
+      break;
+
+    case ALG_SHA256:
+      sz=32;
+      break;
+
+    case ALG_SHA512:
+      sz=64;
+      break;
+    default:
+      return 800;
+  }
+
+  open_random((char *)rand_dev);
+
+  if (!(*generated_key=(uint8_t *)malloc(sz)))
+    return 801;
+
+  if ((err=verify_system_entropy(entropy_type, *generated_key, sz, timeoutInS))) {
+    clear_rnd(*generated_key, sz);
+    free(*generated_key);
+    *generated_key=NULL;
+    sz=0;
+  }
+
+  if (generated_key_size)
+    *generated_key_size=sz;
+
+  close_random();
+
+  return err;
 }
 
-inline void cauth_random_detach()
+int generate_totp_key_dynamic(const char **out, size_t *out_len, int alg, uint32_t entropy_type, uint64_t timeoutInS, const char *rand_dev)
 {
-   _fn_rand=NULL;
+  uint8_t *generated_key;
+  size_t generated_key_sz, sz_tmp;
+  int err;
+
+  *out=NULL;
+
+  if (out_len)
+    *out_len=0;
+
+  if ((err=generate_key_dynamic(&generated_key, &generated_key_sz, alg, entropy_type, timeoutInS, rand_dev)))
+    return err;
+
+  if ((*out=(const char *)malloc(cyoBase32EncodeGetLength(generated_key_sz)))) {
+    if (!(sz_tmp=cyoBase32Encode((char *)*out, (const void *)generated_key, generated_key_sz))) {
+      free((void *)*out);
+      *out=NULL;
+      sz_tmp=1;
+      err=700;
+    }
+  } else {
+    sz_tmp=1;
+    err=701;
+  }
+
+  open_random((char *)rand_dev);
+  clear_rnd(generated_key, generated_key_sz);
+  close_random();
+
+  free((void *)generated_key);
+  generated_key=NULL;
+
+  if (out_len)
+    *out_len=sz_tmp-1;
+
+  return err;
 }
 
-inline CAUTH_BOOL cauth_random(uint8_t *ptr, size_t ptr_size, int *fd, void *ctx)
-{
-   return ((_fn_rand!=NULL)&&(_fn_rand(ptr, ptr_size, fd, ctx)==0));
-}
-
-const char _cauth_rnd_1[]={
-   'a', 'b', 'c', 'd', 'e', 'f', 'g', '\\', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-   '9', 'Y', ':', 'Z', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-   'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '^', ';', '<', '=', '>', '?',
-   '1', 'Q', '2', 'R', '3', 'S', '4', 'T', '5', 'U', '6', 'V', '7', 'W', '8', 'X',
-   '`', 'p', 'a', 'q', 'b', 'r', 'c', 's', 'd', 't', 'e', 'u', 'f', 'v', 'g', 'w',
-   '!', 'A', '[', 'B', '#', 'C', '$', 'D', '%', 'E', '&', 'F', ']', 'G', '(', 'H',
-   'h', 'x', 'i', 'y', 'j', 'z', 'k', '{', 'l', '|', 'm', '}', 'n', '~', 'o', '_',
-   ')', 'I', '*', 'J', '+', 'K', ',', 'L', '-', 'M', '.', 'N', '/', 'O', '0', 'P'
-};
-
-_Static_assert(sizeof(_cauth_rnd_1)==128, "_cauth_rnd_1 wrong size");
-
-static
-const char *generate_key_dynamic_util(size_t *key_size, int alg, CAUTH_BOOL double_key, int *fd, void *ctx)
-{
-   uint16_t u16_sz;
-   size_t sz;
-   char *p;
-   const char *res;
-
-   if (!_fn_rand)
-      return NULL;
-
-   switch (alg) {
-      case ALG_SHA1_DEFAULT:
-         u16_sz=20;
-         break;
-
-      case ALG_SHA256:
-         u16_sz=32;
-         break;
-
-      case ALG_SHA512:
-         u16_sz=64;
-         break;
-      default:
-         return NULL;
-   }
-
-   if (!(res=malloc(sz=(2*((size_t)(double_key)?u16_sz<<=1:u16_sz)+1))))
-      return NULL;
-
-   if (cauth_random((uint8_t *)(p=(char *)res), sz, fd, ctx)) {
-
-      sz=(size_t)(u16_sz);
-
-      if (key_size)
-         *key_size=sz;
-
-      p[sz++]=0;
-
-      do {
-         *p=(char)_cauth_rnd_1[(size_t)((*(p+sz)&0x70)|((*p)&0x0F))];
-         p++;
-      } while (--u16_sz);
-
-      return res;
-
-   }
-
-   free((void *)res);
-   return NULL;
-}
-
-inline
-const char *generate_key_dynamic(int alg, int *fd, void *ctx)
-{
-   return generate_key_dynamic_util(NULL, alg, TRUE, fd, ctx);
-}
-
-#define CLEAR_AND_FREE(p, s) \
-   memset(p, 0, s);\
-   free(p);
-
-inline
-const char *generate_totp_key_dynamic(size_t *totp_key_size, int alg, CAUTH_BOOL is_base32, int *fd, void *ctx)
-{
-
-   size_t sz1, sz2;
-   char
-      *value=(char *)generate_key_dynamic_util(&sz1, alg, FALSE, fd, ctx),
-      *res;
-
-   if (totp_key_size)
-      *totp_key_size=0;
-
-   if (!value)
-      return NULL;
-
-   if (is_base32) {
-      if ((res=malloc(cyoBase32EncodeGetLength(sz2=sz1)))) {
-         if (!(sz1=cyoBase32Encode(res, (const void *)value, sz1))) {
-            free(res);
-            res=NULL;
-         }
-      }
-      CLEAR_AND_FREE(value, sz2)
-   } else
-      res=value;
-
-   if (totp_key_size)
-      *totp_key_size=sz1;
-
-   return (const char *)res;
-}

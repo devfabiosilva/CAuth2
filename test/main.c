@@ -7,9 +7,9 @@
 #include <cauth_test.h>
 
 static void test_rfc6238_table();
-static void test_random();
-static void test_key_dyn();
-static void test_totp_key();
+//static void test_random();
+//static void test_key_dyn();
+//static void test_totp_key();
 static void test_signatures();
 static void verify_signatures_test();
 static void test_dummy_memory_buffer();
@@ -90,9 +90,9 @@ int main(int argc, char **argv) {
     test_rfc6238_table();
     test_signatures();
     verify_signatures_test();
-    test_random();
-    test_key_dyn();
-    test_totp_key();
+    //test_random();
+    //test_key_dyn();
+    //test_totp_key();
     test_dummy_memory_buffer();
     test_memory_copy_buffer();
     test_time_const_comparator();
@@ -575,7 +575,7 @@ verify_signatures_test()
 #undef MESSAGE
 #undef SECRET
 }
-
+/*
 static int open_random_file_descriptor()
 {
     #define FILE_NAME "/dev/urandom"
@@ -1010,7 +1010,7 @@ static void test_totp_key()
 
     INFO_MSG("Begin \"test_totp_key()\" ...\n\n")
 }
-
+*/
 //TODO deprecate random generator
 
 static void test_dummy_memory_buffer()

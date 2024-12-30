@@ -468,23 +468,24 @@ cauth_buildDate();
 const char *
 cauth_endianess();
 
-typedef int (*fn_rand)(uint8_t *, size_t, int *, void *);
+int
+generate_key_dynamic(
+  uint8_t **,
+  size_t *,
+  int,
+  uint32_t,
+  uint64_t,
+  const char *
+);
 
-void cauth_random_attach(fn_rand);
-
-void cauth_random_detach();
-
-CAUTH_BOOL cauth_random(uint8_t *, size_t, int *, void *);
-
-const char *generate_key_dynamic(int, int *, void *);
-
-const char *
+int
 generate_totp_key_dynamic(
-   size_t *, 
-   int,
-   CAUTH_BOOL,
-   int *,
-   void *
+  const char **,
+  size_t *,
+  int,
+  uint32_t,
+  uint64_t,
+  const char *
 );
 
 #endif

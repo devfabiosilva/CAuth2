@@ -33,6 +33,14 @@ cyodecode.o: src/CyoDecode.c src/CyoEncode.c
 	@$(CC) -O2 -c src/CyoDecode.c -Iinclude -o cyodecode$(SUFFIX).o -Wall
 	@$(CC) -O2 -c src/CyoEncode.c -Iinclude -o cyoencode$(SUFFIX).o -Wall
 
+rnd.o: src/rnd.c
+	@echo "Build Random utilities ..."
+	@$(CC) -O2 -c src/rnd.c -Iinclude -o rnd$(SUFFIX).o -Wall
+
+rnd_shared.o: src/rnd.c
+	@echo "Build Random utilities shared object..."
+	@$(CC) -O2 -c src/rnd.c -Iinclude -fPIC -o rnd_shared$(SUFFIX).o -Wall
+
 mbedtls:
 ifeq ("$(wildcard $(CURDIR)/downloads)","")
 	@echo "Creating temporary folder for download dependencies ..."
@@ -84,7 +92,7 @@ ifeq ("$(wildcard $(CAUTH_BUILD_INCLUDE_DIR))","")
 	@mkdir $(CAUTH_BUILD_INCLUDE_DIR) -v
 endif
 
-main: libdir cyodecode_shared.o cyodecode.o mbedtls
+main: libdir rnd.o rnd_shared.o cyodecode_shared.o cyodecode.o mbedtls
 
 ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME)$(SUFFIX).a)","")
 	@echo "Build CAuth2 object"
@@ -92,7 +100,7 @@ ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME)$(SUFFIX).a)","")
 	@echo "Build static library $(LIBANAME)$(SUFFIX).a ..."
 	@cp $(MBED_LIB_DIR)/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib -v
 	@mv $(CAUTH_BUILD_DIR)/lib/$(MBED_CRYPTO_NAME) $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME)$(SUFFIX).a
-	@ar -q $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME)$(SUFFIX).a cauth$(SUFFIX).o cyodecode$(SUFFIX).o cyoencode$(SUFFIX).o
+	@ar -q $(CAUTH_BUILD_DIR)/lib/lib$(LIBANAME)$(SUFFIX).a cauth$(SUFFIX).o rnd$(SUFFIX).o cyodecode$(SUFFIX).o cyoencode$(SUFFIX).o
 else
 	@echo "Nothing to do lib$(LIBANAME)$(SUFFIX).a already exists"
 endif
@@ -104,7 +112,7 @@ ifeq ("$(wildcard $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)$(SUFFIX).so)","")
 	cd $(CAUTH_BUILD_DIR)/lib/shared -v; pwd; \
 	mv $(MBED_LIB_OBJ_DIR)/lib$(LIBANAME)_shared$(SUFFIX).a $(CAUTH_BUILD_DIR)/lib/shared -v
 	@$(CC) -D$(ENDIANESS) -D$(ARG) -O2 -c $(CURDIR)/src/cauth2.c -I$(MBED_INCLUDE_DIR) -I$(INCLUDEDIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared$(SUFFIX) -fPIC -o cauth_shared$(SUFFIX).o -Wall
-	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared$(SUFFIX).a $(CURDIR)/cauth_shared$(SUFFIX).o $(CURDIR)/cyodecode_shared$(SUFFIX).o $(CURDIR)/cyoencode_shared$(SUFFIX).o
+	@ar -q $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)_shared$(SUFFIX).a $(CURDIR)/rnd_shared$(SUFFIX).o $(CURDIR)/cauth_shared$(SUFFIX).o $(CURDIR)/cyodecode_shared$(SUFFIX).o $(CURDIR)/cyoencode_shared$(SUFFIX).o
 	@$(CC) -D$(ENDIANESS) -D$(ARG) -shared -O2 -fPIC $(CURDIR)/src/cauth2.c -I$(INCLUDEDIR) -I$(MBED_INCLUDE_DIR) -L$(CAUTH_BUILD_DIR)/lib/shared -l$(LIBANAME)_shared$(SUFFIX) -o $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)$(SUFFIX).so -Wall
 	@strip $(CAUTH_BUILD_DIR)/lib/shared/lib$(LIBANAME)$(SUFFIX).so
 else
