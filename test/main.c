@@ -5,9 +5,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cauth_test.h>
+#include "../include/rnd.h"
 
 static void test_rfc6238_table();
-//static void test_random();
+static void test_random();
 //static void test_key_dyn();
 //static void test_totp_key();
 static void test_signatures();
@@ -90,7 +91,7 @@ int main(int argc, char **argv) {
     test_rfc6238_table();
     test_signatures();
     verify_signatures_test();
-    //test_random();
+    test_random();
     //test_key_dyn();
     //test_totp_key();
     test_dummy_memory_buffer();
@@ -575,443 +576,123 @@ verify_signatures_test()
 #undef MESSAGE
 #undef SECRET
 }
-/*
-static int open_random_file_descriptor()
-{
-    #define FILE_NAME "/dev/urandom"
-    int fd=open(FILE_NAME, O_RDONLY);
 
-    if (fd<0)
-        C_ASSERT_FAIL(NULL,
-            CTEST_SETTER(
-                CTEST_WARN("Error: Can't open file descriptor \""FILE_NAME"\"")
-            )
-        )
+#define TEST_TYPE_NAME(type) {#type, type}
+struct test_entropy_t {
+  const char *name;
+  uint32_t type;
+} TEST_ENTROPY_TYPE[] = {
+  TEST_TYPE_NAME(F_ENTROPY_TYPE_NOT_RECOMENDED),
+  TEST_TYPE_NAME(F_ENTROPY_TYPE_GOOD),
+  TEST_TYPE_NAME(F_ENTROPY_TYPE_EXCELENT),
+  TEST_TYPE_NAME(F_ENTROPY_TYPE_PARANOIC),
+  {NULL}
+};
+#undef TEST_TYPE_NAME
 
-    return fd;
-    #undef FILE_NAME
-}
+#define TEST_TYPE_NAME_SZ(type, sz) {#type, type, sz}
+struct test_alg_t {
+  const char *name;
+  int alg;
+  size_t size;
+} TEST_ALG_TYPE[] = {
+  TEST_TYPE_NAME_SZ(ALG_SHA1_DEFAULT, 20),
+  TEST_TYPE_NAME_SZ(ALG_SHA256, 32),
+  TEST_TYPE_NAME_SZ(ALG_SHA512, 64),
+  {NULL}
+};
+#undef TEST_TYPE_NAME_SZ
 
-static void close_file_descriptor(int fd)
-{
-    int err;
-
-    if (!(err=close(fd)))
-        WARN_MSG_FMT("File descriptor %d closed successfully", fd)
-    else
-        WARN_MSG_FMT("File descriptor %d was not closed. Function close() returned %d",
-            fd,
-            err
-        )
-}
-
-struct test_key_dyn_t {
-    const char *result;
-    int fd;
+struct random_vector_t {
+  uint8_t *value;
+  size_t size;
 };
 
-static void cb_test_key_dyn_on_error(void *ctx)
+static void test_random_destroy(void *ctx)
 {
-    struct test_key_dyn_t *test_key_dyn_res=(struct test_key_dyn_t *)ctx;
+  struct random_vector_t *v = (struct random_vector_t *)ctx;
 
-    if (test_key_dyn_res->result) {
-        ERROR_MSG_FMT("Error. Freeing %p ...", test_key_dyn_res->result)
-        free((void *)test_key_dyn_res->result);
-    }
+  if (v) {
+    if (v->value) {
+      WARN_MSG_FMT("test_random_destroy. Destroying vector %p with size %lu\n\n", v->value, v->size)
+      debug_dump(v->value, v->size);
+      free((void *)v->value);
+    } else
+      WARN_MSG("test_random_destroy null pointer. Ignoring ...\n\n")
 
-    close_file_descriptor(test_key_dyn_res->fd);
-}
-
-static void cb_test_key_dyn_on_success(void *ctx)
-{
-    struct test_key_dyn_t *test_key_dyn_res=(struct test_key_dyn_t *)ctx;
-
-    INFO_MSG_FMT("Success. Code generated: %s at %p\nFreeing ...",
-        test_key_dyn_res->result, test_key_dyn_res->result
-    );
-
-    free((void *)test_key_dyn_res->result);
+  } else
+    WARN_MSG("test_random_destroy null vector. Ignoring ...\n\n")
 }
 
 static void test_random() {
-    struct  test_key_dyn_t test_key_dyn_res;
-    uint8_t randv[64];
 
-#define CLEAR_RANDV memset(randv, 0, sizeof(randv));
-#define IS_RANDV_NULL test_vector(randv, sizeof(randv), 0)==0
+  int err, test_number = 0;
+  uint64_t wait_time;
+  struct test_entropy_t *test_entropy_type;
+  struct test_alg_t *test_alg_type = TEST_ALG_TYPE;
+  struct random_vector_t random_vector;
 
-    INFO_MSG("Begin \"test_random()\" ...\n\n")
+  INFO_MSG("Begin \"test_random()\" ...\n\n")
 
-    test_key_dyn_res.result=NULL;
-    test_key_dyn_res.fd=open_random_file_descriptor();
+  while (test_alg_type->name) {
+    test_entropy_type = TEST_ENTROPY_TYPE;
+    wait_time = 1;
 
-    CLEAR_RANDV
+    while (test_entropy_type->name) {
 
-    C_ASSERT_FALSE(
-        cauth_random(randv, sizeof(randv), NULL, NULL),
-        CTEST_SETTER(
-            CTEST_INFO("Expecting random false because it has not initialized"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
+system_entropy_ret:
+
+      INFO_MSG_FMT("TEST %d: Testing alg %s and entropy %s with random number generator with timeout %lu s ...", ++test_number, test_alg_type->name, test_entropy_type->name, wait_time)
+
+      err=generate_key_dynamic(&random_vector.value, &random_vector.size, test_alg_type->alg, test_entropy_type->type, wait_time, NULL);
+
+      if (err != 0) {
+        C_ASSERT_NULL(
+          (void *)random_vector.value,
+          CTEST_SETTER(
+            CTEST_INFO("Expecting vector NULL if error is not ZERO"),
+            CTEST_ON_ERROR_CB(test_random_destroy, (void *)&random_vector)
+          )
         )
-    )
-
-    C_ASSERT_TRUE(
-        IS_RANDV_NULL,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting random vector is NULL"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
+        if (wait_time < MAX_TIMEOUT_IN_SECOND) {
+          WARN_MSG_FMT("generate_key_dynamic %s  and entropy %s error %d. Trying new timeout %lu", test_alg_type->name, test_entropy_type->name, err, ++wait_time)
+          goto system_entropy_ret;
+        }
+        C_ASSERT_FAIL(NULL,
+          CTEST_SETTER(
+            CTEST_WARN("MAX_TIMEOUT_IN_SECOND %d exceeded\n", MAX_TIMEOUT_IN_SECOND)
+          )
         )
-    )
+      }
 
-    cauth_random_attach(gen_rand_no_entropy_util);
-
-    C_ASSERT_TRUE(
-        IS_RANDV_NULL,
+      C_ASSERT_NOT_NULL(
+        (void *)random_vector.value,
         CTEST_SETTER(
-            CTEST_INFO("Expecting random vector is NULL on attach random function"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
+          CTEST_INFO("Expecting vector NOT NULL if error is ZERO")
         )
-    )
+      )
 
-    C_ASSERT_TRUE(
-        cauth_random(randv, sizeof(randv), &test_key_dyn_res.fd, NULL),
+      WARN_MSG_FMT("Vector %p with size %lu\n\n", random_vector.value, random_vector.size)
+      debug_dump(random_vector.value, random_vector.size);
+
+      C_ASSERT_TRUE(
+        test_alg_type->size == random_vector.size,
         CTEST_SETTER(
-            CTEST_INFO("Generate random value"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
+          CTEST_INFO("Check if %s has size is %lu", test_alg_type->name, test_alg_type->size),
+          CTEST_ON_SUCCESS("Expected %lu -> OK", test_alg_type->size),
+          CTEST_ON_ERROR("Was expected %lu but found %lu", test_alg_type->size, random_vector.size),
+          CTEST_ON_SUCCESS_CB(test_random_destroy, (void *)&random_vector),
+          CTEST_ON_ERROR_CB(test_random_destroy, (void *)&random_vector)
         )
-    )
+      )
+      test_entropy_type++;
+    }
 
-    C_ASSERT_FALSE(
-        IS_RANDV_NULL,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting random vector is NOT NULL and has random value"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
+    test_alg_type++;
+  }
 
-    C_ASSERT_FALSE(
-        cauth_random(NULL, sizeof(randv), &test_key_dyn_res.fd, NULL),
-        CTEST_SETTER(
-            CTEST_INFO("Expecting false on generate random value because it has invalid parameter"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    C_ASSERT_FALSE(
-        cauth_random(randv, 0, &test_key_dyn_res.fd, NULL),
-        CTEST_SETTER(
-            CTEST_INFO("Expecting false on generate random value because it has invalid parameter in size"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    cauth_random_detach();
-
-    C_ASSERT_FALSE(
-        cauth_random(randv, sizeof(randv), &test_key_dyn_res.fd, NULL),
-        CTEST_SETTER(
-            CTEST_INFO("Expecting fail on generate random value because custom function has detached"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    INFO_MSG_FMT("Closing file descriptor %d at test_random()", test_key_dyn_res.fd)
-
-    close_file_descriptor(test_key_dyn_res.fd);
-
-    INFO_MSG("End \"test_random()\"")
-
-#undef IS_RANDV_NULL
-#undef CLEAR_RANDV
+  INFO_MSG("End \"test_random()\"")
 }
-
-static void test_key_dyn()
-{
-    struct  test_key_dyn_t test_key_dyn_res;
-    
-    INFO_MSG("Begin \"test_key_dyn()\" ...\n\n")
-
-    test_key_dyn_res.fd=open_random_file_descriptor();
-
-    cauth_random_detach();
-
-    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA1_DEFAULT, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_key_dynamic == NULL"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    cauth_random_attach(gen_rand_no_entropy_util);
-
-    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA1_DEFAULT, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_key_dynamic(ALG_SHA1_DEFAULT) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA256, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_key_dynamic(ALG_SHA256) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_key_dynamic(ALG_SHA512, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_key_dynamic(ALG_SHA512) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_key_dynamic(123456, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_key_dynamic(123456) == NULL"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    INFO_MSG_FMT("Closing file descriptor %d at test_key_dyn()", test_key_dyn_res.fd)
-
-    close_file_descriptor(test_key_dyn_res.fd);
-
-    INFO_MSG("End \"test_key_dyn()\"")
-}
-
-static void test_totp_key()
-{
-    struct  test_key_dyn_t test_key_dyn_res;
-    size_t key_size;
-
-    INFO_MSG("Begin \"test_totp_key()\" ...\n\n")
-
-    test_key_dyn_res.fd=open_random_file_descriptor();
-
-    cauth_random_detach();
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic == NULL"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic == NULL"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    C_ASSERT_EQUAL_U64(0, (uint64_t)key_size,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting key size equal zero"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    cauth_random_attach(gen_rand_no_entropy_util);
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE, NULL != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA512, FALSE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, FALSE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=NULL;
-
-    C_ASSERT_EQUAL_U64(64, (uint64_t)key_size,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting key size equal 64"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA512, TRUE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA512, TRUE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=NULL;
-
-    C_ASSERT_EQUAL_U64(104, (uint64_t)key_size,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting key size equal 104"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA256, FALSE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA256, FALSE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA256, TRUE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA256, TRUE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA256, FALSE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA256, FALSE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=NULL;
-
-    C_ASSERT_EQUAL_U64(32, (uint64_t)key_size,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting key size equal 32"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA256, TRUE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA256, TRUE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=NULL;
-
-    C_ASSERT_EQUAL_U64(56, (uint64_t)key_size,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting key size equal 56"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, FALSE, NULL, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, TRUE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(NULL, ALG_SHA1_DEFAULT, TRUE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, FALSE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=NULL;
-
-    C_ASSERT_EQUAL_U64(20, (uint64_t)key_size,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting key size equal 20"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, TRUE, &test_key_dyn_res.fd, NULL);
-    C_ASSERT_NOT_NULL(
-        (void *)test_key_dyn_res.result,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting generate_totp_key_dynamic(&key_size, ALG_SHA1_DEFAULT, TRUE, NULL) != NULL"),
-            CTEST_ON_SUCCESS_CB(cb_test_key_dyn_on_success, (void *)&test_key_dyn_res),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    test_key_dyn_res.result=NULL;
-
-    C_ASSERT_EQUAL_U64(32, (uint64_t)key_size,
-        CTEST_SETTER(
-            CTEST_INFO("Expecting key size equal 32"),
-            CTEST_ON_ERROR_CB(cb_test_key_dyn_on_error, (void *)&test_key_dyn_res)
-        )
-    )
-
-    INFO_MSG_FMT("Closing file descriptor %d at test_totp_key()", test_key_dyn_res.fd)
-
-    close_file_descriptor(test_key_dyn_res.fd);
-
-    INFO_MSG("Begin \"test_totp_key()\" ...\n\n")
-}
-*/
-//TODO deprecate random generator
 
 static void test_dummy_memory_buffer()
 {

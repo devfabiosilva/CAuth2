@@ -589,14 +589,12 @@ int generate_totp_key_dynamic(const char **out, size_t *out_len, int alg, uint32
   if ((err=generate_key_dynamic(&generated_key, &generated_key_sz, alg, entropy_type, timeoutInS, rand_dev)))
     return err;
 
-  if ((*out=(const char *)malloc(cyoBase32EncodeGetLength(generated_key_sz)))) {
-    if (!(sz_tmp=cyoBase32Encode((char *)*out, (const void *)generated_key, generated_key_sz))) {
-      free((void *)*out);
-      *out=NULL;
-      sz_tmp=1;
-      err=700;
-    }
-  } else {
+  if (!(*out=(const char *)malloc(cyoBase32EncodeGetLength(generated_key_sz)))) {
+    sz_tmp=1;
+    err=700;
+  } else if (!(sz_tmp=cyoBase32Encode((char *)*out, (const void *)generated_key, generated_key_sz))) {
+    free((void *)*out);
+    *out=NULL;
     sz_tmp=1;
     err=701;
   }
