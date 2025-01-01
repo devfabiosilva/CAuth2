@@ -9,8 +9,7 @@
 
 static void test_rfc6238_table();
 static void test_random();
-//static void test_key_dyn();
-//static void test_totp_key();
+static void test_totp_key();
 static void test_signatures();
 static void verify_signatures_test();
 static void test_dummy_memory_buffer();
@@ -92,8 +91,7 @@ int main(int argc, char **argv) {
     test_signatures();
     verify_signatures_test();
     test_random();
-    //test_key_dyn();
-    //test_totp_key();
+    test_totp_key();
     test_dummy_memory_buffer();
     test_memory_copy_buffer();
     test_time_const_comparator();
@@ -601,6 +599,14 @@ struct test_alg_t {
   TEST_TYPE_NAME_SZ(ALG_SHA512, 64),
   {NULL}
 };
+
+struct test_alg_t TEST_TOTP_ALG_TYPE[] = {
+  TEST_TYPE_NAME_SZ(ALG_SHA1_DEFAULT, 31),
+  TEST_TYPE_NAME_SZ(ALG_SHA256, 55),
+  TEST_TYPE_NAME_SZ(ALG_SHA512, 103),
+  {NULL}
+};
+
 #undef TEST_TYPE_NAME_SZ
 
 struct random_vector_t {
@@ -624,27 +630,35 @@ static void test_random_destroy(void *ctx)
     WARN_MSG("test_random_destroy null vector. Ignoring ...\n\n")
 }
 
-static void test_random() {
+static void test_random_util(struct test_alg_t *test_alg_type, void *anyFunc) {
 
-  int err, test_number = 0;
+  int err = 0, test_number = 0;
   uint64_t wait_time;
-  struct test_entropy_t *test_entropy_type;
-  struct test_alg_t *test_alg_type = TEST_ALG_TYPE;
+  struct test_entropy_t *test_entropy_type_tmp;
   struct random_vector_t random_vector;
 
-  INFO_MSG("Begin \"test_random()\" ...\n\n")
-
   while (test_alg_type->name) {
-    test_entropy_type = TEST_ENTROPY_TYPE;
+    test_entropy_type_tmp = TEST_ENTROPY_TYPE;
     wait_time = 1;
 
-    while (test_entropy_type->name) {
+    while (test_entropy_type_tmp->name) {
 
 system_entropy_ret:
 
-      INFO_MSG_FMT("TEST %d: Testing alg %s and entropy %s with random number generator with timeout %lu s ...", ++test_number, test_alg_type->name, test_entropy_type->name, wait_time)
+      INFO_MSG_FMT("TEST %d: Testing alg %s and entropy %s with random number generator with timeout %lu s ...", ++test_number, test_alg_type->name, test_entropy_type_tmp->name, wait_time)
 
-      err=generate_key_dynamic(&random_vector.value, &random_vector.size, test_alg_type->alg, test_entropy_type->type, wait_time, NULL);
+      if (anyFunc == (void *)generate_key_dynamic) {
+        INFO_MSG_FMT("Testing generate_key_dynamic %d time(s) ...\n", test_number)
+        err=generate_key_dynamic(&random_vector.value, &random_vector.size, test_alg_type->alg, test_entropy_type_tmp->type, wait_time, NULL);
+      } else if (anyFunc == (void *)generate_totp_key_dynamic) {
+        INFO_MSG_FMT("Testing generate_totp_key_dynamic ... %d time(s) \n", test_number)
+        err=generate_totp_key_dynamic((const char **)&random_vector.value, &random_vector.size, test_alg_type->alg, test_entropy_type_tmp->type, wait_time, NULL);
+      } else
+        C_ASSERT_FAIL(NULL,
+          CTEST_SETTER(
+            CTEST_INFO("INVALID FUNCTION AT POINTER %p. Quitting ...\n", anyFunc)
+          )
+        )
 
       if (err != 0) {
         C_ASSERT_NULL(
@@ -655,12 +669,12 @@ system_entropy_ret:
           )
         )
         if (wait_time < MAX_TIMEOUT_IN_SECOND) {
-          WARN_MSG_FMT("generate_key_dynamic %s  and entropy %s error %d. Trying new timeout %lu", test_alg_type->name, test_entropy_type->name, err, ++wait_time)
+          WARN_MSG_FMT("generate_key_dynamic %s  and entropy %s error %d. Trying new timeout %lu", test_alg_type->name, test_entropy_type_tmp->name, err, ++wait_time)
           goto system_entropy_ret;
         }
         C_ASSERT_FAIL(NULL,
           CTEST_SETTER(
-            CTEST_WARN("MAX_TIMEOUT_IN_SECOND %d exceeded\n", MAX_TIMEOUT_IN_SECOND)
+            CTEST_WARN("MAX_TIMEOUT_IN_SECOND %d seconds exceeded\n", MAX_TIMEOUT_IN_SECOND)
           )
         )
       }
@@ -674,6 +688,7 @@ system_entropy_ret:
 
       WARN_MSG_FMT("Vector %p with size %lu\n\n", random_vector.value, random_vector.size)
       debug_dump(random_vector.value, random_vector.size);
+      debug_dump_ascii(random_vector.value, random_vector.size);
 
       C_ASSERT_TRUE(
         test_alg_type->size == random_vector.size,
@@ -681,17 +696,45 @@ system_entropy_ret:
           CTEST_INFO("Check if %s has size is %lu", test_alg_type->name, test_alg_type->size),
           CTEST_ON_SUCCESS("Expected %lu -> OK", test_alg_type->size),
           CTEST_ON_ERROR("Was expected %lu but found %lu", test_alg_type->size, random_vector.size),
+          CTEST_ON_ERROR_CB(test_random_destroy, (void *)&random_vector)
+        )
+      )
+
+      C_ASSERT_FALSE(
+        test_vector(random_vector.value, random_vector.size, 0) == 0,
+        CTEST_SETTER(
+          CTEST_INFO("Check if vector %p with size %lu is NOT NULL", random_vector.value, random_vector.size),
+          CTEST_ON_SUCCESS("Vector NOT NULL - OK"),
+          CTEST_ON_ERROR("Was expected VECTOR NOT NULL"),
           CTEST_ON_SUCCESS_CB(test_random_destroy, (void *)&random_vector),
           CTEST_ON_ERROR_CB(test_random_destroy, (void *)&random_vector)
         )
       )
-      test_entropy_type++;
+
+      test_entropy_type_tmp++;
+
     }
 
     test_alg_type++;
+
   }
+}
+
+static void test_random() {
+  INFO_MSG("Begin \"test_random()\" ...\n\n")
+
+  test_random_util(TEST_ALG_TYPE, generate_key_dynamic);
 
   INFO_MSG("End \"test_random()\"")
+}
+
+static void test_totp_key()
+{
+  INFO_MSG("Begin \"test_totp_key()\" ...\n\n")
+
+  test_random_util(TEST_TOTP_ALG_TYPE, generate_totp_key_dynamic);
+
+  INFO_MSG("End \"test_totp_key()\"")
 }
 
 static void test_dummy_memory_buffer()

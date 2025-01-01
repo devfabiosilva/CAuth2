@@ -67,6 +67,41 @@ void debug_dump(uint8_t *data, size_t data_sz)
 
 }
 
+void debug_dump_ascii(uint8_t *data, size_t data_sz)
+{
+  size_t i;
+  int page;
+  uint8_t c;
+
+  if (!data) {
+    fprintf(stderr, "debug_dump_ascii: NULL data");
+    return;
+  }
+
+  if (!data_sz) {
+    fprintf(stderr, "debug_dump_ascii: Empty data");
+    return;
+  }
+
+  page=0;
+
+  for (i=0;i<data_sz;i++) {
+    if ((i&(PG_ALIGN-1))==0) {
+      fprintf(stdout, "\n\tpage %03d: ", page);
+      page+=PG_ALIGN;
+    } else if ((i&((PG_ALIGN>>1)-1))==0)
+      fprintf(stdout, "  ");
+
+    if (((c=data[i])<0x21) || (c>0x7E))
+      fprintf(stdout, "  %02X ", c);
+    else
+      fprintf(stdout, " '%c' ", (char)c);
+  }
+
+  fprintf(stdout, "\n");
+
+}
+
 int is_vec_content_eq(
   uint8_t *a, size_t a_sz,
   uint8_t *b, size_t b_sz
