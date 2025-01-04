@@ -1,8 +1,14 @@
 var cauth2_8h =
 [
-    [ "ALG_SHA1_DEFAULT", "d0/dd4/cauth2_8h.html#a090f74af649f839af277bf3c7969e9a0", null ],
+    [ "ALG_SHA1", "d0/dd4/cauth2_8h.html#a4dce579991cd6222152c905329bbd04e", null ],
     [ "ALG_SHA256", "d0/dd4/cauth2_8h.html#a0b4cc1e244b5df7ab4e5a56534c1a759", null ],
     [ "ALG_SHA512", "d0/dd4/cauth2_8h.html#af4aaf0d90d016eb954e451624beb7b90", null ],
+    [ "DEFAULT_TIMEOUT_IN_SECOND", "d0/dd4/cauth2_8h.html#a29619c288a393a630da20ca14c4add42", null ],
+    [ "ENTROPY_TYPE_EXCELENT", "d0/dd4/cauth2_8h.html#aee01d6e1dd7c6cf25b16bc47b5f011c7", null ],
+    [ "ENTROPY_TYPE_GOOD", "d0/dd4/cauth2_8h.html#a9e59b722a8e0e15a562dd6c74b4a280c", null ],
+    [ "ENTROPY_TYPE_NOT_ENOUGH", "d0/dd4/cauth2_8h.html#afd6ab167d21e3d73ce2e3e66d499b129", null ],
+    [ "ENTROPY_TYPE_NOT_RECOMENDED", "d0/dd4/cauth2_8h.html#a705bb46fa4bd71a93d574a46a4eafe47", null ],
+    [ "ENTROPY_TYPE_PARANOIC", "d0/dd4/cauth2_8h.html#a042cf80680b53cb25ce4f8a5275062bb", null ],
     [ "ERROR_SUCCESS", "d0/dd4/cauth2_8h.html#aea0ae801b7d25c979655a7eb20d034af", null ],
     [ "FALSE", "d0/dd4/cauth2_8h.html#aa93f0eb578d23995850d61f7d61c55c1", null ],
     [ "TRUE", "d0/dd4/cauth2_8h.html#aa8cecfc5c5c054d2875c03e77b7be15d", null ],
@@ -48,6 +54,8 @@ var cauth2_8h =
     [ "cauth_verify_message", "d0/dd4/cauth2_8h.html#a71e4f471c71faa1b394373ce9b0b03de", null ],
     [ "cauth_verify_message_with_err", "d0/dd4/cauth2_8h.html#a46f92d357a77b5eea7be6ba18b103caa", null ],
     [ "check_base32_oauth_key_valid", "d0/dd4/cauth2_8h.html#aa4236f08bcb351c0e804c2d8420cc768", null ],
+    [ "check_entropy_value", "d0/dd4/cauth2_8h.html#adb22f28c088151b954b0e07ca8f428cf", null ],
+    [ "clear_rnd_and_free", "d0/dd4/cauth2_8h.html#af5db9efd29aebe58575afc6d62472630", null ],
     [ "generate_key_dynamic", "d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c", null ],
     [ "generate_totp_key_dynamic", "d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4", null ],
     [ "sign_message_dynamic", "d0/dd4/cauth2_8h.html#a6fd990ad82a8127238bda1706b55fba5", null ]

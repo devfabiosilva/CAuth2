@@ -1,7 +1,7 @@
 import pytest
 import logging
 import panelauth as p
-from panelauth import ALG_SHA1_DEFAULT, ALG_SHA256, ALG_SHA512
+from panelauth import ALG_SHA1, ALG_SHA256, ALG_SHA512, ENTROPY_TYPE_PARANOIC
 
 SIGN_SECRET_KEY = "Secret key 1234567890"
 SECRET_KEY_SHA1 = "12345678901234567890"
@@ -46,21 +46,17 @@ def test_module_build_date(caplog) -> None:
 
     caplog.set_level(logging.INFO)
 
-    k = p.create(SIGN_SECRET_KEY)
-
-    info(k.buildDate.__doc__)
-    info(k.buildDate())
-    assert k.buildDate() == "202412122358"
+    info(p.buildDate.__doc__)
+    info(p.buildDate())
+    assert p.buildDate() == "202412122358"
 
 def test_module_get_version(caplog) -> None:
 
     caplog.set_level(logging.INFO)
 
-    k = p.create(SIGN_SECRET_KEY)
-
-    info(k.getVersion.__doc__)
-    info(k.getVersion())
-    assert k.getVersion() == "0.3.0"
+    info(p.getVersion.__doc__)
+    info(p.getVersion())
+    assert p.getVersion() == "0.3.0"
 
 def test_module_get_totp_exception(caplog) -> None:
 
@@ -109,7 +105,7 @@ def test_module_get_totp_sha1_default(caplog) -> None:
 
     info("Python3 panelauth only allows Base32 for SHA1 OAuth2")
 
-    k = p.create(SIGN_SECRET_KEY, SECRET_KEY_SHA1_B32, totpAlgType=ALG_SHA1_DEFAULT)
+    k = p.create(SIGN_SECRET_KEY, SECRET_KEY_SHA1_B32, totpAlgType=ALG_SHA1)
     info(k.getAuthTotp.__doc__)
     value = k.getAuthTotp()
     info(str(value))
@@ -171,7 +167,7 @@ def test_module_get_totp_sha256(caplog) -> None:
 def test_module_sign_message_sha1(caplog) -> None:
     caplog.set_level(logging.INFO)
 
-    k = p.create(SIGN_SECRET_KEY, hmacAlgType=ALG_SHA1_DEFAULT)
+    k = p.create(SIGN_SECRET_KEY, hmacAlgType=ALG_SHA1)
 
     signed_message = k.signMessage(MESSAGE)
     assert len(signed_message) == 20
@@ -207,15 +203,25 @@ def test_module_sign_message_sha512(caplog) -> None:
 
     assert signed_message_str == "306f1a088b72a0d6e11b435a709af7fec9a9cce5cf1519f3fb1c4e395c7921ba43cca697821bdadf27bef1acd4315a6e807492eaf49f1130342e21cdf45e5ca2"
 
-# TODO implement this function in Python3
-def ignore_test_generate_key_sha512(caplog) -> None:
+#TODO add more options for this test
+def test_generate_key_sha512(caplog) -> None:
     caplog.set_level(logging.INFO)
 
     k = p.create(SIGN_SECRET_KEY)
 
-    genkey = k.genKey()
-    assert len(genkey) == 64
+    genkey1 = p.genKey()
+    assert len(genkey1) == 64
 
-    info(genkey)
+    info(genkey1.hex().upper())
 
-    assert genkey != None
+    assert genkey1 != None
+
+    genkey2 = p.genKey(entropyType = ENTROPY_TYPE_PARANOIC)
+
+    assert len(genkey2) == 64
+
+    info(genkey2.hex().upper())
+
+    assert genkey2 != None
+    assert genkey2 != genkey1
+

@@ -117,10 +117,10 @@
 #define FALSE (int)(1!=1)
 
 /**
- * @def ALG_SHA1_DEFAULT
- * @brief SHA1 Algorithm (Default)
+ * @def ALG_SHA1
+ * @brief SHA1 Algorithm
  */
-#define ALG_SHA1_DEFAULT (int)5
+#define ALG_SHA1 (int)5
 
 /**
  * @def ALG_SHA256
@@ -468,6 +468,40 @@ cauth_buildDate();
 const char *
 cauth_endianess();
 
+/**
+ * @def ENTROPY_TYPE_PARANOIC
+ * @brief Type of the very excelent entropy used for verifier. Very slow
+ */
+#define ENTROPY_TYPE_PARANOIC (uint32_t)1477682819
+
+//#define ENTROPY_TYPE_EXCELENT (uint32_t)1475885281
+/**
+ * @def F_ENTROPY_TYPE_EXCELENT
+ * @brief Type of the excelent entropy used for verifier. Slow
+ */
+#define ENTROPY_TYPE_EXCELENT (uint32_t)1476885281
+
+//#define ENTROPY_TYPE_GOOD (uint32_t)1471531015
+/**
+ * @def ENTROPY_TYPE_GOOD
+ * @brief Type of the good entropy used for verifier. Not so slow
+ */
+#define ENTROPY_TYPE_GOOD (uint32_t)1472531015
+
+//#define ENTROPY_TYPE_NOT_ENOUGH (uint32_t)1470001808
+/**
+ * @def ENTROPY_TYPE_NOT_ENOUGH
+ * @brief Type of the moderate entropy used for verifier. Fast
+ */
+#define ENTROPY_TYPE_NOT_ENOUGH (uint32_t)1471001808
+
+//#define ENTROPY_TYPE_NOT_RECOMENDED (uint32_t)1469703345
+/**
+ * @def ENTROPY_TYPE_NOT_RECOMENDED
+ * @brief Type of the not recommended entropy used for verifier. Very fast
+ */
+#define ENTROPY_TYPE_NOT_RECOMENDED (uint32_t)1470003345
+
 int
 generate_key_dynamic(
   uint8_t **,
@@ -485,6 +519,18 @@ generate_totp_key_dynamic(
   int,
   uint32_t,
   uint64_t,
+  const char *
+);
+
+#define DEFAULT_TIMEOUT_IN_SECOND 60
+
+bool check_entropy_value(
+  long int
+);
+
+void clear_rnd_and_free(
+  uint8_t **,
+  size_t,
   const char *
 );
 

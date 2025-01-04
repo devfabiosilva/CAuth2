@@ -5,7 +5,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cauth_test.h>
-#include "../include/rnd.h"
 
 static void test_rfc6238_table();
 static void test_random();
@@ -580,10 +579,10 @@ struct test_entropy_t {
   const char *name;
   uint32_t type;
 } TEST_ENTROPY_TYPE[] = {
-  TEST_TYPE_NAME(F_ENTROPY_TYPE_NOT_RECOMENDED),
-  TEST_TYPE_NAME(F_ENTROPY_TYPE_GOOD),
-  TEST_TYPE_NAME(F_ENTROPY_TYPE_EXCELENT),
-  TEST_TYPE_NAME(F_ENTROPY_TYPE_PARANOIC),
+  TEST_TYPE_NAME(ENTROPY_TYPE_NOT_RECOMENDED),
+  TEST_TYPE_NAME(ENTROPY_TYPE_GOOD),
+  TEST_TYPE_NAME(ENTROPY_TYPE_EXCELENT),
+  TEST_TYPE_NAME(ENTROPY_TYPE_PARANOIC),
   {NULL}
 };
 #undef TEST_TYPE_NAME

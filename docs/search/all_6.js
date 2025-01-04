@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['is_5flower_5fcase_44',['IS_LOWER_CASE',['../d0/dd4/cauth2_8h.html#a845abf149bfb7bb245ca4cc3e509b2b7a19619f91786522e599d65f7dfc0555fd',1,'cauth2.h']]],
-  ['is_5fupper_5fcase_45',['IS_UPPER_CASE',['../d0/dd4/cauth2_8h.html#a845abf149bfb7bb245ca4cc3e509b2b7a56cc0c2c11721aba3c3420d8ac25bebf',1,'cauth2.h']]]
+  ['hex2str_5ftype_50',['HEX2STR_TYPE',['../d0/dd4/cauth2_8h.html#a53650bcb565801b4669b3141568200b9',1,'cauth2.h']]],
+  ['hex2str_5ftype_5ft_51',['hex2str_type_t',['../d0/dd4/cauth2_8h.html#a845abf149bfb7bb245ca4cc3e509b2b7',1,'cauth2.h']]]
 ];

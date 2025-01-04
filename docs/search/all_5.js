@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['hex2str_5ftype_42',['HEX2STR_TYPE',['../d0/dd4/cauth2_8h.html#a53650bcb565801b4669b3141568200b9',1,'cauth2.h']]],
-  ['hex2str_5ftype_5ft_43',['hex2str_type_t',['../d0/dd4/cauth2_8h.html#a845abf149bfb7bb245ca4cc3e509b2b7',1,'cauth2.h']]]
+  ['generate_5fkey_5fdynamic_48',['generate_key_dynamic',['../d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c',1,'cauth2.h']]],
+  ['generate_5ftotp_5fkey_5fdynamic_49',['generate_totp_key_dynamic',['../d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4',1,'cauth2.h']]]
 ];

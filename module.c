@@ -14,15 +14,30 @@ typedef struct {
    int totp_alg_type;
 } C_RAW_DATA_OBJ;
 
-struct panelAuthConst_t {
+#define SET_CONST(val) \
+  {#val, val},
+struct algAuthConst_t {
    const char *name;
    int value;
-} PANEL_AUTH_CONST[] = {
-   {"ALG_SHA1_DEFAULT", ALG_SHA1_DEFAULT},
-   {"ALG_SHA256", ALG_SHA256},
-   {"ALG_SHA512", ALG_SHA512},
-   {NULL}
+} ALG_AUTH_CONST[] = {
+  SET_CONST(ALG_SHA1)
+  SET_CONST(ALG_SHA256)
+  SET_CONST(ALG_SHA512)
+  {NULL}
 };
+
+struct entropy_type_t {
+   const char *name;
+   int value;
+} ENTROPY_TYPE[] = {
+  SET_CONST(ENTROPY_TYPE_PARANOIC)
+  SET_CONST(ENTROPY_TYPE_EXCELENT)
+  SET_CONST(ENTROPY_TYPE_GOOD)
+  SET_CONST(ENTROPY_TYPE_NOT_ENOUGH)
+  SET_CONST(ENTROPY_TYPE_NOT_RECOMENDED)
+  {NULL}
+};
+#undef SET_CONST
 
 #ifdef P_DEBUG
  #define PANEL_DEBUG(std, ...) \
@@ -96,7 +111,7 @@ static int c_raw_data_obj_init(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
    self->hmac_secret_key_dyn=NULL;
    self->totp_secret_key_dyn=NULL;
    self->hmac_alg_type=ALG_SHA256;
-   self->totp_alg_type=ALG_SHA1_DEFAULT;
+   self->totp_alg_type=ALG_SHA1;
 
    if (!PyArg_ParseTupleAndKeywords(
       args, kwds, "s|sII", kwlist,
@@ -209,30 +224,36 @@ static PyObject *c_getVersion(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kw
 static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
 {
    static char
-      *kwlist[] = {"algType", NULL};
+      *kwlist[] = {"algType", "entropyType", "timeoutInSeconds", "randomGeneratorDevice", NULL};
 
-   const char *result;
-   int alg, fd, err;
+   uint8_t *result;
+   size_t result_sz;
+   const char *randomGeneratorDevice;
+   long int alg, entropy;
+   signed long int timeoutInSeconds;
+   int err;
    PyObject *ret;
 
    alg=ALG_SHA512;
+   entropy=ENTROPY_TYPE_GOOD;
+   timeoutInSeconds=DEFAULT_TIMEOUT_IN_SECOND;
+   randomGeneratorDevice=NULL;
 
-   if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &alg))
+   if (!PyArg_ParseTupleAndKeywords(args, kwds, "|llLs", kwlist, &alg, &entropy, &timeoutInSeconds, &randomGeneratorDevice))
       PANEL_ERROR("Can't parse algorithm type", NULL)
 
-   if ((fd=open("/dev/urandom", O_RDONLY)<0))
-      PANEL_ERROR("Could not open file descriptor", NULL)
+   if (timeoutInSeconds < 1)
+     PANEL_ERROR("Invalid timeout", NULL)
 
-   result=generate_key_dynamic(alg, &fd, NULL);
+   if (!check_entropy_value(entropy))
+     PANEL_ERROR("Invalid entropy type", NULL)
 
-   if ((err=close(fd)))
-      printf("\nWarn. Could not close file descriptor %d with error %d\n", fd, err);
+   if ((err=generate_key_dynamic(&result, &result_sz, (int)alg, (uint32_t)entropy, (uint64_t)timeoutInSeconds, randomGeneratorDevice)))
+     PANEL_ERROR_FMT(NULL, "Generate key error @ generate_key_dynamic with err = %d", err)
 
-   if (!result)
-      PANEL_ERROR("generate_key_dynamic(alg) fail", NULL)
+   ret=Py_BuildValue("y#", result, result_sz);
 
-   ret=Py_BuildValue("s", result);
-   CLEAR_AND_FREE(result, strlen(result))
+   clear_rnd_and_free(&result, result_sz, randomGeneratorDevice);
 
    if (ret)
       return ret;
@@ -243,9 +264,6 @@ static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
 static PyMethodDef panelauth_methods[] = {
     {"getAuthTotp", (PyCFunction)get_auth_totp, METH_NOARGS, "Get current TOTP authentication code with given initialized secret."},
     {"signMessage", (PyCFunction)sign_message, METH_VARARGS|METH_KEYWORDS, "Signs a message with a given private key"},
-    {"buildDate", (PyCFunction)c_buildDate, METH_NOARGS, "Get C Auth2 current build date"},
-    {"getVersion", (PyCFunction)c_getVersion, METH_NOARGS, "Get C Auth2 current version"},
-    {"genKey", (PyCFunction)c_generatekey, METH_VARARGS|METH_KEYWORDS, "Generates key given algorithm type"},
     {NULL}
 };
 
@@ -269,10 +287,18 @@ static PyModuleDef PANEL_AUTH_module = {
     .m_size=-1,
 };
 
+static PyMethodDef py_cauth2_modules_functions[] = {
+    {"buildDate", (PyCFunction)c_buildDate, METH_NOARGS, "Get C Auth2 current build date"},
+    {"getVersion", (PyCFunction)c_getVersion, METH_NOARGS, "Get C Auth2 current version"},
+    {"genKey", (PyCFunction)c_generatekey, METH_VARARGS|METH_KEYWORDS, "Generates key given algorithm type"},
+    {NULL}
+};
+
 PyMODINIT_FUNC PyInit_panelauth(void)
 {
    PyObject *m;
-   struct panelAuthConst_t *panelConst;
+   struct algAuthConst_t *algConst;
+   struct entropy_type_t *entropy_type;
 
    PANEL_DEBUG(stdout, "Check is panel is ready\n")
    if (PyType_Ready(&PANEL_AUTH_Type)<0)
@@ -282,19 +308,40 @@ PyMODINIT_FUNC PyInit_panelauth(void)
    if (!(m=PyModule_Create(&PANEL_AUTH_module)))
       PANEL_ERROR("\nCannot create module \"PANEL_AUTH_module\"\n", NULL)
 
-   PANEL_DEBUG(stdout, "Module %p created\n", m);
-   if (PyModule_AddObject(m, "create", (PyObject *) &PANEL_AUTH_Type)<0)
+   PANEL_DEBUG(stdout, "Module %p created.\n Adding module objects", m);
+   if (PyModule_AddObjectRef(m, "create", (PyObject *) &PANEL_AUTH_Type)<0) {
+      Py_DECREF(m);
       PANEL_ERROR("\nCannot create module \"panelauth\" from \"PANEL_AUTH_Type\"\n", NULL)
+   }
+
+   PANEL_DEBUG(stdout, "Adding functions ...");
+   if (PyModule_AddFunctions(m, py_cauth2_modules_functions)<0) {
+     Py_DECREF(m);
+     PANEL_ERROR("\nCannot add function to module\n", NULL)
+   }
 
    PANEL_DEBUG(stdout, "Object added\nAdding constants ...\n");
 
-   panelConst=PANEL_AUTH_CONST;
+   algConst=ALG_AUTH_CONST;
 
-   while (panelConst->name) {
-      if (PyModule_AddIntConstant(m, panelConst->name, (long int)panelConst->value))
-         PANEL_ERROR("Could not add const value", NULL)
+   while (algConst->name) {
+      if (PyModule_AddIntConstant(m, algConst->name, (long int)algConst->value)) {
+         Py_DECREF(m);
+         PANEL_ERROR("Could not add alg const values", NULL)
+      }
 
-      panelConst++;
+      algConst++;
+   }
+
+   entropy_type=ENTROPY_TYPE;
+
+   while (entropy_type->name) {
+      if (PyModule_AddIntConstant(m, entropy_type->name, (long int)entropy_type->value)) {
+         Py_DECREF(m);
+         PANEL_ERROR("Could not add entropy const values", NULL)
+      }
+
+      entropy_type++;
    }
 
    return m;

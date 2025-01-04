@@ -8,7 +8,7 @@
 #include <rnd.h>
 
 _Static_assert(sizeof(int)==sizeof(mbedtls_md_type_t), "wrong mbedtls_md_type_t size");
-_Static_assert(ALG_SHA1_DEFAULT==MBEDTLS_MD_SHA1, "wrong ALG_SHA1_DEFAULT value");
+_Static_assert(ALG_SHA1==MBEDTLS_MD_SHA1, "wrong ALG_SHA1 value");
 _Static_assert(ALG_SHA256==MBEDTLS_MD_SHA256, "wrong ALG_SHA256 value");
 _Static_assert(ALG_SHA512==MBEDTLS_MD_SHA512, "wrong ALG_SHA512 value");
 
@@ -540,7 +540,7 @@ int generate_key_dynamic(uint8_t **generated_key, size_t *generated_key_size, in
     *generated_key_size=0;
 
   switch (alg) {
-    case ALG_SHA1_DEFAULT:
+    case ALG_SHA1:
       sz=20;
       break;
 
@@ -610,5 +610,23 @@ int generate_totp_key_dynamic(const char **out, size_t *out_len, int alg, uint32
     *out_len=sz_tmp-1;
 
   return err;
+}
+
+inline
+bool check_entropy_value(long int value)
+{
+  return (value >= (long int)ENTROPY_TYPE_NOT_RECOMENDED) && (value <= (long int)ENTROPY_TYPE_PARANOIC);
+}
+
+void clear_rnd_and_free(uint8_t **value, size_t value_sz, const char *rand_dev)
+{
+  if ((*value != NULL) && (value_sz > 0)) {
+    open_random((char *)rand_dev);
+    clear_rnd(*value, value_sz);
+    close_random();
+
+    free((void *)*value);
+    *value=NULL;
+  }
 }
 

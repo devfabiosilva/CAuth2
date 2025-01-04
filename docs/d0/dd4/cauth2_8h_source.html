@@ -102,7 +102,7 @@ $(document).ready(function(){initNavTree('d0/dd4/cauth2_8h_source.html','../../'
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
 <div class="line"><a name="l00117"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#aa93f0eb578d23995850d61f7d61c55c1">  117</a></span>&#160;<span class="preprocessor">#define FALSE (int)(1!=1)</span></div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
-<div class="line"><a name="l00123"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a090f74af649f839af277bf3c7969e9a0">  123</a></span>&#160;<span class="preprocessor">#define ALG_SHA1_DEFAULT (int)5</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a4dce579991cd6222152c905329bbd04e">  123</a></span>&#160;<span class="preprocessor">#define ALG_SHA1 (int)5</span></div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
 <div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a0b4cc1e244b5df7ab4e5a56534c1a759">  129</a></span>&#160;<span class="preprocessor">#define ALG_SHA256 (int)9</span></div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
@@ -212,28 +212,54 @@ $(document).ready(function(){initNavTree('d0/dd4/cauth2_8h_source.html','../../'
 <div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
 <div class="line"><a name="l00469"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a30bc9c77c992c6e7a7246d6a93b2a3fe">  469</a></span>&#160;<a class="code" href="../../d0/dd4/cauth2_8h.html#a30bc9c77c992c6e7a7246d6a93b2a3fe">cauth_endianess</a>();</div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160; </div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00472"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c">  472</a></span>&#160;<a class="code" href="../../d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c">generate_key_dynamic</a>(</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  uint8_t **,</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;  <span class="keywordtype">size_t</span> *,</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;  <span class="keywordtype">int</span>,</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;  uint32_t,</div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  uint64_t,</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;);</div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160; </div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00482"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4">  482</a></span>&#160;<a class="code" href="../../d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4">generate_totp_key_dynamic</a>(</div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> **,</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  <span class="keywordtype">size_t</span> *,</div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;  <span class="keywordtype">int</span>,</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;  uint32_t,</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;  uint64_t,</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;);</div>
+<div class="line"><a name="l00475"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a042cf80680b53cb25ce4f8a5275062bb">  475</a></span>&#160;<span class="preprocessor">#define ENTROPY_TYPE_PARANOIC (uint32_t)1477682819</span></div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160; </div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;<span class="comment">//#define ENTROPY_TYPE_EXCELENT (uint32_t)1475885281</span></div>
+<div class="line"><a name="l00482"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#aee01d6e1dd7c6cf25b16bc47b5f011c7">  482</a></span>&#160;<span class="comment"></span><span class="preprocessor">#define ENTROPY_TYPE_EXCELENT (uint32_t)1476885281</span></div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160; </div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;<span class="comment">//#define ENTROPY_TYPE_GOOD (uint32_t)1471531015</span></div>
+<div class="line"><a name="l00489"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a9e59b722a8e0e15a562dd6c74b4a280c">  489</a></span>&#160;<span class="comment"></span><span class="preprocessor">#define ENTROPY_TYPE_GOOD (uint32_t)1472531015</span></div>
 <div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160; </div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160; </div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;<span class="comment">//#define ENTROPY_TYPE_NOT_ENOUGH (uint32_t)1470001808</span></div>
+<div class="line"><a name="l00496"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#afd6ab167d21e3d73ce2e3e66d499b129">  496</a></span>&#160;<span class="comment"></span><span class="preprocessor">#define ENTROPY_TYPE_NOT_ENOUGH (uint32_t)1471001808</span></div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160; </div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;<span class="comment">//#define ENTROPY_TYPE_NOT_RECOMENDED (uint32_t)1469703345</span></div>
+<div class="line"><a name="l00503"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a705bb46fa4bd71a93d574a46a4eafe47">  503</a></span>&#160;<span class="comment"></span><span class="preprocessor">#define ENTROPY_TYPE_NOT_RECOMENDED (uint32_t)1470003345</span></div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160; </div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00506"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c">  506</a></span>&#160;<a class="code" href="../../d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c">generate_key_dynamic</a>(</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;  uint8_t **,</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;  <span class="keywordtype">size_t</span> *,</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;  <span class="keywordtype">int</span>,</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;  uint32_t,</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;  uint64_t,</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;);</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160; </div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00516"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4">  516</a></span>&#160;<a class="code" href="../../d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4">generate_totp_key_dynamic</a>(</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> **,</div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;  <span class="keywordtype">size_t</span> *,</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;  <span class="keywordtype">int</span>,</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;  uint32_t,</div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;  uint64_t,</div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;);</div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160; </div>
+<div class="line"><a name="l00525"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#a29619c288a393a630da20ca14c4add42">  525</a></span>&#160;<span class="preprocessor">#define DEFAULT_TIMEOUT_IN_SECOND 60</span></div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160; </div>
+<div class="line"><a name="l00527"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#adb22f28c088151b954b0e07ca8f428cf">  527</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d0/dd4/cauth2_8h.html#adb22f28c088151b954b0e07ca8f428cf">check_entropy_value</a>(</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;  <span class="keywordtype">long</span> <span class="keywordtype">int</span></div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;);</div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160; </div>
+<div class="line"><a name="l00531"></a><span class="lineno"><a class="line" href="../../d0/dd4/cauth2_8h.html#af5db9efd29aebe58575afc6d62472630">  531</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d0/dd4/cauth2_8h.html#af5db9efd29aebe58575afc6d62472630">clear_rnd_and_free</a>(</div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;  uint8_t **,</div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;  <span class="keywordtype">size_t</span>,</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;);</div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160; </div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160; </div>
 <div class="ttc" id="acauth2_8h_html_a0aad74305c65a6037c543b2d56c3d5a9"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#a0aad74305c65a6037c543b2d56c3d5a9">cauth_buildDate</a></div><div class="ttdeci">const char * cauth_buildDate()</div><div class="ttdoc">Get CAuth2 build date.</div></div>
 <div class="ttc" id="acauth2_8h_html_a14363cf228f6dbc2fe712b5bcc37e989"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#a14363cf228f6dbc2fe712b5bcc37e989">cauth_sign_err_t</a></div><div class="ttdeci">cauth_sign_err_t</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dd4/cauth2_8h_source.html#l00178">cauth2.h:178</a></div></div>
 <div class="ttc" id="acauth2_8h_html_a14363cf228f6dbc2fe712b5bcc37e989a366322a22bc0e5ef661047712e7af3d4"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#a14363cf228f6dbc2fe712b5bcc37e989a366322a22bc0e5ef661047712e7af3d4">CAUTH_ERR_INVALID_ALG_TYPE</a></div><div class="ttdeci">@ CAUTH_ERR_INVALID_ALG_TYPE</div><div class="ttdoc">Invalid algorithm type.</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dd4/cauth2_8h_source.html#l00184">cauth2.h:184</a></div></div>
@@ -269,12 +295,14 @@ $(document).ready(function(){initNavTree('d0/dd4/cauth2_8h_source.html','../../'
 <div class="ttc" id="acauth2_8h_html_ab28d655edcd149d3602b3625e5624f60"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#ab28d655edcd149d3602b3625e5624f60">cauth_getVersion</a></div><div class="ttdeci">const char * cauth_getVersion()</div><div class="ttdoc">Get CAuth2 current version.</div></div>
 <div class="ttc" id="acauth2_8h_html_ab8df9a4e1c845b0de92f352fdbbbb68c"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c">generate_key_dynamic</a></div><div class="ttdeci">int generate_key_dynamic(uint8_t **, size_t *, int, uint32_t, uint64_t, const char *)</div></div>
 <div class="ttc" id="acauth2_8h_html_accd48cbd1a7b64cfd0f60e47f56ad15a"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#accd48cbd1a7b64cfd0f60e47f56ad15a">cauth_2fa_auth_code</a></div><div class="ttdeci">CAUTH_2FA_AUTH_CODE_ERR cauth_2fa_auth_code(uint32_t *, int, uint8_t *, size_t, int, uint64_t, uint64_t, time_t *, uint8_t)</div><div class="ttdoc">Get OAuth2 code from given key</div></div>
+<div class="ttc" id="acauth2_8h_html_adb22f28c088151b954b0e07ca8f428cf"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#adb22f28c088151b954b0e07ca8f428cf">check_entropy_value</a></div><div class="ttdeci">bool check_entropy_value(long int)</div></div>
 <div class="ttc" id="acauth2_8h_html_adecfd819958f42a50047b888b528757d"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#adecfd819958f42a50047b888b528757d">cauth_verify_err_t</a></div><div class="ttdeci">cauth_verify_err_t</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dd4/cauth2_8h_source.html#l00195">cauth2.h:195</a></div></div>
 <div class="ttc" id="acauth2_8h_html_adecfd819958f42a50047b888b528757da0af8ed71a9d85270e6c4cffdd250561a"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#adecfd819958f42a50047b888b528757da0af8ed71a9d85270e6c4cffdd250561a">CAUTH_VERIFY_OK</a></div><div class="ttdeci">@ CAUTH_VERIFY_OK</div><div class="ttdoc">Verify OK.</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dd4/cauth2_8h_source.html#l00204">cauth2.h:203</a></div></div>
 <div class="ttc" id="acauth2_8h_html_adecfd819958f42a50047b888b528757da5b7da999b54d846cc11bf31ec7ddcd88"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#adecfd819958f42a50047b888b528757da5b7da999b54d846cc11bf31ec7ddcd88">CAUTH_VERIFY_WRONG_SIZE_ERR</a></div><div class="ttdeci">@ CAUTH_VERIFY_WRONG_SIZE_ERR</div><div class="ttdoc">Wrong size error.</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dd4/cauth2_8h_source.html#l00199">cauth2.h:199</a></div></div>
 <div class="ttc" id="acauth2_8h_html_adecfd819958f42a50047b888b528757da8dee4dd94c325a67783dc9bd3ddb13c2"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#adecfd819958f42a50047b888b528757da8dee4dd94c325a67783dc9bd3ddb13c2">CAUTH_VERIFY_INVALID</a></div><div class="ttdeci">@ CAUTH_VERIFY_INVALID</div><div class="ttdoc">Verify invalid signature.</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dd4/cauth2_8h_source.html#l00201">cauth2.h:201</a></div></div>
 <div class="ttc" id="acauth2_8h_html_adecfd819958f42a50047b888b528757daeb326a3220dc72c295d78acfb2eec1d0"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#adecfd819958f42a50047b888b528757daeb326a3220dc72c295d78acfb2eec1d0">CAUTH_VERIFY_SIGNATURE_ERR</a></div><div class="ttdeci">@ CAUTH_VERIFY_SIGNATURE_ERR</div><div class="ttdoc">Signature error.</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dd4/cauth2_8h_source.html#l00197">cauth2.h:197</a></div></div>
 <div class="ttc" id="acauth2_8h_html_af4b672205d3879be32a312b91014d2c5"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#af4b672205d3879be32a312b91014d2c5">CAUTH_2FA_AUTH_CODE_ERR</a></div><div class="ttdeci">enum cauth_2fa_auth_code_err_t CAUTH_2FA_AUTH_CODE_ERR</div><div class="ttdoc">CAuth2 2FA error code.</div></div>
+<div class="ttc" id="acauth2_8h_html_af5db9efd29aebe58575afc6d62472630"><div class="ttname"><a href="../../d0/dd4/cauth2_8h.html#af5db9efd29aebe58575afc6d62472630">clear_rnd_and_free</a></div><div class="ttdeci">void clear_rnd_and_free(uint8_t **, size_t, const char *)</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

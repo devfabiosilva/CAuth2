@@ -34,5 +34,7 @@ var searchData=
   ['cauth_5fverify_5fok_34',['CAUTH_VERIFY_OK',['../d0/dd4/cauth2_8h.html#adecfd819958f42a50047b888b528757da0af8ed71a9d85270e6c4cffdd250561a',1,'cauth2.h']]],
   ['cauth_5fverify_5fsignature_5ferr_35',['CAUTH_VERIFY_SIGNATURE_ERR',['../d0/dd4/cauth2_8h.html#adecfd819958f42a50047b888b528757daeb326a3220dc72c295d78acfb2eec1d0',1,'cauth2.h']]],
   ['cauth_5fverify_5fwrong_5fsize_5ferr_36',['CAUTH_VERIFY_WRONG_SIZE_ERR',['../d0/dd4/cauth2_8h.html#adecfd819958f42a50047b888b528757da5b7da999b54d846cc11bf31ec7ddcd88',1,'cauth2.h']]],
-  ['check_5fbase32_5foauth_5fkey_5fvalid_37',['check_base32_oauth_key_valid',['../d0/dd4/cauth2_8h.html#aa4236f08bcb351c0e804c2d8420cc768',1,'cauth2.h']]]
+  ['check_5fbase32_5foauth_5fkey_5fvalid_37',['check_base32_oauth_key_valid',['../d0/dd4/cauth2_8h.html#aa4236f08bcb351c0e804c2d8420cc768',1,'cauth2.h']]],
+  ['check_5fentropy_5fvalue_38',['check_entropy_value',['../d0/dd4/cauth2_8h.html#adb22f28c088151b954b0e07ca8f428cf',1,'cauth2.h']]],
+  ['clear_5frnd_5fand_5ffree_39',['clear_rnd_and_free',['../d0/dd4/cauth2_8h.html#af5db9efd29aebe58575afc6d62472630',1,'cauth2.h']]]
 ];
