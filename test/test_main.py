@@ -203,25 +203,91 @@ def test_module_sign_message_sha512(caplog) -> None:
 
     assert signed_message_str == "306f1a088b72a0d6e11b435a709af7fec9a9cce5cf1519f3fb1c4e395c7921ba43cca697821bdadf27bef1acd4315a6e807492eaf49f1130342e21cdf45e5ca2"
 
-#TODO add more options for this test
+# TODO IMPLEMENT THIS FAILING TESTS
+def ignore_test_generate_key_execptions(caplog) -> None:
+    caplog.set_level(logging.INFO)
+
+    with pytest.raises(expected_exception=BaseException, match="PANEL_AUTH module") as ex_test:
+        p.genkey("abc")
+
+    exception_raised = ex_test.value.__cause__.args[0]
+    info(exception_raised)
+    assert exception_raised == "Error on parse on init"
+
 def test_generate_key_sha512(caplog) -> None:
     caplog.set_level(logging.INFO)
 
-    k = p.create(SIGN_SECRET_KEY)
-
     genkey1 = p.genKey()
+    assert genkey1 != None
     assert len(genkey1) == 64
 
     info(genkey1.hex().upper())
 
-    assert genkey1 != None
-
     genkey2 = p.genKey(entropyType = ENTROPY_TYPE_PARANOIC)
 
+    assert genkey2 != None
     assert len(genkey2) == 64
+    assert genkey2 != genkey1
 
     info(genkey2.hex().upper())
 
+    genkey3 = p.genKey(ALG_SHA512, ENTROPY_TYPE_PARANOIC)
+
+    assert genkey3 != None
+    assert len(genkey2) == 64
+    assert genkey3 != genkey2
+
+    info(genkey3.hex().upper())
+
+def test_generate_key_sha256(caplog) -> None:
+    caplog.set_level(logging.INFO)
+
+    genkey1 = p.genKey(ALG_SHA256)
+
+    assert genkey1 != None
+    assert len(genkey1) == 32
+
+    info(genkey1.hex().upper())
+
+    genkey2 = p.genKey(ALG_SHA256, entropyType = ENTROPY_TYPE_PARANOIC)
+
     assert genkey2 != None
     assert genkey2 != genkey1
+    assert len(genkey2) == 32
+
+    info(genkey2.hex().upper())
+
+    genkey3 = p.genKey(ALG_SHA256, ENTROPY_TYPE_PARANOIC)
+
+    assert genkey3 != None
+    assert len(genkey3) == 32
+    assert genkey3 != genkey2
+
+    info(genkey3.hex().upper())
+
+def test_generate_key_sha1(caplog) -> None:
+    caplog.set_level(logging.INFO)
+
+    genkey1 = p.genKey(ALG_SHA1)
+
+    assert genkey1 != None
+    assert len(genkey1) == 20
+
+    info(genkey1.hex().upper())
+
+    genkey2 = p.genKey(ALG_SHA1, entropyType = ENTROPY_TYPE_PARANOIC)
+
+    assert genkey2 != None
+    assert genkey2 != genkey1
+    assert len(genkey2) == 20
+
+    info(genkey2.hex().upper())
+
+    genkey3 = p.genKey(ALG_SHA1, ENTROPY_TYPE_PARANOIC)
+
+    assert genkey3 != None
+    assert len(genkey3) == 20
+    assert genkey3 != genkey2
+
+    info(genkey3.hex().upper())
 
