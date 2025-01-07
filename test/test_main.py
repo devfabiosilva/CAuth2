@@ -291,3 +291,80 @@ def test_generate_key_sha1(caplog) -> None:
 
     info(genkey3.hex().upper())
 
+def test_generate_totp_key_sha512(caplog) -> None:
+    caplog.set_level(logging.INFO)
+
+    genkey1 = p.genTOTPKey()
+    assert genkey1 != None
+    assert len(genkey1) == 103
+
+    info(genkey1)
+
+    genkey2 = p.genTOTPKey(entropyType = ENTROPY_TYPE_PARANOIC)
+
+    assert genkey2 != None
+    assert len(genkey2) == 103
+    assert genkey2 != genkey1
+
+    info(genkey2)
+
+    genkey3 = p.genTOTPKey(ALG_SHA512, ENTROPY_TYPE_PARANOIC)
+
+    assert genkey3 != None
+    assert len(genkey2) == 103
+    assert genkey3 != genkey2
+
+    info(genkey3)
+
+def test_generate_totp_key_sha256(caplog) -> None:
+    caplog.set_level(logging.INFO)
+
+    genkey1 = p.genTOTPKey(ALG_SHA256)
+
+    assert genkey1 != None
+    assert len(genkey1) == 55
+
+    info(genkey1)
+
+    genkey2 = p.genTOTPKey(ALG_SHA256, entropyType = ENTROPY_TYPE_PARANOIC)
+
+    assert genkey2 != None
+    assert genkey2 != genkey1
+    assert len(genkey2) == 55
+
+    info(genkey2)
+
+    genkey3 = p.genTOTPKey(ALG_SHA256, ENTROPY_TYPE_PARANOIC)
+
+    assert genkey3 != None
+    assert len(genkey3) == 55
+    assert genkey3 != genkey2
+
+    info(genkey3)
+
+def test_generate_totp_key_sha1(caplog) -> None:
+    caplog.set_level(logging.INFO)
+
+    genkey1 = p.genTOTPKey(ALG_SHA1)
+
+    assert genkey1 != None
+    assert len(genkey1) == 31
+
+    info(genkey1)
+
+    genkey2 = p.genTOTPKey(ALG_SHA1, entropyType = ENTROPY_TYPE_PARANOIC)
+
+    assert genkey2 != None
+    assert genkey2 != genkey1
+    assert len(genkey2) == 31
+
+    info(genkey2)
+
+    genkey3 = p.genTOTPKey(ALG_SHA1, ENTROPY_TYPE_PARANOIC)
+
+    assert genkey3 != None
+    assert len(genkey3) == 31
+    assert genkey3 != genkey2
+
+    info(genkey3)
+

@@ -221,14 +221,16 @@ static PyObject *c_getVersion(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kw
    return Py_BuildValue("s", cauth_getVersion());
 }
 
-static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
+static PyObject *generateKeyUtil(
+  PyObject *args, PyObject *kwds, bool isTOTP
+)
 {
    static char
       *kwlist[] = {"algType", "entropyType", "timeoutInSeconds", "randomGeneratorDevice", NULL};
 
    uint8_t *result;
    size_t result_sz;
-   const char *randomGeneratorDevice;
+   const char *randomGeneratorDevice, *functionName, *buildValue;
    long int alg, entropy;
    signed long int timeoutInSeconds;
    int err;
@@ -248,10 +250,20 @@ static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
    if (!check_entropy_value(entropy))
      PANEL_ERROR("Invalid entropy type", NULL)
 
-   if ((err=generate_key_dynamic(&result, &result_sz, (int)alg, (uint32_t)entropy, (uint64_t)timeoutInSeconds, randomGeneratorDevice)))
-     PANEL_ERROR_FMT(NULL, "Generate key error @ generate_key_dynamic with err = %d", err)
+   if (isTOTP) {
+     functionName = "generate_totp_key_dynamic";
+     buildValue = "s#";
+     err=generate_totp_key_dynamic((const char **)&result, &result_sz, (int)alg, (uint32_t)entropy, (uint64_t)timeoutInSeconds, randomGeneratorDevice);
+   } else {
+     buildValue = "y#";
+     functionName = "generate_key_dynamic";
+     err=generate_key_dynamic(&result, &result_sz, (int)alg, (uint32_t)entropy, (uint64_t)timeoutInSeconds, randomGeneratorDevice);
+   }
 
-   ret=Py_BuildValue("y#", result, result_sz);
+   if (err)
+     PANEL_ERROR_FMT(NULL, "Generate key error @ %s with err = %d", functionName, err)
+
+   ret=Py_BuildValue(buildValue, result, result_sz);
 
    clear_rnd_and_free(&result, result_sz, randomGeneratorDevice);
 
@@ -259,6 +271,16 @@ static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
       return ret;
 
    PANEL_ERROR("Error. generate key to string", NULL)
+}
+
+static PyObject *c_generatekey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
+{
+  return generateKeyUtil(args, kwds, false);
+}
+
+static PyObject *c_generatetopkey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
+{
+  return generateKeyUtil(args, kwds, true);
 }
 
 static PyMethodDef panelauth_methods[] = {
@@ -291,6 +313,7 @@ static PyMethodDef py_cauth2_modules_functions[] = {
     {"buildDate", (PyCFunction)c_buildDate, METH_NOARGS, "Get C Auth2 current build date"},
     {"getVersion", (PyCFunction)c_getVersion, METH_NOARGS, "Get C Auth2 current version"},
     {"genKey", (PyCFunction)c_generatekey, METH_VARARGS|METH_KEYWORDS, "Generates key given algorithm type"},
+    {"genTOTPKey", (PyCFunction)c_generatetopkey, METH_VARARGS|METH_KEYWORDS, "Generates TOTP key given algorithm type"},
     {NULL}
 };
 
