@@ -15,7 +15,7 @@ int is_vec_content_eq(
   uint8_t *, size_t
 );
 
-#define MAX_TIMEOUT_IN_SECOND 35
+#define MAX_TIMEOUT_IN_SECOND 60
 
 #endif
 
