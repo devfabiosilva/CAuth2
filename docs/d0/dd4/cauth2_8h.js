@@ -56,6 +56,8 @@ var cauth2_8h =
     [ "check_base32_oauth_key_valid", "d0/dd4/cauth2_8h.html#aa4236f08bcb351c0e804c2d8420cc768", null ],
     [ "check_entropy_value", "d0/dd4/cauth2_8h.html#adb22f28c088151b954b0e07ca8f428cf", null ],
     [ "clear_rnd_and_free", "d0/dd4/cauth2_8h.html#af5db9efd29aebe58575afc6d62472630", null ],
+    [ "decode_totp_key_dynamic", "d0/dd4/cauth2_8h.html#aa0beecbf1972df74599296007604e6cf", null ],
+    [ "decode_totp_key_with_alg_check_dynamic", "d0/dd4/cauth2_8h.html#ace42e7ee4af019c1bb708e06c7a10e4f", null ],
     [ "generate_key_dynamic", "d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c", null ],
     [ "generate_totp_key_dynamic", "d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4", null ],
     [ "sign_message_dynamic", "d0/dd4/cauth2_8h.html#a6fd990ad82a8127238bda1706b55fba5", null ]

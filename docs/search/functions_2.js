@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['sign_5fmessage_5fdynamic_71',['sign_message_dynamic',['../d0/dd4/cauth2_8h.html#a6fd990ad82a8127238bda1706b55fba5',1,'cauth2.h']]]
+  ['generate_5fkey_5fdynamic_73',['generate_key_dynamic',['../d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c',1,'cauth2.h']]],
+  ['generate_5ftotp_5fkey_5fdynamic_74',['generate_totp_key_dynamic',['../d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4',1,'cauth2.h']]]
 ];

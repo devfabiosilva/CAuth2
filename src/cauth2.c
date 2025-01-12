@@ -530,6 +530,23 @@ cauth_verify_message(
    )==CAUTH_VERIFY_OK);
 }
 
+#define ALG_CHECK \
+  switch (alg) { \
+    case ALG_SHA1: \
+      sz=20; \
+      break; \
+\
+    case ALG_SHA256: \
+      sz=32; \
+      break; \
+\
+    case ALG_SHA512: \
+      sz=64; \
+      break; \
+    default: \
+      return 800; \
+  }
+
 int generate_key_dynamic(uint8_t **generated_key, size_t *generated_key_size, int alg, uint32_t entropy_type, uint64_t timeoutInS, const char *rand_dev)
 {
   int err;
@@ -539,21 +556,7 @@ int generate_key_dynamic(uint8_t **generated_key, size_t *generated_key_size, in
   if (generated_key_size)
     *generated_key_size=0;
 
-  switch (alg) {
-    case ALG_SHA1:
-      sz=20;
-      break;
-
-    case ALG_SHA256:
-      sz=32;
-      break;
-
-    case ALG_SHA512:
-      sz=64;
-      break;
-    default:
-      return 800;
-  }
+  ALG_CHECK
 
   open_random((char *)rand_dev);
 
@@ -574,6 +577,64 @@ int generate_key_dynamic(uint8_t **generated_key, size_t *generated_key_size, in
 
   return err;
 }
+
+int decode_totp_key_dynamic(uint8_t **out, size_t *out_sz, const char *in, ssize_t in_len)
+{
+  int err;
+  size_t sz;
+
+  *out = NULL;
+
+  if (out_sz)
+    *out_sz = 0;
+
+  if (in_len < 0)
+    in_len = (size_t)strlen(in);
+
+  if (!(sz=cyoBase32DecodeGetLength((size_t)in_len)))
+    return 750;
+
+  if (!(*out=malloc(sz)))
+    return 751;
+
+  err=0;
+  if (!cyoBase32Decode((void *)*out, in, (size_t)in_len)) {
+    free((void *)*out);
+    *out=NULL;
+    sz=0;
+    err=752;
+  }
+
+  if (out_sz)
+    *out_sz = sz;
+
+  return err;
+}
+
+int decode_totp_key_with_alg_check_dynamic(uint8_t **out, size_t *out_sz, int alg, const char *in, ssize_t in_len)
+{
+  int err;
+  size_t sz, sz_tmp;
+
+  ALG_CHECK
+
+  if ((err=decode_totp_key_dynamic(out, &sz_tmp, in, in_len)))
+    return err;
+
+  if (sz != sz_tmp) {
+    free((void *)*out);
+    *out=NULL;
+    sz_tmp=0;
+    err = 801;
+  }
+
+  if (out_sz)
+    *out_sz=sz_tmp;
+
+  return err;
+}
+
+#undef ALG_CHECK
 
 int generate_totp_key_dynamic(const char **out, size_t *out_len, int alg, uint32_t entropy_type, uint64_t timeoutInS, const char *rand_dev)
 {

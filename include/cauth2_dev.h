@@ -534,5 +534,16 @@ void clear_rnd_and_free(
   const char *
 );
 
+int decode_totp_key_dynamic(
+  uint8_t **out, size_t *out_sz,
+  const char *in, ssize_t in_len
+);
+
+int decode_totp_key_with_alg_check_dynamic(
+  uint8_t **out, size_t *out_sz,
+  int alg,
+  const char *in, ssize_t in_len
+);
+
 #endif
 
