@@ -634,6 +634,59 @@ int decode_totp_key_with_alg_check_dynamic(uint8_t **out, size_t *out_sz, int al
   return err;
 }
 
+int encode_totp_key_dynamic(const char **out, size_t *out_sz, const uint8_t *in, size_t in_len)
+{
+  int err;
+  size_t sz;
+
+  *out = NULL;
+
+  if (out_sz)
+    *out_sz = 0;
+
+  if (!(sz=cyoBase32EncodeGetLength(in_len)))
+    return 950;
+
+  if (!(*out=malloc(sz)))
+    return 951;
+
+  err=0;
+  if (!cyoBase32Encode((char *)*out, (const void *)in, in_len)) {
+    free((void *)*out);
+    *out=NULL;
+    sz=0;
+    err=952;
+  }
+
+  if (out_sz)
+    *out_sz = sz;
+
+  return err;
+}
+
+int encode_totp_key_with_alg_check_dynamic(const char **out, size_t *out_sz, int alg, const uint8_t *in, size_t in_len)
+{
+  int err;
+  size_t sz, sz_tmp;
+
+  ALG_CHECK
+
+  if ((err=encode_totp_key_dynamic(out, &sz_tmp, in, in_len)))
+    return err;
+
+  if (sz != sz_tmp) {
+    free((void *)*out);
+    *out=NULL;
+    sz_tmp=0;
+    err = 901;
+  }
+
+  if (out_sz)
+    *out_sz=sz_tmp;
+
+  return err;
+}
+
 #undef ALG_CHECK
 
 int generate_totp_key_dynamic(const char **out, size_t *out_len, int alg, uint32_t entropy_type, uint64_t timeoutInS, const char *rand_dev)

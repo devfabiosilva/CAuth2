@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['generate_5fkey_5fdynamic_73',['generate_key_dynamic',['../d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c',1,'cauth2.h']]],
-  ['generate_5ftotp_5fkey_5fdynamic_74',['generate_totp_key_dynamic',['../d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4',1,'cauth2.h']]]
+  ['encode_5ftotp_5fkey_5fdynamic_75',['encode_totp_key_dynamic',['../d0/dd4/cauth2_8h.html#ab76ebfee3d76283820056ef1f179ccf9',1,'cauth2.h']]],
+  ['encode_5ftotp_5fkey_5fwith_5falg_5fcheck_5fdynamic_76',['encode_totp_key_with_alg_check_dynamic',['../d0/dd4/cauth2_8h.html#a59534fbe1df1da34ed2077b5027c1946',1,'cauth2.h']]]
 ];

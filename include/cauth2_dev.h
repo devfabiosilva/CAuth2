@@ -545,5 +545,16 @@ int decode_totp_key_with_alg_check_dynamic(
   const char *in, ssize_t in_len
 );
 
+int encode_totp_key_dynamic(
+  const char **out, size_t *out_sz,
+  const uint8_t *in, size_t in_len
+);
+
+int encode_totp_key_with_alg_check_dynamic(
+  const char **out, size_t *out_sz,
+  int alg,
+  const uint8_t *in, size_t in_len
+);
+
 #endif
 

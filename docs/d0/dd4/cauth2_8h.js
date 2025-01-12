@@ -58,6 +58,8 @@ var cauth2_8h =
     [ "clear_rnd_and_free", "d0/dd4/cauth2_8h.html#af5db9efd29aebe58575afc6d62472630", null ],
     [ "decode_totp_key_dynamic", "d0/dd4/cauth2_8h.html#aa0beecbf1972df74599296007604e6cf", null ],
     [ "decode_totp_key_with_alg_check_dynamic", "d0/dd4/cauth2_8h.html#ace42e7ee4af019c1bb708e06c7a10e4f", null ],
+    [ "encode_totp_key_dynamic", "d0/dd4/cauth2_8h.html#ab76ebfee3d76283820056ef1f179ccf9", null ],
+    [ "encode_totp_key_with_alg_check_dynamic", "d0/dd4/cauth2_8h.html#a59534fbe1df1da34ed2077b5027c1946", null ],
     [ "generate_key_dynamic", "d0/dd4/cauth2_8h.html#ab8df9a4e1c845b0de92f352fdbbbb68c", null ],
     [ "generate_totp_key_dynamic", "d0/dd4/cauth2_8h.html#a4b00e818aa36d8bac92f4d9e19536ef4", null ],
     [ "sign_message_dynamic", "d0/dd4/cauth2_8h.html#a6fd990ad82a8127238bda1706b55fba5", null ]
