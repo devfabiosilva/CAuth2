@@ -659,7 +659,7 @@ int encode_totp_key_dynamic(const char **out, size_t *out_sz, const uint8_t *in,
   }
 
   if (out_sz)
-    *out_sz = sz;
+    *out_sz = sz - 1;
 
   return err;
 }
@@ -667,22 +667,18 @@ int encode_totp_key_dynamic(const char **out, size_t *out_sz, const uint8_t *in,
 int encode_totp_key_with_alg_check_dynamic(const char **out, size_t *out_sz, int alg, const uint8_t *in, size_t in_len)
 {
   int err;
-  size_t sz, sz_tmp;
+  size_t sz;
 
   ALG_CHECK
 
-  if ((err=encode_totp_key_dynamic(out, &sz_tmp, in, in_len)))
+  if (sz != in_len)
+    return 901;
+
+  if ((err=encode_totp_key_dynamic(out, &sz, in, in_len)))
     return err;
 
-  if (sz != sz_tmp) {
-    free((void *)*out);
-    *out=NULL;
-    sz_tmp=0;
-    err = 901;
-  }
-
   if (out_sz)
-    *out_sz=sz_tmp;
+    *out_sz=sz;
 
   return err;
 }

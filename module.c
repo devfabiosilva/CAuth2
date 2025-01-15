@@ -308,6 +308,32 @@ static PyObject *c_decodetotpkey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject 
    PANEL_ERROR("c_decodetotpkey: Can't convert C byte array to Python 3 byte array", NULL)
 }
 
+static PyObject *c_decodetotpkeywithalg(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
+{
+   int err;
+   static char *kwlist[] = {"totpkey", "algorithm", NULL};
+   char *totpkey;
+   Py_ssize_t totpkey_sz;
+   long int alg;
+   uint8_t *out;
+   size_t out_sz;
+   PyObject *ret;
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#l", kwlist, &totpkey, &totpkey_sz, &alg))
+      PANEL_ERROR("c_decodetotpkeywithalg: Can't parse totpkey to decode", NULL)
+
+   if ((err=decode_totp_key_with_alg_check_dynamic(&out, &out_sz, (int)alg, (const char *)totpkey, (ssize_t)totpkey_sz)))
+     PANEL_ERROR_FMT(NULL, "c_decodetotpkeywithalg: Could not decode totp key. Err = %d", err)
+
+   ret=Py_BuildValue("y#", out, (Py_ssize_t)out_sz);
+   clear_rnd_and_free(&out, out_sz, NULL);
+
+   if (ret)
+      return ret;
+
+   PANEL_ERROR("c_decodetotpkeywithalg: Can't convert C byte array to Python 3 byte array", NULL)
+}
+
 static PyObject *c_encodetotpkey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
 {
    int err;
@@ -331,6 +357,32 @@ static PyObject *c_encodetotpkey(C_RAW_DATA_OBJ *self, PyObject *args, PyObject 
       return ret;
 
    PANEL_ERROR("c_encodetotpkey: Can't convert C char array to Python 3 string", NULL)
+}
+
+static PyObject *c_encodetotpkeywithalg(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kwds)
+{
+   int err;
+   static char *kwlist[] = {"value", "algorithm", NULL};
+   uint8_t *in;
+   Py_ssize_t in_sz;
+   long int alg;
+   const char *out;
+   size_t out_sz;
+   PyObject *ret;
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwds, "y#l", kwlist, &in, &in_sz, &alg))
+      PANEL_ERROR("c_encodetotpkeywithalg: Can't parse value to decode", NULL)
+
+   if ((err=encode_totp_key_with_alg_check_dynamic(&out, &out_sz, (int)alg, (const uint8_t *)in, (size_t)in_sz)))
+     PANEL_ERROR_FMT(NULL, "c_encodetotpkeywithalg: Could not encode totp key with alg. Err = %d", err)
+
+   ret=Py_BuildValue("s#", out, (Py_ssize_t)out_sz);
+   clear_rnd_and_free((uint8_t **)&out, out_sz, NULL);
+
+   if (ret)
+      return ret;
+
+   PANEL_ERROR("c_encodetotpkeywithalg: Can't convert C char array to Python 3 string", NULL)
 }
 
 static PyMethodDef panelauth_methods[] = {
@@ -365,7 +417,9 @@ static PyMethodDef py_cauth2_modules_functions[] = {
     {"genKey", (PyCFunction)c_generatekey, METH_VARARGS|METH_KEYWORDS, "Generates key given algorithm type"},
     {"genTOTPKey", (PyCFunction)c_generatetopkey, METH_VARARGS|METH_KEYWORDS, "Generates TOTP key given algorithm type"},
     {"decodeTOTPKey", (PyCFunction)c_decodetotpkey, METH_VARARGS|METH_KEYWORDS, "Decodes Base 32 key"},
+    {"decodeTOTPKeyWithAlg", (PyCFunction)c_decodetotpkeywithalg, METH_VARARGS|METH_KEYWORDS, "Decodes Base 32 key with given algorithm"},
     {"encodeTOTPKey", (PyCFunction)c_encodetotpkey, METH_VARARGS|METH_KEYWORDS, "Encodes messages to Base 32"},
+    {"encodeTOTPKeyWithAlg", (PyCFunction)c_encodetotpkeywithalg, METH_VARARGS|METH_KEYWORDS, "Encodes messages to Base 32 with given algorithm"},
     {NULL}
 };
 
