@@ -578,6 +578,7 @@ int generate_key_dynamic(uint8_t **generated_key, size_t *generated_key_size, in
   return err;
 }
 
+static
 int decode_totp_key_dynamic(uint8_t **out, size_t *out_sz, const char *in, ssize_t in_len)
 {
   int err;
@@ -634,6 +635,7 @@ int decode_totp_key_with_alg_check_dynamic(uint8_t **out, size_t *out_sz, int al
   return err;
 }
 
+static
 int encode_totp_key_dynamic(const char **out, size_t *out_sz, const uint8_t *in, size_t in_len)
 {
   int err;

@@ -206,12 +206,8 @@ Functions</h2></td></tr>
 <tr class="separator:adb22f28c088151b954b0e07ca8f428cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5db9efd29aebe58575afc6d62472630"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#af5db9efd29aebe58575afc6d62472630">clear_rnd_and_free</a> (uint8_t **, size_t, const char *)</td></tr>
 <tr class="separator:af5db9efd29aebe58575afc6d62472630"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0beecbf1972df74599296007604e6cf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#aa0beecbf1972df74599296007604e6cf">decode_totp_key_dynamic</a> (uint8_t **out, size_t *out_sz, const char *in, ssize_t in_len)</td></tr>
-<tr class="separator:aa0beecbf1972df74599296007604e6cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace42e7ee4af019c1bb708e06c7a10e4f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#ace42e7ee4af019c1bb708e06c7a10e4f">decode_totp_key_with_alg_check_dynamic</a> (uint8_t **out, size_t *out_sz, int alg, const char *in, ssize_t in_len)</td></tr>
 <tr class="separator:ace42e7ee4af019c1bb708e06c7a10e4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab76ebfee3d76283820056ef1f179ccf9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#ab76ebfee3d76283820056ef1f179ccf9">encode_totp_key_dynamic</a> (const char **out, size_t *out_sz, const uint8_t *in, size_t in_len)</td></tr>
-<tr class="separator:ab76ebfee3d76283820056ef1f179ccf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59534fbe1df1da34ed2077b5027c1946"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a59534fbe1df1da34ed2077b5027c1946">encode_totp_key_with_alg_check_dynamic</a> (const char **out, size_t *out_sz, int alg, const uint8_t *in, size_t in_len)</td></tr>
 <tr class="separator:a59534fbe1df1da34ed2077b5027c1946"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -1169,46 +1165,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa0beecbf1972df74599296007604e6cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0beecbf1972df74599296007604e6cf">&#9670;&nbsp;</a></span>decode_totp_key_dynamic()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int decode_totp_key_dynamic </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t **&#160;</td>
-          <td class="paramname"><em>out</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>out_sz</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>in</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ssize_t&#160;</td>
-          <td class="paramname"><em>in_len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="ace42e7ee4af019c1bb708e06c7a10e4f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ace42e7ee4af019c1bb708e06c7a10e4f">&#9670;&nbsp;</a></span>decode_totp_key_with_alg_check_dynamic()</h2>
 
@@ -1243,46 +1199,6 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">ssize_t&#160;</td>
-          <td class="paramname"><em>in_len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab76ebfee3d76283820056ef1f179ccf9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab76ebfee3d76283820056ef1f179ccf9">&#9670;&nbsp;</a></span>encode_totp_key_dynamic()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int encode_totp_key_dynamic </td>
-          <td>(</td>
-          <td class="paramtype">const char **&#160;</td>
-          <td class="paramname"><em>out</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>out_sz</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const uint8_t *&#160;</td>
-          <td class="paramname"><em>in</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>in_len</em>&#160;</td>
         </tr>
         <tr>
