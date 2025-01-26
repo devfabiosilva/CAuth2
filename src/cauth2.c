@@ -581,41 +581,38 @@ int generate_key_dynamic(uint8_t **generated_key, size_t *generated_key_size, in
 static
 int decode_totp_key_dynamic(uint8_t **out, size_t *out_sz, const char *in, ssize_t in_len)
 {
-  int err;
-  size_t sz;
-
-  *out = NULL;
-
-  if (out_sz)
-    *out_sz = 0;
 
   if (in_len < 0)
     in_len = (size_t)strlen(in);
 
-  if (!(sz=cyoBase32DecodeGetLength((size_t)in_len)))
+  if (in_len == 0)
+    return 649;
+
+  if (!(*out_sz=cyoBase32DecodeGetLength((size_t)in_len)))
     return 750;
 
-  if (!(*out=malloc(sz)))
+  if (!(*out=malloc(*out_sz)))
     return 751;
 
-  err=0;
-  if (!cyoBase32Decode((void *)*out, in, (size_t)in_len)) {
-    free((void *)*out);
-    *out=NULL;
-    sz=0;
-    err=752;
-  }
+  if (cyoBase32Decode((void *)*out, in, (size_t)in_len))
+    return 0;
 
-  if (out_sz)
-    *out_sz = sz;
+  free((void *)*out);
+  *out=NULL;
+  *out_sz=0;
 
-  return err;
+  return 752;
 }
 
 int decode_totp_key_with_alg_check_dynamic(uint8_t **out, size_t *out_sz, int alg, const char *in, ssize_t in_len)
 {
   int err;
   size_t sz, sz_tmp;
+
+  *out = NULL;
+
+  if (out_sz)
+    *out_sz = 0;
 
   ALG_CHECK
 
@@ -630,57 +627,54 @@ int decode_totp_key_with_alg_check_dynamic(uint8_t **out, size_t *out_sz, int al
   }
 
   if (out_sz)
-    *out_sz=sz_tmp;
+    *out_sz = sz_tmp;
 
   return err;
 }
 
 static
-int encode_totp_key_dynamic(const char **out, size_t *out_sz, const uint8_t *in, size_t in_len)
+int encode_totp_key_dynamic(const char **out, size_t *out_len, const uint8_t *in, size_t in_len)
+{
+  *out = NULL;
+
+  if (!(*out_len=cyoBase32EncodeGetLength(in_len)))
+    return 950;
+
+  if (!(*out=malloc(*out_len)))
+    return 951;
+
+  if (cyoBase32Encode((char *)*out, (const void *)in, in_len)) {
+    --(*out_len);
+    return 0;
+  }
+
+  free((void *)*out);
+  *out=NULL;
+  *out_len=0;
+
+  return 952;
+}
+
+int encode_totp_key_with_alg_check_dynamic(const char **out, size_t *out_len, int alg, const uint8_t *in, size_t in_sz)
 {
   int err;
   size_t sz;
 
   *out = NULL;
 
-  if (out_sz)
-    *out_sz = 0;
-
-  if (!(sz=cyoBase32EncodeGetLength(in_len)))
-    return 950;
-
-  if (!(*out=malloc(sz)))
-    return 951;
-
-  err=0;
-  if (!cyoBase32Encode((char *)*out, (const void *)in, in_len)) {
-    free((void *)*out);
-    *out=NULL;
-    sz=0;
-    err=952;
-  }
-
-  if (out_sz)
-    *out_sz = sz - 1;
-
-  return err;
-}
-
-int encode_totp_key_with_alg_check_dynamic(const char **out, size_t *out_sz, int alg, const uint8_t *in, size_t in_len)
-{
-  int err;
-  size_t sz;
+  if (out_len)
+    *out_len = 0;
 
   ALG_CHECK
 
-  if (sz != in_len)
+  if (sz != in_sz)
     return 901;
 
-  if ((err=encode_totp_key_dynamic(out, &sz, in, in_len)))
+  if ((err=encode_totp_key_dynamic(out, &sz, in, in_sz)))
     return err;
 
-  if (out_sz)
-    *out_sz=sz;
+  if (out_len)
+    *out_len=sz;
 
   return err;
 }
