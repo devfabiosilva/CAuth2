@@ -15,6 +15,7 @@ static void test_dummy_memory_buffer();
 static void test_memory_copy_buffer();
 static void test_time_const_comparator();
 static void test_encode_message();
+static void test_decode_message();
 
 #define SZ(this) sizeof(this)-1
 #define SHA1 "SHA1"
@@ -96,6 +97,7 @@ int main(int argc, char **argv) {
     test_memory_copy_buffer();
     test_time_const_comparator();
     test_encode_message();
+    test_decode_message();
     end_tests();
     return 0;
 }
@@ -996,6 +998,82 @@ static void test_encode_message()
     }
 
     ++encode_expected;
+  }
+}
+
+#define SET_DECODE_EXPECTED(message, expected_encoded_message, expected_err, alg) \
+{(const char *)message, sizeof(message) - 1, (uint8_t *)expected_encoded_message, expected_err, alg, sizeof(expected_encoded_message) - 1},
+
+struct decode_expected_t {
+  const char *message;
+  size_t message_len;
+  uint8_t *expected_decoded_message;
+  int expected_err;
+  int alg;
+  size_t expected_decoded_size;
+} DECODE_EXPECTED[] = {
+  SET_DECODE_EXPECTED("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ", "12345678901234567890", 0, ALG_SHA1)
+  SET_DECODE_EXPECTED("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA====", "12345678901234567890123456789012",
+    0,
+    ALG_SHA256
+  )
+  SET_DECODE_EXPECTED(
+    "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDCMRTGQ2TMNZYHEYDCMRTGQ2TMNZYHEYDCMRTGQ2TMNZYHEYDCMQ=",
+    "1234567890123456789012345678901212345678901234567890123456789012",
+    0,
+    ALG_SHA512
+  )
+  SET_DECODE_EXPECTED("1234", "", 750, ALG_SHA1)
+  SET_DECODE_EXPECTED("123456789",
+    "",
+    750,
+    ALG_SHA256
+  )
+  SET_DECODE_EXPECTED(
+    "123456789012345678901234",
+    "",
+    752,
+    ALG_SHA512
+  )
+  {NULL, 0, NULL, 0, 0, 0}
+};
+
+#undef SET_DECODE_EXPECTED
+
+static void test_decode_message()
+{
+  int err, i = 0;
+  uint8_t *out;
+  size_t out_len;
+  struct decode_expected_t *decode_expected = DECODE_EXPECTED;
+
+  while (decode_expected->message) {
+    err = decode_totp_key_with_alg_check_dynamic(&out, &out_len, decode_expected->alg, decode_expected->message, decode_expected->message_len);
+    i++;
+    if (err == 0) {
+      C_ASSERT_NOT_NULL((void *)out)
+      C_ASSERT_EQUAL_LONG_INT((long int)decode_expected->expected_decoded_size, (long int)out_len,
+        CTEST_SETTER(
+          CTEST_ON_ERROR_CB(free, (void *)out)
+        )
+      )
+      C_ASSERT_EQUAL_BYTE((uint8_t *)decode_expected->expected_decoded_message, (uint8_t *)out, decode_expected->expected_decoded_size,
+        CTEST_SETTER(
+          CTEST_ON_ERROR_CB(free, (void *)out)
+        )
+      )
+      free((void *)out);
+    } else {
+      C_ASSERT_NULL((void *)out,
+        CTEST_SETTER(
+          CTEST_ON_ERROR_CB(free, (void *)out)
+        )
+      )
+      C_ASSERT_EQUAL_INT(0, out_len)
+      C_ASSERT_TRUE(decode_expected->expected_err == err)
+    }
+
+    ++decode_expected;
   }
 }
 

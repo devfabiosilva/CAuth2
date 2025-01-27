@@ -619,11 +619,13 @@ int decode_totp_key_with_alg_check_dynamic(uint8_t **out, size_t *out_sz, int al
   if ((err=decode_totp_key_dynamic(out, &sz_tmp, in, in_len)))
     return err;
 
-  if (sz != sz_tmp) {
+  if (sz < sz_tmp)
+    sz_tmp = sz;
+  else if (sz > sz_tmp) {
+    err = 801;
     free((void *)*out);
     *out=NULL;
     sz_tmp=0;
-    err = 801;
   }
 
   if (out_sz)
