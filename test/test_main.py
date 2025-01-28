@@ -368,3 +368,56 @@ def test_generate_totp_key_sha1(caplog) -> None:
 
     info(genkey3)
 
+def test_encodeTOTPKeyWithAlg(caplog) -> None:
+    caplog.set_level(logging.INFO)
+
+    encoded = p.encodeTOTPKeyWithAlg(b"12345678901234567890")
+
+    assert encoded != None
+    assert len(encoded) == 32
+    assert encoded == "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
+
+    encoded = p.encodeTOTPKeyWithAlg(b"12345678901234567890", ALG_SHA1)
+
+    assert encoded != None
+    assert len(encoded) == 32
+    assert encoded == "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
+
+    encoded = p.encodeTOTPKeyWithAlg(b"12345678901234567890123456789012", ALG_SHA256)
+
+    assert encoded != None
+    assert len(encoded) == 56
+    assert encoded == "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA===="
+
+    encoded = p.encodeTOTPKeyWithAlg(b"1234567890123456789012345678901212345678901234567890123456789012", ALG_SHA512)
+
+    assert encoded != None
+    assert len(encoded) == 104
+    assert encoded == "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDCMRTGQ2TMNZYHEYDCMRTGQ2TMNZYHEYDCMRTGQ2TMNZYHEYDCMQ="
+
+def test_decodeTOTPKeyWithAlg(caplog) -> None:
+    caplog.set_level(logging.INFO)
+
+    decoded = p.decodeTOTPKeyWithAlg("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ")
+
+    assert decoded != None
+    assert len(decoded) == 20
+    assert decoded == b"12345678901234567890"
+
+    decoded = p.decodeTOTPKeyWithAlg("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ", ALG_SHA1)
+
+    assert decoded != None
+    assert len(decoded) == 20
+    assert decoded == b"12345678901234567890"
+
+    decoded = p.decodeTOTPKeyWithAlg("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA====", ALG_SHA256)
+
+    assert decoded != None
+    assert len(decoded) == 32
+    assert decoded == b"12345678901234567890123456789012"
+
+    decoded = p.decodeTOTPKeyWithAlg("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDCMRTGQ2TMNZYHEYDCMRTGQ2TMNZYHEYDCMRTGQ2TMNZYHEYDCMQ=", ALG_SHA512)
+
+    assert decoded != None
+    assert len(decoded) == 64
+    assert decoded == b"1234567890123456789012345678901212345678901234567890123456789012"

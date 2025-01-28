@@ -294,7 +294,9 @@ static PyObject *c_decodetotpkeywithalg(C_RAW_DATA_OBJ *self, PyObject *args, Py
    size_t out_sz;
    PyObject *ret;
 
-   if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#l", kwlist, &totpkey, &totpkey_sz, &alg))
+   alg = ALG_SHA1;
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#|l", kwlist, &totpkey, &totpkey_sz, &alg))
       PANEL_ERROR("c_decodetotpkeywithalg: Can't parse totpkey to decode", NULL)
 
    if ((err=decode_totp_key_with_alg_check_dynamic(&out, &out_sz, (int)alg, (const char *)totpkey, (ssize_t)totpkey_sz)))
@@ -320,7 +322,9 @@ static PyObject *c_encodetotpkeywithalg(C_RAW_DATA_OBJ *self, PyObject *args, Py
    size_t out_sz;
    PyObject *ret;
 
-   if (!PyArg_ParseTupleAndKeywords(args, kwds, "y#l", kwlist, &in, &in_sz, &alg))
+   alg = ALG_SHA1;
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwds, "y#|l", kwlist, &in, &in_sz, &alg))
       PANEL_ERROR("c_encodetotpkeywithalg: Can't parse value to decode", NULL)
 
    if ((err=encode_totp_key_with_alg_check_dynamic(&out, &out_sz, (int)alg, (const uint8_t *)in, (size_t)in_sz)))
