@@ -125,7 +125,7 @@ Macros</h2></td></tr>
 <tr class="separator:afd6ab167d21e3d73ce2e3e66d499b129"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a705bb46fa4bd71a93d574a46a4eafe47"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a705bb46fa4bd71a93d574a46a4eafe47">ENTROPY_TYPE_NOT_RECOMENDED</a>&#160;&#160;&#160;(uint32_t)1470003345</td></tr>
 <tr class="separator:a705bb46fa4bd71a93d574a46a4eafe47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29619c288a393a630da20ca14c4add42"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a29619c288a393a630da20ca14c4add42">DEFAULT_TIMEOUT_IN_SECOND</a>&#160;&#160;&#160;60</td></tr>
+<tr class="memitem:a29619c288a393a630da20ca14c4add42"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dd4/cauth2_8h.html#a29619c288a393a630da20ca14c4add42">DEFAULT_TIMEOUT_IN_SECOND</a>&#160;&#160;&#160;120</td></tr>
 <tr class="separator:a29619c288a393a630da20ca14c4add42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -273,12 +273,14 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define DEFAULT_TIMEOUT_IN_SECOND&#160;&#160;&#160;60</td>
+          <td class="memname">#define DEFAULT_TIMEOUT_IN_SECOND&#160;&#160;&#160;120</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d0/dd4/cauth2_8h_source.html#l00525">525</a> of file <a class="el" href="../../d0/dd4/cauth2_8h_source.html">cauth2.h</a>.</p>
+<p>Default timeout for generating random keys. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/dd4/cauth2_8h_source.html#l00529">529</a> of file <a class="el" href="../../d0/dd4/cauth2_8h_source.html">cauth2.h</a>.</p>
 
 </div>
 </div>
@@ -1123,11 +1125,25 @@ Functions</h2></td></tr>
           <td class="memname">bool check_entropy_value </td>
           <td>(</td>
           <td class="paramtype">long int&#160;</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Check if selected entropy type is valid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>Entropy value</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">&lt;em&gt;true&lt;/em&gt;</td><td>if is valid </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

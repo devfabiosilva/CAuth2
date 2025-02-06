@@ -966,7 +966,7 @@ struct encode_expected_t {
 
 static void test_encode_message()
 {
-  int err;
+  int err, i = 0;
   const char *out;
   size_t out_len;
   struct encode_expected_t *encode_expected = ENCODE_EXPECTED;
@@ -974,6 +974,7 @@ static void test_encode_message()
   while (encode_expected->message) {
     err = encode_totp_key_with_alg_check_dynamic(&out, &out_len, encode_expected->alg, encode_expected->message, encode_expected->message_len);
 
+    INFO_MSG_FMT("\nTest encode message test %d\n", ++i)
     if (err == 0) {
       C_ASSERT_NOT_NULL((void *)out)
       C_ASSERT_EQUAL_STRING((char *)encode_expected->expected_encoded_message, (char *)out,
@@ -1049,7 +1050,8 @@ static void test_decode_message()
 
   while (decode_expected->message) {
     err = decode_totp_key_with_alg_check_dynamic(&out, &out_len, decode_expected->alg, decode_expected->message, decode_expected->message_len);
-    i++;
+
+    INFO_MSG_FMT("\nTest decode message test %d\n", ++i)
     if (err == 0) {
       C_ASSERT_NOT_NULL((void *)out)
       C_ASSERT_EQUAL_LONG_INT((long int)decode_expected->expected_decoded_size, (long int)out_len,

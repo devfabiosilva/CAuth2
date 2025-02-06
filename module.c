@@ -107,6 +107,8 @@ static int c_raw_data_obj_init(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
    char
       *kwlist[] = {"hmacSecretKey", "totpSecretKey", "hmacAlgType", "totpAlgType", NULL},
       *hmacSecretKey, *totpSecretKey=NULL;
+   Py_ssize_t
+     hmacSecretKeyLen, totpSecretKeyLen;
 
    self->hmac_secret_key_dyn=NULL;
    self->totp_secret_key_dyn=NULL;
@@ -114,11 +116,11 @@ static int c_raw_data_obj_init(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
    self->totp_alg_type=ALG_SHA1;
 
    if (!PyArg_ParseTupleAndKeywords(
-      args, kwds, "s|sII", kwlist,
-      &hmacSecretKey, &totpSecretKey, &self->hmac_alg_type, &self->totp_alg_type
+      args, kwds, "s#|s#II", kwlist,
+      &hmacSecretKey, &hmacSecretKeyLen, &totpSecretKey, &totpSecretKeyLen, &self->hmac_alg_type, &self->totp_alg_type
    )) PANEL_ERROR("Error on parse on init", 11)
 
-   if (!(self->hmac_secret_key_size=strlen(hmacSecretKey)))
+   if (!(self->hmac_secret_key_size=(size_t)hmacSecretKeyLen))
       PANEL_ERROR("Empty HMAC secret key", 12)
 
    if (!(self->hmac_secret_key_dyn=malloc(++(self->hmac_secret_key_size))))
@@ -129,7 +131,7 @@ static int c_raw_data_obj_init(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *k
    if (totpSecretKey) {
       if ((err=check_base32_oauth_key_valid(
             NULL, totpSecretKey,
-            self->totp_secret_key_size=strlen(totpSecretKey), self->totp_alg_type
+            self->totp_secret_key_size=(size_t)totpSecretKeyLen, self->totp_alg_type
       ))) {
          errMsg="Empty Auth2 TOTP Base32 secret key or C function check_base32_oauth_key_valid() error";
          goto totpSecretKey_ERROR;
@@ -188,18 +190,19 @@ static PyObject *sign_message(C_RAW_DATA_OBJ *self, PyObject *args, PyObject *kw
    int err;
    static char *kwlist[] = {"messageStr", NULL};
    char *strMsg;
+   Py_ssize_t strMsgLen;
    static void *signed_message_ptr;
    size_t signed_message_size;
    PyObject *ret;
 
-   if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &strMsg))
+   if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#", kwlist, &strMsg, &strMsgLen))
       PANEL_ERROR("Can't parse message to be assigned", NULL)
 
    if ((err=sign_message_dynamic(
       (void **)&signed_message_ptr, &signed_message_size,
       self->hmac_alg_type,
       (uint8_t *)self->hmac_secret_key_dyn, self->hmac_secret_key_size,
-      (uint8_t *)strMsg, strlen(strMsg)
+      (uint8_t *)strMsg, (size_t)strMsgLen
    ))) PANEL_ERROR_FMT(NULL, "Sign message error @ sign_message_dynamic with err = %d", err)
 
    ret=Py_BuildValue("y#", signed_message_ptr, signed_message_size);

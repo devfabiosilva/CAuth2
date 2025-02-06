@@ -522,8 +522,23 @@ generate_totp_key_dynamic(
   const char *
 );
 
-#define DEFAULT_TIMEOUT_IN_SECOND 60
+/**
+ * @def DEFAULT_TIMEOUT_IN_SECOND
+ * @brief Default timeout for generating random keys
+ */
+#define DEFAULT_TIMEOUT_IN_SECOND 120
 
+/**
+ * @fn bool check_entropy_value(
+ *  long int value
+ * )
+ * @brief Check if selected entropy type is valid
+ * 
+ * @param [in] value Entropy value
+ * 
+ * @retval _true_ if is valid
+ * 
+ */
 bool check_entropy_value(
   long int
 );
