@@ -6,6 +6,7 @@ TODO LIST (Next release)
 - Add Secret key TOTP generator support for _panelauth_ in Python3 🐍⏰🧪👀
 - Add Secret key generator support for signing messages for _panelauth_ in Python3 🐍⏰🧪👀
 - Complement documentation
+- Update MBED TLS v3.3.2 -> v3.6.3 👻😊✔️
 
 ## [0.2.1] - 2024-11-17
 - Update MBED TLS v3.3.0 -> v3.6.0 👻😊✔️
