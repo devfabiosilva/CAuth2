@@ -6,7 +6,9 @@ TODO LIST (Next release)
 - Add Secret key TOTP generator support for _panelauth_ in Python3 🐍⏰🧪👀
 - Add Secret key generator support for signing messages for _panelauth_ in Python3 🐍⏰🧪👀
 - Complement documentation
-- Update MBED TLS v3.3.2 -> v3.6.3 👻😊✔️
+
+## [0.2.2] - 2025-09-16
+- Update MBED TLS v3.6.0 -> v3.6.4 👻😊✔️
 
 ## [0.2.1] - 2024-11-17
 - Update MBED TLS v3.3.0 -> v3.6.0 👻😊✔️
@@ -23,6 +25,7 @@ TODO LIST (Next release)
 
 ## [master] - current
 
+[0.2.2]: https://github.com/devfabiosilva/CAuth2/tree/v0.2.2
 [0.2.1]: https://github.com/devfabiosilva/CAuth2/tree/v0.2.1
 [0.1.1]: https://github.com/devfabiosilva/CAuth2/tree/v0.1.1
 [0.1.0]: https://github.com/devfabiosilva/CAuth2/tree/v0.1.0
