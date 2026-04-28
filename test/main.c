@@ -82,10 +82,10 @@ struct test_table_t
 
 int main(int argc, char **argv) {
 
-    C_ASSERT_EQUAL_STRING("0.3.0", cauth_getVersion(), CTEST_SETTER(
+    C_ASSERT_EQUAL_STRING("2.2.3", cauth_getVersion(), CTEST_SETTER(
       CTEST_TITLE("Check CAuth2 version is correct")
     ))
-    C_ASSERT_EQUAL_STRING("202412122358", cauth_buildDate(), CTEST_SETTER(
+    C_ASSERT_EQUAL_STRING("202604281357", cauth_buildDate(), CTEST_SETTER(
       CTEST_TITLE("Check CAuth2 build date is correct")
     ))
     test_rfc6238_table();
