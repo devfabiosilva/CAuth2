@@ -56,7 +56,7 @@ def test_module_get_version(caplog) -> None:
 
     info(p.getVersion.__doc__)
     info(p.getVersion())
-    assert p.getVersion() == "2.2.3"
+    assert p.getVersion() == "0.2.3"
 
 def test_module_get_totp_exception(caplog) -> None:
 

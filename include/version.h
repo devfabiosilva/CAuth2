@@ -1,7 +1,7 @@
 #ifndef VERSION_H
  #define VERSION_H
 
-#define VERSION "2"
+#define VERSION "0"
 #define VERSION_MAJOR "2"
 #define VERSION_MINOR "3"
 
