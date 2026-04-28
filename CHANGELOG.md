@@ -8,10 +8,10 @@ TODO LIST (Next release)
 - Complement documentation
 
 ## [0.2.3] - 2026-04-28
-- Update MBED TLS v3.6.4 -> v3.6.6 👻😊✔️ (See [MBED TLS v3.6.6 changelogs](https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-3.6.6))
+- Update MBED TLS v3.6.4 -> v3.6.6 👻😊✔️ (See [MBED TLS v3.6.6 changelogs](https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-3.6.6)
 
 ## [0.2.2] - 2025-09-16
-- Update MBED TLS v3.6.0 -> v3.6.4 👻😊✔️ (See [MBED TLS v3.6.4 changelogs](https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-3.6.4))
+- Update MBED TLS v3.6.0 -> v3.6.4 👻😊✔️ (See [MBED TLS v3.6.4 changelogs](https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-3.6.4)
 
 **Note**: _Security updates in MBED TLS does not affects CAuth_
 
